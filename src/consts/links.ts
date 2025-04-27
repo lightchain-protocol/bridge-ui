@@ -1,0 +1,15 @@
+export const links = {
+  home: '#',
+  explorer: '#',
+  discord: 'https://discord.gg/',
+  github: 'https://github.com',
+  docs: '#',
+  warpDocs: '#',
+  gasDocs: '#',
+  chains: '#',
+  twitter: 'https://x.com',
+  blog: 'https://medium.com',
+  tos: '#',
+  privacyPolicy: '#',
+  bounty: '#',
+};
