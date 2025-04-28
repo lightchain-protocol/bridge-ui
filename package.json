@@ -1,8 +1,7 @@
 {
-  "name": "@hyperlane-xyz/warp-ui-template",
+  "name": "lcaibridge",
   "description": "A web app template for building Hyperlane Warp Route UIs",
   "version": "12.1.0",
-  "author": "J M Rossy",
   "dependencies": {
     "@chakra-ui/next-js": "^2.4.2",
     "@chakra-ui/react": "^2.8.2",
@@ -77,22 +76,17 @@
     "yaml": "^2.6.0",
     "yaml-loader": "^0.8.1"
   },
-  "homepage": "https://www.hyperlane.xyz",
   "license": "Apache-2.0",
   "main": "dist/src/index.js",
   "packageManager": "yarn@4.5.0",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hyperlane-xyz/hyperlane-warp-ui-template"
-  },
   "scripts": {
     "clean": "rm -rf dist cache .next",
     "dev": "next dev",
     "build": "next build",
     "typecheck": "tsc",
     "lint": "next lint",
-    "start": "next start",
+    "start": "next start -p 3001",
     "test": "vitest --watch false",
     "prettier": "prettier --write ./src"
   },
