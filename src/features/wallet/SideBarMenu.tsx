@@ -61,29 +61,29 @@ export function SideBarMenu({
   return (
     <>
       <div
-        className={`fixed right-0 top-0 h-full w-88 transform bg-white bg-opacity-95 shadow-lg transition-transform duration-100 ease-in ${
+        className={`hpl-sidebar fixed right-0 top-0 h-full w-88 transform bg-primary-900 shadow-lg transition-transform duration-100 ease-in ${
           isMenuOpen ? 'z-10 translate-x-0' : 'z-0 translate-x-full'
         }`}
       >
         {isMenuOpen && (
           <button
-            className="absolute left-0 top-0 flex h-full w-9 -translate-x-full items-center justify-center rounded-l-md bg-white bg-opacity-60 transition-all hover:bg-opacity-80"
+            className="hpl-sidebar-btn absolute left-0 top-0 flex h-full w-9 -translate-x-full items-center justify-center rounded-l-md transition-all hover:bg-opacity-80"
             onClick={() => onClose()}
           >
             <Image src={CollapseIcon} width={15} height={24} alt="" />
           </button>
         )}
         <div className="flex h-full w-full flex-col overflow-y-auto">
-          <div className="w-full rounded-t-md bg-primary-500 px-3.5 py-2 text-base font-normal tracking-wider text-white">
+          <div className="hpl-sidebar-title w-full rounded-t-md px-3.5 py-2 text-base font-normal text-primary-100">
             Connected Wallets
           </div>
           <AccountList
             multiProvider={multiProvider}
             onClickConnectWallet={onClickConnectWallet}
             onCopySuccess={onCopySuccess}
-            className="px-3 py-3"
+            className="px-3 py-3 hpl-sidebar-list"
           />
-          <div className="mb-4 w-full bg-primary-500 px-3.5 py-2 text-base font-normal tracking-wider text-white">
+          <div className="hpl-sidebar-title mb-4 w-full px-3.5 py-2 text-base font-normal text-primary-100">
             Transfer History
           </div>
           <div className="flex grow flex-col px-3.5">

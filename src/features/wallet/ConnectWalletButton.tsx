@@ -15,8 +15,7 @@ export function ConnectWalletButton() {
       multiProvider={multiProvider}
       onClickWhenUnconnected={() => setShowEnvSelectModal(true)}
       onClickWhenConnected={() => setIsSideBarOpen(true)}
-      className="rounded-lg bg-white"
-      countClassName="bg-accent-500"
+      className="hpl-btn-gd btn-header"
     />
   );
 }

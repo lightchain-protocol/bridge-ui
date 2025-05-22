@@ -19,9 +19,9 @@ export function TokenIcon({ token, size = 32 }: Props) {
   const registry = useStore((s) => s.registry);
   const imageSrc = getImageSrc(registry, token);
   const bgColorSeed =
-    token && (!imageSrc || fallbackToText)
-      ? (Buffer.from(token.addressOrDenom).at(0) || 0) % 5
-      : undefined;
+  token && (!imageSrc || fallbackToText)
+  ? (Buffer.from(token.addressOrDenom).at(0) || 0) % 5
+  : undefined;
 
   return (
     <Circle size={size} bgColorSeed={bgColorSeed} title={title}>
@@ -34,7 +34,7 @@ export function TokenIcon({ token, size = 32 }: Props) {
           onError={() => setFallbackToText(true)}
         />
       ) : (
-        <div className={`text-[${fontSize}px]`}>{character}</div>
+        <div className={`text-[${fontSize}px] text-gray-600`}>{character}</div>
       )}
     </Circle>
   );

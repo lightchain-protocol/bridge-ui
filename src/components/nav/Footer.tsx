@@ -1,34 +1,16 @@
-import { DiscordIcon, GithubIcon, HyperlaneLogo, TwitterIcon } from '@hyperlane-xyz/widgets';
+import { FaXTwitter } from "react-icons/fa6";
 import Link from 'next/link';
-import { ReactNode } from 'react';
-import { links } from '../../consts/links';
-import { Color } from '../../styles/Color';
+import { FaTelegramPlane } from "react-icons/fa";
+import { BsMedium } from "react-icons/bs";
+import { PiLinktreeLogoBold } from "react-icons/pi";
 
-type FooterLink = {
-  title: string;
-  url: string;
-  external: boolean;
-  icon?: ReactNode;
-};
-
-const footerLinks: FooterLink[] = [
-  { title: 'Docs', url: links.docs, external: true },
-  { title: 'Terms', url: links.tos, external: true },
-  { title: 'Twitter', url: links.twitter, external: true, icon: <TwitterIcon color="#fff" /> },
-  { title: 'Homepage', url: links.home, external: true },
-  { title: 'Privacy', url: links.privacyPolicy, external: true },
-  { title: 'Discord', url: links.discord, external: true, icon: <DiscordIcon color="#fff" /> },
-  { title: 'Explorer', url: links.explorer, external: true },
-  { title: 'Link', url: links.bounty, external: true },
-  { title: 'Github', url: links.github, external: true, icon: <GithubIcon color="#fff" /> },
-];
 
 export function Footer() {
   return (
     <footer className="relative text-white">
-      <div className="relative bg-gradient-to-b from-transparent to-black/40 px-8 pb-5 pt-2 sm:pt-0">
-        <div className="flex flex-col items-center justify-between gap-8 sm:flex-row sm:gap-10">
-          <FooterLogo />
+      <div className="relative bg-gradient-to-b from-transparent to-black/40 px-2 pb-2 pt-3 sm:px-6 lg:px-12 pb-5 pt-2 sm:pt-0">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:gap-10">
+        <span className="text-primary-300">Copyright © 2025 <Link className="copyright-link" href='https://lightchain.ai'>Lightchain Protocol</Link></span>
           <FooterNav />
         </div>
       </div>
@@ -36,37 +18,22 @@ export function Footer() {
   );
 }
 
-function FooterLogo() {
-  return <div></div>;
-  return (
-    <div className="flex items-center justify-center">
-      <div className="ml-2 h-12 w-12 sm:h-14 sm:w-14">
-        <HyperlaneLogo color={Color.white} />
-      </div>
-      <div className="ml-6 space-y-1 text-lg font-medium sm:text-xl">
-        <div>Go interchain</div>
-        <div>with Hyperlane</div>
-      </div>
-    </div>
-  );
-}
-
 function FooterNav() {
   return (
     <nav className="text-md font-medium">
-      <ul style={{ gridTemplateColumns: 'auto auto auto' }} className="grid gap-x-7 gap-y-1.5">
-        {footerLinks.map((item) => (
-          <li key={item.title}>
-            <Link
-              className="flex items-center capitalize underline-offset-2 hover:underline"
-              target={item.external ? '_blank' : '_self'}
-              href={item.url}
-            >
-              {item?.icon && <div className="mr-3 mt-1 w-4">{item?.icon}</div>}
-              {!item?.icon && <div>{item.title}</div>}
-            </Link>
-          </li>
-        ))}
+      <ul className="hpl-social-media">
+        <li>
+          <Link href="https://x.com/LightchainAI" target='_blank'><FaXTwitter /></Link>
+        </li>
+        <li>
+          <Link href="https://t.me/LightchainProtocol" target='_blank'><FaTelegramPlane /></Link>
+        </li>
+        <li>
+          <Link href="https://linktr.ee/lightchainai" target='_blank'><PiLinktreeLogoBold /></Link>
+        </li>
+        <li>
+          <Link href="https://news.lightchain.ai" target='_blank'><BsMedium /></Link>
+        </li>
       </ul>
     </nav>
   );

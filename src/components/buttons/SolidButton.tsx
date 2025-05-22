@@ -25,14 +25,14 @@ export function SolidButton(
   const color = _color ?? 'primary';
 
   const base =
-    'flex items-center justify-center rounded-lg transition-all duration-500 active:scale-95';
+    'flex items-center justify-center rounded-lg transition-all duration-500';
   let baseColors, onHover;
   if (color === 'primary') {
-    baseColors = 'bg-primary-500 text-white';
+    baseColors = 'bg-primary-700 text-[#ccceef]';
     onHover = 'hover:bg-primary-600';
   } else if (color === 'accent') {
-    baseColors = 'bg-accent-500 text-white';
-    onHover = 'hover:bg-accent-600';
+    baseColors = 'hpl-btn-gd text-white';
+    onHover = '';
   } else if (color === 'green') {
     baseColors = 'bg-green-500 text-white';
     onHover = 'hover:bg-green-600';

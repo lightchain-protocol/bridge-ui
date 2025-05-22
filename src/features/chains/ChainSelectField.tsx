@@ -39,7 +39,7 @@ export function ChainSelectField({ name, label, onChange, disabled, customListIt
       <button
         type="button"
         name={field.name}
-        className={`${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
+        className={`hpl-select-item ${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
         onClick={onClick}
       >
         <div className="flex items-center gap-3">
@@ -47,13 +47,13 @@ export function ChainSelectField({ name, label, onChange, disabled, customListIt
             <ChainLogo chainName={field.value} size={32} />
           </div>
           <div className="flex flex-col items-start gap-1">
-            <label htmlFor={name} className="text-xs text-gray-600">
+            <label htmlFor={name} className="text-xs">
               {label}
             </label>
             {displayName}
           </div>
         </div>
-        <ChevronIcon width={12} height={8} direction="s" />
+        <ChevronIcon width={12} height={8} direction="s" color="#7376aa" />
       </button>
       <ChainSelectListModal
         isOpen={isModalOpen}
@@ -66,7 +66,7 @@ export function ChainSelectField({ name, label, onChange, disabled, customListIt
 }
 
 const styles = {
-  base: 'px-2 py-1.5 w-full flex items-center justify-between text-sm bg-white rounded-lg border border-primary-300 outline-none transition-colors duration-500',
-  enabled: 'hover:bg-gray-100 active:scale-95 focus:border-primary-500',
-  disabled: 'bg-gray-150 cursor-default',
+  base: 'px-2 py-1.5 w-full flex items-center justify-between text-sm rounded-lg outline-none transition-colors duration-500',
+  enabled: '',
+  disabled: 'cursor-default',
 };

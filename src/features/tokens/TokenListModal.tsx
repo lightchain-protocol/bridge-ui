@@ -39,7 +39,7 @@ export function TokenListModal({
     <Modal
       isOpen={isOpen}
       close={onClose}
-      panelClassname="px-4 py-3 max-w-100 sm:max-w-[31rem] min-h-[24rem]"
+      panelClassname="my-custom-modal px-4 py-3 max-w-100 sm:max-w-[31rem] min-h-[24rem]"
     >
       <SearchBar search={search} setSearch={setSearch} />
       <TokenList

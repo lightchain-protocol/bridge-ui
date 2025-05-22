@@ -146,7 +146,7 @@ function SwapChainsButton({
       onClick={onClick}
       disabled={disabled}
     >
-      <SwapIcon width={20} height={20} />
+      <SwapIcon width={20} height={20} color="#7064e9" />
     </IconButton>
   );
 }
@@ -221,7 +221,7 @@ function TokenSection({
 
   return (
     <div className="flex-1">
-      <label htmlFor="tokenIndex" className="block pl-0.5 text-sm text-gray-600">
+      <label htmlFor="tokenIndex" className="block pl-0.5 text-sm hpl-lable">
         Token
       </label>
       <TokenSelectField
@@ -241,7 +241,7 @@ function AmountSection({ isNft, isReview }: { isNft: boolean; isReview: boolean 
   return (
     <div className="flex-1">
       <div className="flex justify-between pr-1">
-        <label htmlFor="amount" className="block pl-0.5 text-sm text-gray-600">
+        <label htmlFor="amount" className="block pl-0.5 text-sm hpl-lable">
           Amount
         </label>
         <TokenBalance label="My balance" balance={balance} />
@@ -253,7 +253,7 @@ function AmountSection({ isNft, isReview }: { isNft: boolean; isReview: boolean 
           <TextField
             name="amount"
             placeholder="0.00"
-            className="w-full"
+            className="w-full hpl-input"
             type="number"
             step="any"
             disabled={isReview}
@@ -273,7 +273,7 @@ function RecipientSection({ isReview }: { isReview: boolean }) {
   return (
     <div className="mt-4">
       <div className="flex justify-between pr-1">
-        <label htmlFor="recipient" className="block pl-0.5 text-sm text-gray-600">
+        <label htmlFor="recipient" className="block pl-0.5 text-sm hpl-lable">
           Recipient address
         </label>
         <TokenBalance label="Remote balance" balance={balance} />
@@ -282,7 +282,7 @@ function RecipientSection({ isReview }: { isReview: boolean }) {
         <TextField
           name="recipient"
           placeholder="0x123456..."
-          className="w-full"
+          className="w-full hpl-input"
           disabled={isReview}
         />
         <SelfButton disabled={isReview} />
@@ -293,7 +293,7 @@ function RecipientSection({ isReview }: { isReview: boolean }) {
 
 function TokenBalance({ label, balance }: { label: string; balance?: TokenAmount | null }) {
   const value = balance?.getDecimalFormattedAmount().toFixed(5) || '0';
-  return <div className="text-right text-xs text-gray-600">{`${label}: ${value}`}</div>;
+  return <div className="text-right text-xs text-[#7064e9]">{`${label}: ${value}`}</div>;
 }
 
 function ButtonSection({
@@ -385,11 +385,11 @@ function MaxButton({ balance, disabled }: { balance?: TokenAmount; disabled?: bo
       onClick={onClick}
       color="primary"
       disabled={disabled}
-      className="absolute bottom-1 right-1 top-2.5 px-2 text-xs opacity-90 all:rounded"
+      className="absolute bottom-1 right-1 top-2.5 px-3 text-xs opacity-90 all:rounded"
     >
       {isLoading ? (
         <div className="flex items-center">
-          <SpinnerIcon className="h-5 w-5" color="white" />
+          <SpinnerIcon className="h-5 w-5" color="#7376aa" />
         </div>
       ) : (
         'Max'
@@ -415,7 +415,7 @@ function SelfButton({ disabled }: { disabled?: boolean }) {
       onClick={onClick}
       color="primary"
       disabled={disabled}
-      className="absolute bottom-1 right-1 top-2.5 px-2 text-xs opacity-90 all:rounded"
+      className="absolute bottom-1 right-1 top-2.5 px-3.5 text-xs opacity-90 all:rounded"
     >
       Self
     </SolidButton>

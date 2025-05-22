@@ -14,6 +14,7 @@ import { EvmWalletContext } from '../features/wallet/context/EvmWalletContext';
 import { SolanaWalletContext } from '../features/wallet/context/SolanaWalletContext';
 import { StarknetWalletContext } from '../features/wallet/context/StarknetWalletContext';
 import '../styles/globals.css';
+import '../styles/globals.scss';
 import '../vendor/inpage-metamask';
 import '../vendor/polyfill';
 

@@ -147,7 +147,7 @@ Toasts
 ======
 */
 :root {
-  --toastify-color-light: #ffffff;
+  --toastify-color-light: #14152c;
   --toastify-color-dark: #2e3338;
   --toastify-color-info: #3498db;
   --toastify-color-success: #35d07f;
@@ -164,10 +164,10 @@ Toasts
   --toastify-toast-background: #fff;
   --toastify-toast-min-height: 64px;
   --toastify-toast-max-height: 800px;
-  --toastify-font-family: Roboto, sans-serif;
+  --toastify-font-family: inter, sans-serif;
   --toastify-z-index: 9999;
 
-  --toastify-text-color-light: #2e3338;
+  --toastify-text-color-light: #7064e9;
   --toastify-text-color-dark: #fff;
 
   --toastify-text-color-info: #fff;
@@ -192,6 +192,26 @@ Toasts
   --toastify-color-progress-success: var(--toastify-color-success);
   --toastify-color-progress-warning: var(--toastify-color-warning);
   --toastify-color-progress-error: var(--toastify-color-error);
+
+  --rt-color-dark: #0f1021 !important;
+  --rt-color-white: #7376aa !important;
+
+  
+}
+
+/* wallet modal  */
+
+[data-rk] {
+  --rk-colors-modalBackground: #14152c !important;
+  --rk-colors-accentColor: #7064e9 !important;
+  --rk-colors-closeButton: #7064e9 !important;
+  --rk-colors-closeButtonBackground: #0f1021;
+  --rk-colors-modalBackdrop: rgba(0, 0, 0, 0.4) !important;
+  --rk-colors-modalText: #ccceef !important;
+  --rk-colors-modalTextSecondary: #5a5c87 !important;
+  --rk-colors-downloadTopCardBackground: #0f1021 !important;
+  --rk-colors-downloadBottomCardBackground: #0f1021 !important;
+
 }
 
 /*
