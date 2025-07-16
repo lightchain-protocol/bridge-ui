@@ -6,11 +6,11 @@ import { TokenStandard, WarpCoreConfig } from '@hyperlane-xyz/sdk';
 export const warpRouteConfigs: WarpCoreConfig = {
   tokens: [
     {
-      addressOrDenom: '0xEB48deF5d9d6F753697E71e10432306DDe7a7cF6',
+      addressOrDenom: '0xcD5485a26F238d7327153dde10780c294f23a5B2',
       chainName: 'lcai',
       connections: [
         {
-          token: 'ethereum|sepolia|0x9bFe5645F9A2C9c74Df6A31AFA65a632EDfB7681',
+          token: 'ethereum|sepolia|0xE3c768c1dadd0ad20C5e59c5773D240eF2DB301a',
         },
       ],
       decimals: 18,
@@ -20,12 +20,12 @@ export const warpRouteConfigs: WarpCoreConfig = {
       logoURI: '/logos/lcai.png',
     },
     {
-      addressOrDenom: '0x9bFe5645F9A2C9c74Df6A31AFA65a632EDfB7681',
+      addressOrDenom: '0xE3c768c1dadd0ad20C5e59c5773D240eF2DB301a',
       chainName: 'sepolia',
       collateralAddressOrDenom: '0x6381e597e08f736bA2a57DC5B917E4f9c26dA3dA',
       connections: [
         {
-          token: 'ethereum|lcai|0xEB48deF5d9d6F753697E71e10432306DDe7a7cF6',
+          token: 'ethereum|lcai|0xcD5485a26F238d7327153dde10780c294f23a5B2',
         },
       ],
       decimals: 18,
