@@ -1,11 +1,17 @@
+'use client';
+
 import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
 import Head from 'next/head';
-import { PropsWithChildren } from 'react';
-import { APP_NAME, BACKGROUND_IMAGE, BACKGROUND_COLOR } from '../../consts/app';
+import { PropsWithChildren, useEffect, useState } from 'react';
+import { APP_NAME, BACKGROUND_COLOR, BACKGROUND_IMAGE } from '../../consts/app';
 import { config } from '../../consts/config';
 import { useStore } from '../../features/store';
 import { SideBarMenu } from '../../features/wallet/SideBarMenu';
-import { Footer } from '../nav/Footer';
+import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
+import { RawNavConfig } from '../../lib/nav/types';
+import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
+import Footer from '../footer/Footer';
+import { RawFooterConfig } from '../footer/types/types';
 import { Header } from '../nav/Header';
 
 export function AppLayout({ children }: PropsWithChildren) {
@@ -17,6 +23,18 @@ export function AppLayout({ children }: PropsWithChildren) {
       setIsSideBarOpen: s.setIsSideBarOpen,
     }),
   );
+
+  const [footerConfig, setFooterConfig] = useState<RawFooterConfig | null>(null);
+  const [navConfig, setNavConfig] = useState<RawNavConfig[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([fetchFooterConfig(), fetchNavConfig()]).then(([footer, nav]) => {
+      setFooterConfig(footer);
+      setNavConfig(nav);
+      setIsLoading(false);
+    });
+  }, []);
 
   return (
     <>
@@ -30,11 +48,11 @@ export function AppLayout({ children }: PropsWithChildren) {
         id="app-content"
         className="min-w-screen relative flex h-full min-h-screen w-full flex-col justify-between"
       >
-        <Header />
+        <Header rawMenus={navConfig} />
         <div className="mx-auto flex max-w-screen-xl grow items-center sm:px-4">
           <main className="my-4 flex w-full flex-1 items-center justify-center">{children}</main>
         </div>
-        <Footer />
+        {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>
 
       <MultiProtocolWalletModal
@@ -50,7 +68,6 @@ export function AppLayout({ children }: PropsWithChildren) {
     </>
   );
 }
-
 
 const styles = {
   container: {
