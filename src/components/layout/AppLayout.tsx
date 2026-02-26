@@ -50,7 +50,7 @@ export function AppLayout({ children }: PropsWithChildren) {
       >
         <Header rawMenus={navConfig} />
         <div className="mx-auto flex max-w-screen-xl grow items-center sm:px-4">
-          <main className="my-4 flex w-full flex-1 items-center justify-center">{children}</main>
+          <main className="main-wrapper flex w-full flex-1 items-center justify-center py-10 sm:py-24 lg:py-[120px] px-3">{children}</main>
         </div>
         {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>

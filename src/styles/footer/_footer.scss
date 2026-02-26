@@ -214,11 +214,8 @@ p {
 .footer-style-3 {
   background: none !important;
   border: none !important;
-  margin-top: 96px;
   z-index: 5;
-  @media #{$sm-layout,$md-layout} {
-      margin-top: 16px;
-    }
+
   .footer-top {
     background: var(--color-dark);
     padding-top: 50px;
