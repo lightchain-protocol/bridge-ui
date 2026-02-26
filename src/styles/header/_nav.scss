@@ -16,7 +16,7 @@
         color: var(--color-heading);
         font-size: 16px;
         font-weight: 500;
-        padding: 0 0 0 17px;
+        padding: 0 12px;
         display: flex;
         align-items: center;
         gap: 5px;
@@ -25,7 +25,7 @@
         transition: 0.3s;
 
         @media #{$lg-layout} {
-          padding: 0 10px;
+          padding: 0 12px;
         }
 
         @media #{$md-layout} {
