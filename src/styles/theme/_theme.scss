@@ -1,3 +1,4 @@
+
 /* 
 ================
    Card style
@@ -92,6 +93,8 @@
 =================
 */
 .hpl-sidebar {
+  z-index: 99;
+  
   &-title {
     background-color: #1c1d3d;
   }
