@@ -1,5 +1,5 @@
 
-import { HistoryIcon, IconButton, PlusIcon, useModal } from '@hyperlane-xyz/widgets';
+import { HistoryIcon, PlusIcon, useModal } from '@hyperlane-xyz/widgets';
 import { config } from '../../consts/config';
 import { useStore } from '../../features/store';
 import { AddWarpConfigModal } from '../../features/warpCore/AddWarpConfigModal';
@@ -19,29 +19,23 @@ export function FloatingButtonStrip() {
 
   return (
     <>
-      <div className="absolute -right-8 top-2 hidden flex-col items-center justify-end gap-3 sm:flex">
-        <IconButton
-          className={`p-0.5 ${styles.roundedCircle}`}
-          title="History"
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 items-center justify-center gap-3 flex">
+        <button
+          className={`size-8 rounded-lg border border-dark-3 bg-black-colorful flex items-center justify-center transition-colors hover:bg-dark2`}
           onClick={() => setIsSideBarOpen(!isSideBarOpen)}
         >
           <HistoryIcon color="#7064e9" height={18} width={18} />
-        </IconButton>
+        </button>
         {config.showAddRouteButton && (
-          <IconButton
-            className={styles.roundedCircle}
-            title="Add route"
+          <button
+            className='size-8 rounded-lg border border-dark-3 bg-black-colorful flex items-center justify-center transition-colors hover:bg-dark2'
             onClick={openAddWarpConfig}
           >
             <PlusIcon color={Color.primary['900']} height={26} width={26} />
-          </IconButton>
+          </button>
         )}
       </div>
       <AddWarpConfigModal isOpen={isAddWarpConfigOpen} close={closeAddWarpConfig} />
     </>
   );
 }
-
-const styles = {
-  roundedCircle: 'rounded-full bg-primary-900',
-};

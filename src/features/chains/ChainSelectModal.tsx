@@ -31,9 +31,10 @@ export function ChainSelectListModal({
     <Modal
       isOpen={isOpen}
       close={close}
-      panelClassname="hpl-select-modal p-4 sm:p-5 max-w-lg min-h-[40vh]"
+      panelClassname="hpl-select-modal p-4 sm:p-5 max-w-lg rounded-2xl border border-border-soft p-5 backdrop-blur-[107px] bg-dark2/90"
     >
-      <ChainSearchMenu
+
+        <ChainSearchMenu
         chainMetadata={chainMetadata}
         onClickChain={onSelectChain}
         overrideChainMetadata={chainMetadataOverrides}
@@ -45,5 +46,6 @@ export function ChainSelectListModal({
         showAddChainButton={config.showAddChainButton}
       />
     </Modal>
+
   );
 }

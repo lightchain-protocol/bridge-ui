@@ -3,9 +3,7 @@ import { ProtocolType, errorToString, isNullish, toWei } from '@hyperlane-xyz/ut
 import {
   AccountInfo,
   ChevronIcon,
-  IconButton,
   SpinnerIcon,
-  SwapIcon,
   getAccountAddressAndPubKey,
   useAccountAddressForChain,
   useAccounts,
@@ -31,7 +29,6 @@ import { getNumRoutesWithSelectedChain, tryGetValidChainName } from '../chains/u
 import { useIsAccountSanctioned } from '../sanctions/hooks/useIsAccountSanctioned';
 import { useStore } from '../store';
 import { SelectOrInputTokenIds } from '../tokens/SelectOrInputTokenIds';
-import { TokenSelectField } from '../tokens/TokenSelectField';
 import { useIsApproveRequired } from '../tokens/approval';
 import {
   getDestinationNativeBalance,
@@ -50,6 +47,8 @@ import { TransferFormValues } from './types';
 import { useRecipientBalanceWatcher } from './useBalanceWatcher';
 import { useFeeQuotes } from './useFeeQuotes';
 import { useTokenTransfer } from './useTokenTransfer';
+import { LuArrowLeftRight } from "react-icons/lu";
+import Image from 'next/image';
 
 export function TransferTokenForm() {
   const multiProvider = useMultiProvider();
@@ -61,7 +60,10 @@ export function TransferTokenForm() {
   // Flag for if form is in input vs review mode
   const [isReview, setIsReview] = useState(false);
   // Flag for check current type of token
-  const [isNft, setIsNft] = useState(false);
+  // const [isNft, setIsNft] = useState(false);
+
+  const isNft = false
+
   // Modal for confirming address
   const {
     open: openConfirmationModal,
@@ -96,11 +98,10 @@ export function TransferTokenForm() {
         <Form className="flex w-full flex-col items-stretch">
           <WarningBanners />
           <ChainSelectSection isReview={isReview} />
-          <div className="mt-3.5 flex items-end justify-between space-x-4">
-            <TokenSection setIsNft={setIsNft} isReview={isReview} />
+          <div className="p-2.5 rounded-xl border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.02)] mt-4">
             <AmountSection isNft={isNft} isReview={isReview} />
+            <RecipientSection isReview={isReview} />
           </div>
-          <RecipientSection isReview={isReview} />
           <ReviewDetails visible={isReview} />
           <ButtonSection
             isReview={isReview}
@@ -138,16 +139,14 @@ function SwapChainsButton({
   };
 
   return (
-    <IconButton
-      width={20}
-      height={20}
+    <button
       title="Swap chains"
-      className={!disabled ? 'hover:rotate-180' : undefined}
+      className={`sm:size-[44px] size-8 flex items-center justify-center bg-dark2 hover:bg-darker2`}
       onClick={onClick}
       disabled={disabled}
     >
-      <SwapIcon width={20} height={20} color="#7064e9" />
-    </IconButton>
+      <LuArrowLeftRight className='text-[#7064E9]' />
+    </button>
   );
 }
 
@@ -186,15 +185,16 @@ function ChainSelectSection({ isReview }: { isReview: boolean }) {
   };
 
   return (
-    <div className="mt-2 flex items-center justify-between gap-4">
+    <div className="grid grid-cols-2 gap-[33px] relative">
       <ChainSelectField
         name="origin"
         label="From"
         disabled={isReview}
         customListItemField={destinationRouteCounts}
         onChange={handleChange}
+        className='sm:pr-8 pr-2'
       />
-      <div className="flex flex-1 flex-col items-center">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] sm:border-[6px] border-4 border-dark rounded-md">
         <SwapChainsButton disabled={isReview} onSwapChain={onSwapChain} />
       </div>
       <ChainSelectField
@@ -203,48 +203,50 @@ function ChainSelectSection({ isReview }: { isReview: boolean }) {
         disabled={isReview}
         customListItemField={originRouteCounts}
         onChange={handleChange}
+        className='flex-row-reverse sm:pl-8 pl-2'
+        childClass="flex-row-reverse"
       />
     </div>
   );
 }
 
-function TokenSection({
-  setIsNft,
-  isReview,
-}: {
-  setIsNft: (b: boolean) => void;
-  isReview: boolean;
-}) {
-  const onChangeToken = (addressOrDenom: string) => {
-    updateQueryParam(WARP_QUERY_PARAMS.TOKEN, addressOrDenom);
-  };
+// function TokenSection({
+//   setIsNft,
+//   isReview,
+// }: {
+//   setIsNft: (b: boolean) => void;
+//   isReview: boolean;
+// }) {
+//   const onChangeToken = (addressOrDenom: string) => {
+//     updateQueryParam(WARP_QUERY_PARAMS.TOKEN, addressOrDenom);
+//   };
 
-  return (
-    <div className="flex-1">
-      <label htmlFor="tokenIndex" className="block pl-0.5 text-sm hpl-lable">
-        Token
-      </label>
-      <TokenSelectField
-        name="tokenIndex"
-        disabled={isReview}
-        setIsNft={setIsNft}
-        onChangeToken={onChangeToken}
-      />
-    </div>
-  );
-}
+//   return (
+//     <div className="flex-1">
+//       <TokenSelectField
+//         name="tokenIndex"
+//         disabled={isReview}
+//         setIsNft={setIsNft}
+//         onChangeToken={onChangeToken}
+//       />
+//     </div>
+//   );
+// }
 
 function AmountSection({ isNft, isReview }: { isNft: boolean; isReview: boolean }) {
   const { values } = useFormikContext<TransferFormValues>();
   const { balance } = useOriginBalance(values);
 
   return (
-    <div className="flex-1">
-      <div className="flex justify-between pr-1">
-        <label htmlFor="amount" className="block pl-0.5 text-sm hpl-lable">
+    <div className="p-4 rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2">
+      <div className="flex justify-between">
+        <label htmlFor="amount" className="block text-base font-medium text-gray-400 leading-[1.5]">
           Amount
         </label>
-        <TokenBalance label="My balance" balance={balance} />
+        <div className='rounded-[30px] border border-[rgba(112,100,233,0.10)] bg-[rgba(204,206,239,0.06)] flex items-center gap-2 px-3 py-1'>
+          <Image className='size-6 rounded-full' src="/logos/lcai.png" width={24} height={24} alt="Logo"></Image>
+          <span className="text-base font-semibold leading-none text-contentBody">LCAI</span>
+        </div>
       </div>
       {isNft ? (
         <SelectOrInputTokenIds disabled={isReview} />
@@ -253,12 +255,20 @@ function AmountSection({ isNft, isReview }: { isNft: boolean; isReview: boolean 
           <TextField
             name="amount"
             placeholder="0.00"
-            className="w-full hpl-input"
+            className="w-full"
             type="number"
             step="any"
             disabled={isReview}
           />
-          <MaxButton disabled={isReview} balance={balance} />
+          <div className="flex justify-between items-center mt-4">
+            <TokenBalance label="My balance" balance={balance} />
+            <div className="flex items-center gap-2">
+              <div className="rounded-[20px] border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.06)] px-3 h-6 flex items-center justify-center">
+                <span className='text-xs font-semibold leading-none text-[#7476AA]'>50%</span>
+              </div>
+              <MaxButton disabled={isReview} balance={balance} />
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -271,21 +281,23 @@ function RecipientSection({ isReview }: { isReview: boolean }) {
   useRecipientBalanceWatcher(values.recipient, balance);
 
   return (
-    <div className="mt-4">
-      <div className="flex justify-between pr-1">
-        <label htmlFor="recipient" className="block pl-0.5 text-sm hpl-lable">
+    <div className="p-4 rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 mt-2.5">
+      <div className="flex justify-between ">
+        <label htmlFor="recipient" className="block text-base font-medium text-gray-400 leading-[1.5]">
           Recipient address
         </label>
-        <TokenBalance label="Remote balance" balance={balance} />
+        <SelfButton disabled={isReview} />
       </div>
       <div className="relative w-full">
         <TextField
           name="recipient"
           placeholder="0x123456..."
-          className="w-full hpl-input"
+          className="w-full text-lg font-semibold"
           disabled={isReview}
         />
-        <SelfButton disabled={isReview} />
+        <div className="mt-4">
+          <TokenBalance label="Remote balance" balance={balance} />
+        </div>
       </div>
     </div>
   );
@@ -293,7 +305,7 @@ function RecipientSection({ isReview }: { isReview: boolean }) {
 
 function TokenBalance({ label, balance }: { label: string; balance?: TokenAmount | null }) {
   const value = balance?.getDecimalFormattedAmount().toFixed(5) || '0';
-  return <div className="text-right text-xs text-[#7064e9]">{`${label}: ${value}`}</div>;
+  return <span className="text-sm text-[#7064e9] font-medium">{`${label}: ${value}`}</span>;
 }
 
 function ButtonSection({
@@ -380,21 +392,21 @@ function MaxButton({ balance, disabled }: { balance?: TokenAmount; disabled?: bo
   };
 
   return (
-    <SolidButton
+    <button
       type="button"
       onClick={onClick}
       color="primary"
       disabled={disabled}
-      className="absolute bottom-1 right-1 top-2.5 px-3 text-xs opacity-90 all:rounded"
+      className="bg-[#7064E9] rounded-[30px] px-3 h-6 min-w-[48px] flex justify-center items-center"
     >
       {isLoading ? (
         <div className="flex items-center">
-          <SpinnerIcon className="h-5 w-5" color="#7376aa" />
+          <SpinnerIcon className="size-4 text-contentBody" />
         </div>
       ) : (
-        'Max'
+        <span className="text-xs font-semibold leading-none text-contentBody">Max</span>
       )}
-    </SolidButton>
+    </button>
   );
 }
 
@@ -410,15 +422,15 @@ function SelfButton({ disabled }: { disabled?: boolean }) {
       toast.warn(`No account found for for chain ${chainDisplayName}, is your wallet connected?`);
   };
   return (
-    <SolidButton
+    <button
       type="button"
       onClick={onClick}
       color="primary"
       disabled={disabled}
-      className="absolute bottom-1 right-1 top-2.5 px-3.5 text-xs opacity-90 all:rounded"
+      className="text-xs opacity-90 flex items-center justify-center rounded-[30px] bg-[rgba(204,206,239,0.06)] border border-[rgba(112,100,233,0.20)] py-[3px] px-3.5 transition-colors hover:bg-[#7064E9] hover:text-white text-contentBody"
     >
-      Self
-    </SolidButton>
+      <span className='text-base font-semibold'>Self</span>
+    </button>
   );
 }
 

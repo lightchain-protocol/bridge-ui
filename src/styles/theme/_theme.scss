@@ -5,16 +5,6 @@
 =================
 */
 
-.hpl-card {
-  background-color: #14152c;
-  border: 2px solid rgba(112, 100, 233, .1);
-  box-shadow: 0px 20px 70px rgba(171, 105, 255, 0.25);
-
-  @media screen and (max-width: 575px) {
-    width: calc(100% - 20px);
-    margin: 0 auto;
-  }
-}
 
 .hpl-btn-gd {
   padding: 12px 20px;
@@ -94,10 +84,6 @@
 */
 .hpl-sidebar {
   z-index: 99;
-  
-  &-title {
-    background-color: #1c1d3d;
-  }
 
   &-btn {
     background-color: #202244;
@@ -109,23 +95,7 @@
 
   button {
     .htw-text-gray-800 {
-      color: #7376aa;
-    }
-  }
-
-  &-list {
-    button {
-      color: #7064e9;
-
-      svg {
-        path {
-          fill: #7064e9;
-        }
-      }
-
-      &:hover {
-        background-color: #0f1021;
-      }
+      color: #ffffff;
     }
   }
 }
@@ -176,44 +146,84 @@
 */
 
 .hpl-select-modal {
-  background-color: #14152c;
-  border: 2px solid rgba(112, 100, 233, .1);
 
+  .htw-flex.htw-items-center.htw-justify-between {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .htw-flex.htw-items-center.htw-gap-3.htw-mr-0\.5 {
+    button {
+      width: 40px;
+    }
+  }
   div {
     form {
+      margin-bottom: 10px;
       input {
-        background-color: transparent;
-        color: #454874;
-        border: 2px solid rgba(112, 100, 233, .1);
-  
+        border-radius: 12px;
+        border: 1px solid rgba(112, 100, 233, 0.20);
+        background: rgba(204, 206, 239, 0.12);
+        color: #CCCEEF;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1; 
+          
         &:focus {
           border-color: rgba(112, 100, 233, .2);
+          background: rgba(204, 206, 239, 0.12);
         }
         
         &::placeholder {
-          color: #454874;
+          color: #CCCEEF;
         }
       }
       svg {
         path {
-          fill: #7376aa;
+          fill: #CCCEEF;
         }
       }
     }
     >div {
+      .htw-h-7 {
+        display: flex;
+        gap: 4px;
+
+        button {
+          background-color: rgba(204, 206, 239, 0.24);
+          color: #CCCEEF;
+          border-radius: 4px;
+
+          .htw-text-gray-400 {
+            color: #CCCEEF;
+          }
+
+          svg {
+            path {
+              fill: #CCCEEF;
+            }
+          }
+        }
+      }
       .htw-border-gray-200 {
-        border: 1px solid rgba(112, 100, 233, .1);
+        border-radius: 10px;
+        background: var(--surface-base-light, rgba(204, 206, 239, 0.08));
+        border-color: transparent;
+        overflow: hidden;
+        padding: 8px;
+        height: 40px;
       }
 
       .htw-bg-gray-100 {
-        background-color: #202244;
-        color: #7064e9;
+        background-color: transparent;
+        color: #7376aa;
       }
 
       button {
         color: #7376aa;
         transition: all 0.2s ease;
         opacity: 1;
+        border-radius: 4px;
 
         svg {
           path {
@@ -227,17 +237,17 @@
         }
 
         &:hover {
-          background-color: #202244;
-          color: #7064e9;
+          background-color: rgba(204, 206, 239, 0.12);
+          color: #ccceef;
 
           svg {
             path {
-              fill: #7064e9;
+              fill: #ccceef;
             }
           }
 
           .htw-text-gray-400 {
-            color: #7064e9;
+            color: #ccceef;
           }
         }
       }
@@ -255,7 +265,11 @@
 
       button {
         .htw-text-gray-500 {
-          color: #7376aa;
+          color: #7E7F94;
+        }
+
+        .htw-text-sm {
+          color: #CCCEEF;
         }
       }
     }
@@ -369,6 +383,10 @@
     }
   }
 
+  textarea {
+    min-height: 80px;
+  }
+
 }
 
 
@@ -376,13 +394,17 @@
 .htw-bg-white {
 
   &.htw-backdrop-blur {
-    background-color: #111126;
+    border-radius: 16px;
+    border: 1px solid rgba(204, 206, 239, 0.12);
+    background: rgba(204, 206, 239, 0.12);
+    backdrop-filter: blur(107px);
 
     .hover\:htw-bg-gray-200 {
-      color: #7376aa;
+      color: #CCCEEF;
+      border-radius: 10px;
       
       &:hover {
-        background-color: #161730;
+        background:  rgba(204, 206, 239, 0.12);
       }
     }
 
@@ -391,11 +413,11 @@
     }
 
     button {
-      background-color: #161730;
-      color: #7376aa;
+      background-color: rgba(204, 206, 239, 0.24);
+      color: #CCCEEF;
 
       &:hover {
-        background-color: #1c1e3e;
+        background-color: rgba(204, 206, 239, 0.34);
       }
     }
 
@@ -536,4 +558,39 @@
 // Footer 
 .copyright-link {
   font-weight: 700;
+}
+
+
+// Sidebar 
+.hpl-sidebar-list {
+  .htw-relative {
+    button {
+      padding-left: 10px;
+      padding-right: 20px;
+    }
+
+    .htw-absolute {
+      right: 10px;
+      left: auto;
+
+      button {
+       padding: 0;
+      }
+    }
+  }
+  button {
+    border-radius: 8px;
+    color: #ccceef;
+    background-color: rgba(112,100,233,0.20);
+
+    svg {
+      path {
+        fill: #ccceef;
+      }
+    }
+
+    &:hover {
+      background-color: rgba(112,100,233,0.30);
+    }
+  }
 }

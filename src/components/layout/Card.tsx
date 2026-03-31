@@ -7,7 +7,7 @@ interface Props {
 export function Card({ className, children }: PropsWithChildren<Props>) {
   return (
     <div
-      className={`hpl-card relative overflow-auto rounded-xl p-4 ${className}`}
+      className={`relative sm:p-6 py-6 px-4 bg-dark ${className}`}
     >
       {children}
     </div>
