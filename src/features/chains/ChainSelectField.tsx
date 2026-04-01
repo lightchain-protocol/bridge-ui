@@ -12,9 +12,11 @@ type Props = {
   onChange?: (id: ChainName, fieldName: string) => void;
   disabled?: boolean;
   customListItemField: ChainSearchMenuProps['customListItemField'];
+  className?: string;
+  childClass?: string;
 };
 
-export function ChainSelectField({ name, label, onChange, disabled, customListItemField }: Props) {
+export function ChainSelectField({ name, label, onChange, disabled, customListItemField, className, childClass }: Props) {
   const [field, , helpers] = useField<ChainName>(name);
   const { setFieldValue } = useFormikContext<TransferFormValues>();
 
@@ -35,25 +37,25 @@ export function ChainSelectField({ name, label, onChange, disabled, customListIt
   };
 
   return (
-    <div className="flex-[4]">
+    <div className="relative">
       <button
         type="button"
         name={field.name}
-        className={`hpl-select-item ${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
+        className={`sm:px-4 px-2 py-2.5 w-full rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 flex items-center justify-between sm:gap-4 gap-2 hover:bg-darker2 transition-colors ${disabled ? styles.disabled : styles.enabled} ${className}`}
         onClick={onClick}
       >
-        <div className="flex items-center gap-3">
-          <div className="max-w-[1.4rem] sm:max-w-fit">
-            <ChainLogo chainName={field.value} size={32} />
+        <div className={`flex items-center justify-between sm:gap-4 gap-2.5 ${childClass}`}>
+          <div className="sm:size-[50px] size-5">
+            <ChainLogo chainName={field.value} size={50} />
           </div>
-          <div className="flex flex-col items-start gap-1">
-            <label htmlFor={name} className="text-xs">
+          <div className="flex flex-col items-start gap-1.5">
+            <label htmlFor={name} className="sm:text-sm text-[10px] font-medium text-gray-400 leading-none">
               {label}
             </label>
-            {displayName}
+            <span className="sm:text-lg text-xs font-medium text-contentBody leading-none">{displayName}</span>
           </div>
         </div>
-        <ChevronIcon width={12} height={8} direction="s" color="#7376aa" />
+        <ChevronIcon className='sm:size-3.5 size-3' direction="s" color="#7376AA" />
       </button>
       <ChainSelectListModal
         isOpen={isModalOpen}
@@ -61,6 +63,7 @@ export function ChainSelectField({ name, label, onChange, disabled, customListIt
         onSelect={handleChange}
         customListItemField={customListItemField}
       />
+      
     </div>
   );
 }

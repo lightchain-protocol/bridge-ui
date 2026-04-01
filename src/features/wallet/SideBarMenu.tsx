@@ -73,17 +73,17 @@ export function SideBarMenu({
             <Image src={CollapseIcon} width={15} height={24} alt="" />
           </button>
         )}
-        <div className="flex h-full w-full flex-col overflow-y-auto">
-          <div className="hpl-sidebar-title w-full rounded-t-md px-3.5 py-2 text-base font-normal text-primary-100">
+        <div className="flex h-full w-full flex-col overflow-y-auto pt-4">
+          <div className="hpl-sidebar-title w-full rounded-t-md px-3.5 py-2 text-base font-medium text-primary-100">
             Connected Wallets
           </div>
           <AccountList
             multiProvider={multiProvider}
             onClickConnectWallet={onClickConnectWallet}
             onCopySuccess={onCopySuccess}
-            className="px-3 py-3 hpl-sidebar-list"
+            className="px-3 py-3 hpl-sidebar-list space-y-3"
           />
-          <div className="hpl-sidebar-title mb-4 w-full px-3.5 py-2 text-base font-normal text-primary-100">
+          <div className="hpl-sidebar-title mb-4 w-full px-3.5 py-2 text-base font-medium text-primary-100">
             Transfer History
           </div>
           <div className="flex grow flex-col px-3.5">

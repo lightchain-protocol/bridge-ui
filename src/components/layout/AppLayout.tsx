@@ -3,7 +3,7 @@
 import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
 import Head from 'next/head';
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { APP_NAME, BACKGROUND_COLOR, BACKGROUND_IMAGE } from '../../consts/app';
+import { APP_NAME } from '../../consts/app';
 import { config } from '../../consts/config';
 import { useStore } from '../../features/store';
 import { SideBarMenu } from '../../features/wallet/SideBarMenu';
@@ -13,6 +13,7 @@ import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
 import Footer from '../footer/Footer';
 import { RawFooterConfig } from '../footer/types/types';
 import { Header } from '../nav/Header';
+import Image from 'next/image';
 
 export function AppLayout({ children }: PropsWithChildren) {
   const { showEnvSelectModal, setShowEnvSelectModal, isSideBarOpen, setIsSideBarOpen } = useStore(
@@ -44,12 +45,12 @@ export function AppLayout({ children }: PropsWithChildren) {
         <title>{APP_NAME}</title>
       </Head>
       <div
-        style={styles.container}
         id="app-content"
-        className="min-w-screen relative flex h-full min-h-screen w-full flex-col justify-between"
+        className="min-w-screen relative w-full"
       >
         <Header rawMenus={navConfig} />
-        <div className="mx-auto flex max-w-screen-xl grow items-center sm:px-4">
+        <div className="mx-auto relative">
+          <Image className='absolute top-0 left-0 w-full h-full' src="/images/bg/grid.png" width={1917} height={1170} alt='Background'></Image>
           <main className="main-wrapper flex w-full flex-1 items-center justify-center py-10 sm:py-24 lg:py-[120px] px-3">{children}</main>
         </div>
         {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
@@ -68,13 +69,3 @@ export function AppLayout({ children }: PropsWithChildren) {
     </>
   );
 }
-
-const styles = {
-  container: {
-    backgroundColor: BACKGROUND_COLOR,
-    backgroundImage: BACKGROUND_IMAGE,
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-  },
-};

@@ -18,7 +18,7 @@ export function Header(props: HeaderProps) {
   const [activeMobileMenu, setActiveMobileMenu] = useState(true);
   return (
     <>
-      <header className="lightchain-header header-default header-not-transparent header-sticky relative z-10 w-full px-2 py-3 sm:px-6 lg:px-12">
+      <header className="lightchain-header header-default header-not-transparent header-sticky relative z-10 w-full px-3 py-3 sm:px-6 lg:px-12">
         <div className="flex items-center justify-between">
           <Link href="/" className="hpl-header-logo flex items-center">
             <Image src="/logo.svg" width={250} height={50} alt="logo" />
@@ -27,7 +27,7 @@ export function Header(props: HeaderProps) {
             <Nav rawMenus={rawMenus} />
           </nav>
           <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end gap-2 md:flex-row-reverse md:items-start">
+            <div className="hidden sm:flex flex-col items-end gap-2 md:flex-row-reverse md:items-start">
               <ConnectWalletButton />
             </div>
             <div className="mobile-menu-bar d-md-to-xl-none block lg:hidden">

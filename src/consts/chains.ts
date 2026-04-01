@@ -59,7 +59,7 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
         http: 'https://rpc.sepolia.org',
       },
     ],
-    logoURI: '/logos/eth.svg',
+    logoURI: '/logos/eth.png',
   },
   lcai: {
     protocol: ProtocolType.Ethereum,
