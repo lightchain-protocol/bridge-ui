@@ -140,6 +140,7 @@ function SwapChainsButton({
 
   return (
     <button
+      type="button"
       title="Swap chains"
       className={`sm:size-[44px] size-8 flex items-center justify-center bg-dark2 hover:bg-darker2`}
       onClick={onClick}
