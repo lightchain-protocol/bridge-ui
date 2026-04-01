@@ -11,7 +11,9 @@ import {
 } from '@hyperlane-xyz/widgets';
 import BigNumber from 'bignumber.js';
 import { Form, Formik, useFormikContext } from 'formik';
+import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { LuArrowLeftRight } from "react-icons/lu";
 import { toast } from 'react-toastify';
 import { ConnectAwareSubmitButton } from '../../components/buttons/ConnectAwareSubmitButton';
 import { SolidButton } from '../../components/buttons/SolidButton';
@@ -47,8 +49,6 @@ import { TransferFormValues } from './types';
 import { useRecipientBalanceWatcher } from './useBalanceWatcher';
 import { useFeeQuotes } from './useFeeQuotes';
 import { useTokenTransfer } from './useTokenTransfer';
-import { LuArrowLeftRight } from "react-icons/lu";
-import Image from 'next/image';
 
 export function TransferTokenForm() {
   const multiProvider = useMultiProvider();
@@ -263,9 +263,6 @@ function AmountSection({ isNft, isReview }: { isNft: boolean; isReview: boolean 
           <div className="flex justify-between items-center mt-4">
             <TokenBalance label="My balance" balance={balance} />
             <div className="flex items-center gap-2">
-              <div className="rounded-[20px] border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.06)] px-3 h-6 flex items-center justify-center">
-                <span className='text-xs font-semibold leading-none text-[#7476AA]'>50%</span>
-              </div>
               <MaxButton disabled={isReview} balance={balance} />
             </div>
           </div>
