@@ -4,6 +4,9 @@ import { useStore } from '../store';
 
 export function ConnectWalletButton() {
   const multiProvider = useMultiProvider();
+  const { originChainName } = useStore((s) => ({
+    originChainName: s.originChainName,
+  }));
 
   const { setShowEnvSelectModal, setIsSideBarOpen } = useStore((s) => ({
     setShowEnvSelectModal: s.setShowEnvSelectModal,
@@ -15,7 +18,9 @@ export function ConnectWalletButton() {
       multiProvider={multiProvider}
       onClickWhenUnconnected={() => setShowEnvSelectModal(true)}
       onClickWhenConnected={() => setIsSideBarOpen(true)}
-      className="hpl-btn-gd btn-header"
+      className="rounded-lg bg-accent-gradient shadow-accent-glow [&_*]:text-white [&_path]:fill-white"
+      countClassName="bg-white/20"
+      chainName={originChainName}
     />
   );
 }

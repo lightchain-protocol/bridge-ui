@@ -1,19 +1,55 @@
-import { warpRouteConfigs as registryWarpRoutes } from '@hyperlane-xyz/registry';
-import { WarpCoreConfig, WarpCoreConfigSchema, validateZodResult } from '@hyperlane-xyz/sdk';
-import { objFilter, objMerge } from '@hyperlane-xyz/utils';
+import {
+  IRegistry
+} from '@hyperlane-xyz/registry';
+import {
+  ChainName,
+  TOKEN_STANDARD_TO_PROTOCOL,
+  TokenStandard,
+  WarpCoreConfig,
+  WarpCoreConfigSchema,
+  getTokenConnectionId,
+  validateZodResult,
+} from '@hyperlane-xyz/sdk';
+import { normalizeAddress, objFilter, objMerge } from '@hyperlane-xyz/utils';
 import { warpRouteWhitelist } from '../../consts/warpRouteWhitelist.ts';
 import { warpRouteConfigs as tsWarpRoutes } from '../../consts/warpRoutes.ts';
 import yamlWarpRoutes from '../../consts/warpRoutes.yaml';
 
-export function assembleWarpCoreConfig(storeOverrides: WarpCoreConfig[]): WarpCoreConfig {
+// Map of chain -> address -> wireDecimals
+export type WireDecimalsMap = Record<ChainName, Record<string, number>>;
+
+export async function assembleWarpCoreConfig(
+  storeOverrides: WarpCoreConfig[],
+  registry: IRegistry,
+): Promise<{ config: WarpCoreConfig; wireDecimalsMap: WireDecimalsMap }> {
   const yamlResult = WarpCoreConfigSchema.safeParse(yamlWarpRoutes);
   const yamlConfig = validateZodResult(yamlResult, 'warp core yaml config');
   const tsResult = WarpCoreConfigSchema.safeParse(tsWarpRoutes);
   const tsConfig = validateZodResult(tsResult, 'warp core typescript config');
 
-  const filteredRegistryConfigMap = warpRouteWhitelist
+  let registryWarpRoutes: Record<string, WarpCoreConfig> = {};
+
+  // try {
+  //   if (config.registryUrl) {
+  //     logger.debug('Using custom registry warp routes from:', config.registryUrl);
+  //     registryWarpRoutes = await registry.getWarpRoutes();
+  //     if (isObjEmpty(registryWarpRoutes)) throw new Error('Warp routes empty');
+  //   } else {
+  //     throw new Error('No custom registry URL provided');
+  //   }
+  // } catch {
+  //   logger.debug('Using default published registry for warp routes');
+  //   registryWarpRoutes = publishedRegistryWarpRoutes;
+  // }
+
+  let filteredRegistryConfigMap = warpRouteWhitelist
     ? filterToIds(registryWarpRoutes, warpRouteWhitelist)
     : registryWarpRoutes;
+  filteredRegistryConfigMap = fillMissingCoinGeckoIds(filteredRegistryConfigMap);
+
+  // Build wireDecimalsMap BEFORE flattening - this preserves route grouping
+  const wireDecimalsMap = buildWireDecimalsMap(filteredRegistryConfigMap);
+
   const filteredRegistryConfigValues = Object.values(filteredRegistryConfigMap);
   const filteredRegistryTokens = filteredRegistryConfigValues.map((c) => c.tokens).flat();
   const filteredRegistryOptions = filteredRegistryConfigValues.map((c) => c.options).flat();
@@ -27,7 +63,7 @@ export function assembleWarpCoreConfig(storeOverrides: WarpCoreConfig[]): WarpCo
     ...yamlConfig.tokens,
     ...storeOverrideTokens,
   ];
-  const tokens = dedupeTokens(combinedTokens);
+  const tokens = filterUnconnectedToken(dedupeTokens(combinedTokens));
 
   const combinedOptions = [
     ...filteredRegistryOptions,
@@ -42,14 +78,58 @@ export function assembleWarpCoreConfig(storeOverrides: WarpCoreConfig[]): WarpCo
       'No warp route configs provided. Please check your registry, warp route whitelist, and custom route configs for issues.',
     );
 
-  return { tokens, options };
+  return { config: { tokens, options }, wireDecimalsMap };
+}
+
+// Build map of chain -> address -> wireDecimals before tokens are flattened
+// wireDecimals = max decimals across all tokens in a warp route
+function buildWireDecimalsMap(routes: Record<string, WarpCoreConfig>): WireDecimalsMap {
+  const map: WireDecimalsMap = {};
+  for (const routeConfig of Object.values(routes)) {
+    const wireDecimals = Math.max(...routeConfig.tokens.map((t) => t.decimals ?? 18));
+    for (const token of routeConfig.tokens) {
+      if (!token.addressOrDenom) continue;
+      map[token.chainName] ||= {};
+      map[token.chainName][normalizeAddress(token.addressOrDenom)] = wireDecimals;
+    }
+  }
+  return map;
+}
+
+// Fill missing coinGeckoIds within each warp route
+// For each route, if any token has a coinGeckoId, apply it to tokens without one
+function fillMissingCoinGeckoIds(
+  routes: Record<string, WarpCoreConfig>,
+): Record<string, WarpCoreConfig> {
+  return Object.entries(routes).reduce<Record<string, WarpCoreConfig>>((acc, [routeId, config]) => {
+    // Find first coinGeckoId in this route's tokens
+    const coinGeckoId = config.tokens.find((token) => token.coinGeckoId)?.coinGeckoId;
+
+    if (coinGeckoId) {
+      // Apply coinGeckoId to all tokens in this route that don't have one
+      const updatedTokens = config.tokens.map((token) => ({
+        ...token,
+        coinGeckoId: token.coinGeckoId || coinGeckoId,
+      }));
+      acc[routeId] = {
+        ...config,
+        tokens: updatedTokens,
+      };
+    } else {
+      // No coinGeckoId found, keep route as is
+      acc[routeId] = config;
+    }
+    return acc;
+  }, {});
 }
 
 function filterToIds(
   config: Record<string, WarpCoreConfig>,
   idWhitelist: string[],
 ): Record<string, WarpCoreConfig> {
-  return objFilter(config, (id, c): c is WarpCoreConfig => idWhitelist.includes(id));
+  return objFilter(config, (id, c): c is WarpCoreConfig =>
+    idWhitelist.map((id) => id.toUpperCase()).includes(id.toUpperCase()),
+  );
 }
 
 // Separate warp configs may contain duplicate definitions of the same token.
@@ -57,7 +137,13 @@ function filterToIds(
 function dedupeTokens(tokens: WarpCoreConfig['tokens']): WarpCoreConfig['tokens'] {
   const idToToken: Record<string, WarpCoreConfig['tokens'][number]> = {};
   for (const token of tokens) {
-    const id = `${token.chainName}|${token.addressOrDenom?.toLowerCase()}`;
+    let id = '';
+    // Temporary fix issue for M0 routes where addressOrDenom can be the same
+    if (token.standard === TokenStandard.EvmM0PortalLite) {
+      id = `${token.chainName}|${token.symbol}|${token.addressOrDenom?.toLowerCase()}`;
+    } else {
+      id = `${token.chainName}|${token.addressOrDenom?.toLowerCase()}`;
+    }
     idToToken[id] = objMerge(idToToken[id] || {}, token);
   }
   return Object.values(idToToken);
@@ -72,4 +158,31 @@ function reduceOptions(optionsList: Array<WarpCoreConfig['options']>): WarpCoreC
     }
     return acc;
   }, {});
+}
+
+// Remove tokens that have no connections from the token list, but preserve tokens that are destinations
+function filterUnconnectedToken(tokens: WarpCoreConfig['tokens']): WarpCoreConfig['tokens'] {
+  const destinationTokenIds = new Set<string>();
+
+  tokens.forEach((token) => {
+    if (token.connections?.length) {
+      token.connections.forEach((conn) => {
+        destinationTokenIds.add(conn.token);
+      });
+    }
+  });
+
+  // Keep tokens with connections OR tokens that are destinations
+  return tokens.filter((token) => {
+    // remove null addresses if they exist
+    if (!token.addressOrDenom) return false;
+    // Has connections - keep it
+    if (token.connections?.length) return true;
+
+    const protocol = TOKEN_STANDARD_TO_PROTOCOL[token.standard];
+
+    // Is a destination token - keep it
+    const tokenId = getTokenConnectionId(protocol, token.chainName, token.addressOrDenom);
+    return destinationTokenIds.has(tokenId);
+  });
 }

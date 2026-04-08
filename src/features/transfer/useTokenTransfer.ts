@@ -1,4 +1,10 @@
-import { TypedTransactionReceipt, WarpCore, WarpTxCategory } from '@hyperlane-xyz/sdk';
+import {
+  ProviderType,
+  Token,
+  TypedTransactionReceipt,
+  WarpCore,
+  WarpTxCategory,
+} from '@hyperlane-xyz/sdk';
 import { toTitleCase, toWei } from '@hyperlane-xyz/utils';
 import {
   getAccountAddressForChain,
@@ -10,10 +16,13 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { toastTxSuccess } from '../../components/toast/TxSuccessToast';
 import { logger } from '../../utils/logger';
+import { refinerIdentifyAndShowTransferForm } from '../analytics/refiner';
+import { EVENT_NAME } from '../analytics/types';
+import { trackEvent } from '../analytics/utils';
 import { useMultiProvider } from '../chains/hooks';
 import { getChainDisplayName } from '../chains/utils';
 import { AppState, useStore } from '../store';
-import { getTokenByIndex, useWarpCore } from '../tokens/hooks';
+import { getTokenByKey, useWarpCore } from '../tokens/hooks';
 import { TransferContext, TransferFormValues, TransferStatus } from './types';
 import { tryGetMsgIdFromTransferReceipt } from './utils';
 
@@ -40,7 +49,7 @@ export function useTokenTransfer(onDone?: () => void) {
 
   // TODO implement cancel callback for when modal is closed?
   const triggerTransactions = useCallback(
-    (values: TransferFormValues) =>
+    (values: TransferFormValues, routeOverrideToken: Token | null) =>
       executeTransfer({
         warpCore,
         values,
@@ -52,6 +61,7 @@ export function useTokenTransfer(onDone?: () => void) {
         updateTransferStatus,
         setIsLoading,
         onDone,
+        routeOverrideToken,
       }),
     [
       warpCore,
@@ -83,6 +93,7 @@ async function executeTransfer({
   updateTransferStatus,
   setIsLoading,
   onDone,
+  routeOverrideToken,
 }: {
   warpCore: WarpCore;
   values: TransferFormValues;
@@ -94,19 +105,36 @@ async function executeTransfer({
   updateTransferStatus: AppState['updateTransferStatus'];
   setIsLoading: (b: boolean) => void;
   onDone?: () => void;
+  routeOverrideToken: Token | null;
 }) {
   logger.debug('Preparing transfer transaction(s)');
   setIsLoading(true);
   let transferStatus: TransferStatus = TransferStatus.Preparing;
   updateTransferStatus(transferIndex, transferStatus);
 
-  const { origin, destination, tokenIndex, amount, recipient } = values;
+  const { originTokenKey, destinationTokenKey, amount, recipient: formRecipient } = values;
   const multiProvider = warpCore.multiProvider;
 
   try {
-    const originToken = getTokenByIndex(warpCore, tokenIndex);
-    const connection = originToken?.getConnectionForChain(destination);
-    if (!originToken || !connection) throw new Error('No token route found between chains');
+    const originToken = routeOverrideToken || getTokenByKey(warpCore.tokens, originTokenKey);
+    const destinationToken = getTokenByKey(warpCore.tokens, destinationTokenKey);
+    if (!originToken || !destinationToken) throw new Error('No token route found between chains');
+
+    // Get effective recipient (form value or fallback to connected wallet for destination)
+    const connectedDestAddress = getAccountAddressForChain(
+      multiProvider,
+      destinationToken.chainName,
+      activeAccounts.accounts,
+    );
+    const recipient = formRecipient || connectedDestAddress || '';
+    if (!recipient) throw new Error('No recipient address available');
+    // Find the actual connected token from the origin and destination chains
+    const connectedDestinationToken = originToken?.getConnectionForChain(
+      destinationToken.chainName,
+    )?.token;
+    if (!connectedDestinationToken) throw new Error('No token connection found between chains');
+    const origin = originToken.chainName;
+    const destination = connectedDestinationToken.chainName;
 
     const originProtocol = originToken.protocol;
     const isNft = originToken.isNft();
@@ -114,6 +142,7 @@ async function executeTransfer({
     const originTokenAmount = originToken.amount(weiAmountOrId);
 
     const sendTransaction = transactionFns[originProtocol].sendTransaction;
+    const sendMultiTransaction = transactionFns[originProtocol].sendMultiTransaction;
     const activeChain = activeChains.chains[originProtocol];
     const sender = getAccountAddressForChain(multiProvider, origin, activeAccounts.accounts);
     if (!sender) throw new Error('No active account found for origin chain');
@@ -133,7 +162,7 @@ async function executeTransfer({
       origin,
       destination,
       originTokenAddressOrDenom: originToken.addressOrDenom,
-      destTokenAddressOrDenom: connection.token.addressOrDenom,
+      destTokenAddressOrDenom: connectedDestinationToken.addressOrDenom,
       sender,
       recipient,
       amount,
@@ -150,28 +179,79 @@ async function executeTransfer({
 
     const hashes: string[] = [];
     let txReceipt: TypedTransactionReceipt | undefined = undefined;
-    for (const tx of txs) {
-      updateTransferStatus(transferIndex, (transferStatus = txCategoryToStatuses[tx.category][0]));
-      const { hash, confirm } = await sendTransaction({
-        tx,
+
+    if (txs.length > 1 && txs.every((tx) => tx.type === ProviderType.Starknet)) {
+      updateTransferStatus(
+        transferIndex,
+        (transferStatus = txCategoryToStatuses[WarpTxCategory.Transfer][0]),
+      );
+      const { hash, confirm } = await sendMultiTransaction({
+        txs,
         chainName: origin,
         activeChainName: activeChain.chainName,
       });
-      updateTransferStatus(transferIndex, (transferStatus = txCategoryToStatuses[tx.category][1]));
+      updateTransferStatus(
+        transferIndex,
+        (transferStatus = txCategoryToStatuses[WarpTxCategory.Transfer][1]),
+      );
       txReceipt = await confirm();
-      const description = toTitleCase(tx.category);
+      const description = toTitleCase(WarpTxCategory.Transfer);
       logger.debug(`${description} transaction confirmed, hash:`, hash);
       toastTxSuccess(`${description} transaction sent!`, hash, origin);
+
       hashes.push(hash);
+    } else {
+      for (const tx of txs) {
+        updateTransferStatus(
+          transferIndex,
+          (transferStatus = txCategoryToStatuses[tx.category][0]),
+        );
+        const { hash, confirm } = await sendTransaction({
+          tx,
+          chainName: origin,
+          activeChainName: activeChain.chainName,
+        });
+        updateTransferStatus(
+          transferIndex,
+          (transferStatus = txCategoryToStatuses[tx.category][1]),
+        );
+        txReceipt = await confirm();
+        const description = toTitleCase(tx.category);
+        logger.debug(`${description} transaction confirmed, hash:`, hash);
+        toastTxSuccess(`${description} transaction sent!`, hash, origin);
+
+        hashes.push(hash);
+      }
     }
 
     const msgId = txReceipt
       ? tryGetMsgIdFromTransferReceipt(multiProvider, origin, txReceipt)
       : undefined;
 
+    const originTxHash = hashes.at(-1);
     updateTransferStatus(transferIndex, (transferStatus = TransferStatus.ConfirmedTransfer), {
-      originTxHash: hashes.at(-1),
+      originTxHash,
       msgId,
+    });
+
+    // track event after tx submission
+    const originChainId = warpCore.multiProvider.getChainId(origin);
+    const destinationChainId = warpCore.multiProvider.getChainId(destination);
+    trackEvent(EVENT_NAME.TRANSACTION_SUBMITTED, {
+      amount,
+      recipient,
+      chains: `${origin}|${originChainId}|${destination}|${destinationChainId}`,
+      tokenAddress: originToken.addressOrDenom,
+      tokenSymbol: originToken.symbol,
+      walletAddress: sender,
+      transactionHash: originTxHash || '',
+    });
+
+    // Identify user and show Refiner survey form after successful transfer
+    refinerIdentifyAndShowTransferForm({
+      walletAddress: sender,
+      protocol: originProtocol,
+      chain: origin,
     });
   } catch (error: any) {
     logger.error(`Error at stage ${transferStatus}`, error);
@@ -207,5 +287,6 @@ const errorMessages: Partial<Record<TransferStatus, string>> = {
 
 const txCategoryToStatuses: Record<WarpTxCategory, [TransferStatus, TransferStatus]> = {
   [WarpTxCategory.Approval]: [TransferStatus.SigningApprove, TransferStatus.ConfirmingApprove],
+  [WarpTxCategory.Revoke]: [TransferStatus.SigningRevoke, TransferStatus.ConfirmingRevoke],
   [WarpTxCategory.Transfer]: [TransferStatus.SigningTransfer, TransferStatus.ConfirmingTransfer],
 };

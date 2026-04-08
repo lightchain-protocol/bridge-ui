@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 type Props = {
   name: string;
-  tokenIndex?: number;
   disabled?: boolean;
 };
 
+// TODO: fix or remove NFT token path
 export function SelectTokenIdField({ name, disabled }: Props) {
   const [, , helpers] = useField<number>(name);
   const [tokenId, setTokenId] = useState<string | undefined>(undefined);
@@ -101,7 +101,7 @@ export function SelectTokenIdModal({
 }
 
 const styles = {
-  base: 'mt-1.5 w-full px-2.5 py-2 flex items-center justify-between text-sm bg-primary-900 rounded border border-gray-400 outline-none transition-colors duration-500',
+  base: 'mt-1.5 w-full px-2.5 py-2 flex items-center justify-between text-sm bg-white rounded border border-gray-400 outline-none transition-colors duration-500',
   enabled: 'hover:bg-gray-50 active:bg-gray-100 focus:border-primary-500',
   disabled: 'bg-gray-150 cursor-default',
 };

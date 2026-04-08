@@ -4,13 +4,13 @@ import { TokenStandard, WarpCoreConfig } from '@hyperlane-xyz/sdk';
 // These configs will be merged with the warp routes in the configured registry
 // The input here is typically the output of the Hyperlane CLI warp deploy command
 export const warpRouteConfigs: WarpCoreConfig = {
-  tokens: [
+   tokens: [
     {
-      addressOrDenom: '0xcD5485a26F238d7327153dde10780c294f23a5B2',
-      chainName: 'lcai',
+      addressOrDenom: '0xB9ee19d813D8c5c5Ce03A6cfE3C88aAD382239AA',
+      chainName: 'lcaidevnet',
       connections: [
         {
-          token: 'ethereum|sepolia|0xE3c768c1dadd0ad20C5e59c5773D240eF2DB301a',
+          token: 'ethereum|sepolia|0x18462a7cf57637754631BAF5316ABed4e7e34A41',
         },
       ],
       decimals: 18,
@@ -20,12 +20,12 @@ export const warpRouteConfigs: WarpCoreConfig = {
       logoURI: '/logos/lcai.png',
     },
     {
-      addressOrDenom: '0xE3c768c1dadd0ad20C5e59c5773D240eF2DB301a',
+      addressOrDenom: '0x18462a7cf57637754631BAF5316ABed4e7e34A41',
       chainName: 'sepolia',
-      collateralAddressOrDenom: '0x6381e597e08f736bA2a57DC5B917E4f9c26dA3dA',
+      collateralAddressOrDenom: '0xCAb9A0d25d7F673E6cc05B35cd28D3e888d5D4A3',
       connections: [
         {
-          token: 'ethereum|lcai|0xcD5485a26F238d7327153dde10780c294f23a5B2',
+          token: 'ethereum|lcaidevnet|0xB9ee19d813D8c5c5Ce03A6cfE3C88aAD382239AA',
         },
       ],
       decimals: 18,

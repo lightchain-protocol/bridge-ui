@@ -10,13 +10,23 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   //   ...solanamainnet,
   //   // SVM chains require mailbox addresses for the token adapters
   //   mailbox: solanamainnetAddresses.mailbox,
-  //   // Including a convenient rpc override because the Solana public RPC does not allow browser requests from localhost
   // },
   // eclipsemainnet: {
   //   ...eclipsemainnet,
   //   mailbox: eclipsemainnetAddresses.mailbox,
   // },
-  // sepolia,
+  // soon: {
+  //   ...soon,
+  //   mailbox: soonAddresses.mailbox,
+  // },
+  // sonicsvm: {
+  //   ...sonicsvm,
+  //   mailbox: sonicsvmAddresses.mailbox,
+  // },
+  // solaxy: {
+  //   ...solaxy,
+  //   mailbox: solaxyAddresses.mailbox,
+  // },
   sepolia: {
     blockExplorers: [
       {
@@ -60,6 +70,7 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
       },
     ],
     logoURI: '/logos/eth.png',
+    mailbox: '0x3746b02CDfE03e6Fd4Bd1EE864f2ea79a1DE1DE2'
   },
   lcai: {
     protocol: ProtocolType.Ethereum,
@@ -83,5 +94,31 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
       estimateBlockTime: 10,
     },
     logoURI: '/logos/lcai.png',
+    mailbox: '0xc631131599FAc2bFc2Bb7B707E17DBaBf066046C',
   },
+  lcaidevnet: {
+    protocol: ProtocolType.Ethereum,
+    chainId: 31337,
+    domainId: 7331337,
+    name: 'lcaidevnet',
+    displayName: 'LightchainDevnet',
+    nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
+    rpcUrls: [{ http: 'https://rpc.devnet.lightchain.ai' }],
+    blocks: {
+      confirmations: 1,
+      reorgPeriod: 1,
+      estimateBlockTime: 10,
+    },
+    logoURI: '/logos/lcai.png',
+    mailbox: '0xceCE1D7B73a34e1073AB21ceBf626189bE6AAb77'
+  },
+};
+
+// rent account payment for (mostly for) SVM chains added on top of IGP,
+// not exact but should be pretty close to actual payment
+export const chainsRentEstimate: ChainMap<bigint> = {
+  eclipsemainnet: BigInt(Math.round(0.00004019 * 10 ** 9)),
+  solanamainnet: BigInt(Math.round(0.00411336 * 10 ** 9)),
+  sonicsvm: BigInt(Math.round(0.00411336 * 10 ** 9)),
+  soon: BigInt(Math.round(0.00000355 * 10 ** 9)),
 };

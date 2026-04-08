@@ -60,7 +60,7 @@ export function CosmosWalletContext({ children }: PropsWithChildren<unknown>) {
             };
           },
         }}
-        modalTheme={{ defaultTheme: 'dark' }}
+        modalTheme={{ defaultTheme: 'light' }}
       >
         {children}
       </ChainProvider>

@@ -1,19 +1,17 @@
-'use client';
-
 import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
 import Head from 'next/head';
-import { PropsWithChildren, useEffect, useState } from 'react';
-import { APP_NAME } from '../../consts/app';
+import { PropsWithChildren, useEffect } from 'react';
+import { APP_NAME, BACKGROUND_COLOR, BACKGROUND_IMAGE } from '../../consts/app';
 import { config } from '../../consts/config';
+import { initIntercom } from '../../features/analytics/intercom';
+import { initRefiner } from '../../features/analytics/refiner';
+import { EVENT_NAME } from '../../features/analytics/types';
+import { useWalletConnectionTracking } from '../../features/analytics/useWalletConnectionTracking';
+import { trackEvent } from '../../features/analytics/utils';
 import { useStore } from '../../features/store';
 import { SideBarMenu } from '../../features/wallet/SideBarMenu';
-import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
-import { RawNavConfig } from '../../lib/nav/types';
-import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
-import Footer from '../footer/Footer';
-import { RawFooterConfig } from '../footer/types/types';
+import { Footer } from '../nav/Footer';
 import { Header } from '../nav/Header';
-import Image from 'next/image';
 
 export function AppLayout({ children }: PropsWithChildren) {
   const { showEnvSelectModal, setShowEnvSelectModal, isSideBarOpen, setIsSideBarOpen } = useStore(
@@ -25,16 +23,12 @@ export function AppLayout({ children }: PropsWithChildren) {
     }),
   );
 
-  const [footerConfig, setFooterConfig] = useState<RawFooterConfig | null>(null);
-  const [navConfig, setNavConfig] = useState<RawNavConfig[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  useWalletConnectionTracking();
 
   useEffect(() => {
-    Promise.all([fetchFooterConfig(), fetchNavConfig()]).then(([footer, nav]) => {
-      setFooterConfig(footer);
-      setNavConfig(nav);
-      setIsLoading(false);
-    });
+    initIntercom();
+    initRefiner();
+    trackEvent(EVENT_NAME.PAGE_VIEWED, {});
   }, []);
 
   return (
@@ -45,21 +39,24 @@ export function AppLayout({ children }: PropsWithChildren) {
         <title>{APP_NAME}</title>
       </Head>
       <div
+        style={styles.container}
         id="app-content"
-        className="min-w-screen relative w-full"
+        className="min-w-screen relative flex h-full min-h-screen w-full flex-col justify-between"
       >
-        <Header rawMenus={navConfig} />
-        <div className="mx-auto relative">
-          <Image className='absolute top-0 left-0 w-full h-full' src="/images/bg/grid.png" width={1917} height={1170} alt='Background'></Image>
-          <main className="main-wrapper flex w-full flex-1 items-center justify-center py-10 sm:py-24 lg:py-[120px] px-3">{children}</main>
+        <Header />
+        <div className="mx-auto flex max-w-screen-xl grow items-center sm:px-4">
+          <main className="my-4 flex w-full flex-1 items-center justify-center">{children}</main>
         </div>
-        {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
+        <Footer />
       </div>
 
       <MultiProtocolWalletModal
         isOpen={showEnvSelectModal}
         close={() => setShowEnvSelectModal(false)}
         protocols={config.walletProtocols}
+        onProtocolSelected={(protocol) =>
+          trackEvent(EVENT_NAME.WALLET_CONNECTION_INITIATED, { protocol })
+        }
       />
       <SideBarMenu
         onClose={() => setIsSideBarOpen(false)}
@@ -69,3 +66,13 @@ export function AppLayout({ children }: PropsWithChildren) {
     </>
   );
 }
+
+const styles = {
+  container: {
+    backgroundColor: BACKGROUND_COLOR,
+    backgroundImage: BACKGROUND_IMAGE,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+  },
+};

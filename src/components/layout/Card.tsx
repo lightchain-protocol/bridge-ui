@@ -7,7 +7,7 @@ interface Props {
 export function Card({ className, children }: PropsWithChildren<Props>) {
   return (
     <div
-      className={`relative sm:p-6 py-6 px-4 bg-dark ${className}`}
+      className={`relative overflow-auto rounded-2xl bg-white p-1.5 xs:p-2 sm:p-3 md:p-4 ${className}`}
     >
       {children}
     </div>

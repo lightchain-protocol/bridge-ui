@@ -26,10 +26,10 @@ You need a `projectId` from the WalletConnect Cloud to run the Hyperlane Warp Ro
 
 ```sh
 # Install dependencies
-yarn
+pnpm install
 
 # Build Next project
-yarn build
+pnpm run build
 ```
 
 ### Run
@@ -38,33 +38,48 @@ You can add `.env.local` file next to `.env.example` where you set `projectId` c
 
 ```sh
 # Start the Next dev server
-yarn dev
+pnpm run dev
 # Or with a custom projectId
-NEXT_PUBLIC_WALLET_CONNECT_ID=<projectId> yarn dev
+NEXT_PUBLIC_WALLET_CONNECT_ID=<projectId> pnpm run dev
 ```
 
 ### Test
 
 ```sh
+# Run tests
+pnpm test
+
 # Lint check code
-yarn lint
+pnpm run lint
 
 # Check code types
-yarn typecheck
+pnpm run typecheck
 ```
 
 ### Format
 
 ```sh
 # Format code using Prettier
-yarn prettier
+pnpm run prettier
 ```
 
 ### Clean / Reset
 
 ```sh
-# Delete build artifacts to start fresh 
-yarn clean
+# Delete build artifacts to start fresh
+pnpm run clean
+```
+
+### Local package linking to hyperlane-monorepo
+
+If you have to make changes to the widgets package to edit e.g. the Connect Button or other components linking
+the widgets package locally to test it is necessary. To do that you can run the following commands
+
+```sh
+# Link monorepo packages with the warp-ui
+pnpm link:monorepo
+# Unlink packages again after testing
+pnpm unlink:monorepo
 ```
 
 ## Deployment
@@ -73,4 +88,4 @@ The easiest hosting solution for this Next.JS app is to create a project on Verc
 
 ## Learn more
 
-For more information, see the [Hyperlane documentation](https://docs.hyperlane.xyz/docs/reference/applications/warp-routes).
+For more information, see the [Hyperlane documentation](https://docs.hyperlane.xyz/docs/protocol/warp-routes/warp-routes-overview).

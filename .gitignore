@@ -1,9 +1,7 @@
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 cache/
-.yarn/install-state.gz
+.pnpm-store/
 
 # testing
 /coverage
@@ -26,12 +24,11 @@ coverage.json
 
 # debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
+.env*
+!.env.example
 
 # vercel
 .vercel
@@ -40,4 +37,11 @@ yarn-error.log*
 *.tsbuildinfo
 
 .idea
-.env
+
+.monorepo-tarballs
+
+.opencode
+.sisyphus
+
+# fonts (downloaded via scripts/fetch-fonts.mjs)
+public/fonts/

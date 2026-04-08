@@ -1,10 +1,10 @@
 import { MultiProtocolProvider } from '@hyperlane-xyz/sdk';
-import { ProtocolType } from '@hyperlane-xyz/utils';
 import { getWagmiChainConfigs } from '@hyperlane-xyz/widgets';
 import { RainbowKitProvider, connectorsForWallets, lightTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   argentWallet,
+  binanceWallet,
   coinbaseWallet,
   injectedWallet,
   ledgerWallet,
@@ -20,7 +20,6 @@ import { APP_NAME } from '../../../consts/app';
 import { config } from '../../../consts/config';
 import { Color } from '../../../styles/Color';
 import { useMultiProvider } from '../../chains/hooks';
-import { useWarpCore } from '../../tokens/hooks';
 
 function initWagmi(multiProvider: MultiProtocolProvider) {
   const chains = getWagmiChainConfigs(multiProvider);
@@ -33,7 +32,7 @@ function initWagmi(multiProvider: MultiProtocolProvider) {
       },
       {
         groupName: 'More',
-        wallets: [coinbaseWallet, rainbowWallet, trustWallet, argentWallet],
+        wallets: [binanceWallet, coinbaseWallet, rainbowWallet, trustWallet, argentWallet],
       },
     ],
     { appName: APP_NAME, projectId: config.walletConnectProjectId },
@@ -54,15 +53,7 @@ function initWagmi(multiProvider: MultiProtocolProvider) {
 
 export function EvmWalletContext({ children }: PropsWithChildren<unknown>) {
   const multiProvider = useMultiProvider();
-  const warpCore = useWarpCore();
-
   const { wagmiConfig } = useMemo(() => initWagmi(multiProvider), [multiProvider]);
-
-  const initialChain = useMemo(() => {
-    const tokens = warpCore.tokens;
-    const firstEvmToken = tokens.filter((token) => token.protocol === ProtocolType.Ethereum)?.[0];
-    return multiProvider.tryGetChainMetadata(firstEvmToken?.chainName)?.chainId as number;
-  }, [multiProvider, warpCore]);
 
   return (
     <WagmiProvider config={wagmiConfig}>
@@ -72,7 +63,6 @@ export function EvmWalletContext({ children }: PropsWithChildren<unknown>) {
           borderRadius: 'small',
           fontStack: 'system',
         })}
-        initialChain={initialChain}
       >
         {children}
       </RainbowKitProvider>

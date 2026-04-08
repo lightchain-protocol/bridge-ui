@@ -30,4 +30,4 @@ export const TextInput = forwardRef(function _TextInput(
 });
 
 const defaultClassName =
-  'px-0 py-3 text-[24px] text-contentBody font-bold border-b border-[rgba(112,100,233,0.10)] disabled:bg-gray-150 outline-none transition-all duration-300 bg-transparent focus:border-[rgba(112,100,233,0.50)]';
+  'rounded-lg border border-primary-300 focus:border-primary-500 disabled:bg-gray-150 outline-none transition-all duration-300';
