@@ -15,8 +15,8 @@ import { useMultiProvider } from '../../chains/hooks';
 
 const theme = extendTheme({
   fonts: {
-    heading: `'Neue Haas Grotesk', 'Helvetica', 'sans-serif'`,
-    body: `'Neue Haas Grotesk', 'Helvetica', 'sans-serif'`,
+    heading: `"Inter", sans-serif`,
+    body: `"Inter", sans-serif`,
   },
 });
 

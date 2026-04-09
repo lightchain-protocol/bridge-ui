@@ -1,6 +1,6 @@
 import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
 import Head from 'next/head';
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { APP_NAME, BACKGROUND_COLOR, BACKGROUND_IMAGE } from '../../consts/app';
 import { config } from '../../consts/config';
 import { initIntercom } from '../../features/analytics/intercom';
@@ -10,7 +10,11 @@ import { useWalletConnectionTracking } from '../../features/analytics/useWalletC
 import { trackEvent } from '../../features/analytics/utils';
 import { useStore } from '../../features/store';
 import { SideBarMenu } from '../../features/wallet/SideBarMenu';
-import { Footer } from '../nav/Footer';
+import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
+import type { RawNavConfig } from '../../lib/nav/types';
+import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
+import Footer from '../footer/Footer';
+import type { RawFooterConfig } from '../footer/types/types';
 import { Header } from '../nav/Header';
 
 export function AppLayout({ children }: PropsWithChildren) {
@@ -22,6 +26,9 @@ export function AppLayout({ children }: PropsWithChildren) {
       setIsSideBarOpen: s.setIsSideBarOpen,
     }),
   );
+  const [footerConfig, setFooterConfig] = useState<RawFooterConfig | null>(null);
+  const [navConfig, setNavConfig] = useState<RawNavConfig[]>([]);
+  const [isNavFooterLoading, setIsNavFooterLoading] = useState(true);
 
   useWalletConnectionTracking();
 
@@ -29,6 +36,14 @@ export function AppLayout({ children }: PropsWithChildren) {
     initIntercom();
     initRefiner();
     trackEvent(EVENT_NAME.PAGE_VIEWED, {});
+  }, []);
+
+  useEffect(() => {
+    Promise.all([fetchFooterConfig(), fetchNavConfig()]).then(([footer, nav]) => {
+      setFooterConfig(footer);
+      setNavConfig(nav);
+      setIsNavFooterLoading(false);
+    });
   }, []);
 
   return (
@@ -43,11 +58,11 @@ export function AppLayout({ children }: PropsWithChildren) {
         id="app-content"
         className="min-w-screen relative flex h-full min-h-screen w-full flex-col justify-between"
       >
-        <Header />
+        <Header rawMenus={navConfig} />
         <div className="mx-auto flex max-w-screen-xl grow items-center sm:px-4">
           <main className="my-4 flex w-full flex-1 items-center justify-center">{children}</main>
         </div>
-        <Footer />
+        {!isNavFooterLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>
 
       <MultiProtocolWalletModal

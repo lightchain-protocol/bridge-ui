@@ -1,64 +1,133 @@
-import { GithubIcon } from '@hyperlane-xyz/widgets';
-import clsx from 'clsx';
+'use client';
+
 import Link from 'next/link';
-import { forwardRef, ReactNode } from 'react';
-import { links } from '../../consts/links';
-import { Color } from '../../styles/Color';
-import { BookIcon } from '../icons/BookIcon';
-import { QuestionMarkIcon } from '../icons/QuestionMarkIcon';
-import { StakeIcon } from '../icons/StakeIcon';
-import { WebSimpleIcon } from '../icons/WebSimpleIcon';
-import { XIcon } from '../icons/XIcon';
+import React, { useState } from 'react';
+import { iconMap } from '../../lib/nav/iconMap';
+import { resolveTarget } from '../../lib/nav/resolveTarget';
+import { RawNavCol, RawNavConfig } from '../../lib/nav/types';
 
-interface NavLinkItem {
-  title: string;
-  url: string;
-  icon: ReactNode;
+type Props = {
+  rawMenus: RawNavConfig[];
+};
+
+function widthClass(width?: string) {
+  if (width === 'xwide') return 'with-mega-item-3';
+  return 'with-mega-item-2 small';
 }
 
-export const navLinks: NavLinkItem[] = [
-  { title: 'Stake', url: links.stake, icon: <StakeIcon width={20} height={20} /> },
-  { title: 'X.com', url: links.twitter, icon: <XIcon width={19} height={17} /> },
-  { title: 'Hyperlane', url: links.home, icon: <WebSimpleIcon width={20} height={20} /> },
-  {
-    title: 'Support',
-    url: links.support,
-    icon: <QuestionMarkIcon width={20} height={20} color={Color.primary[500]} />,
-  },
-  {
-    title: 'Docs',
-    url: links.docs,
-    icon: <BookIcon color={Color.primary[500]} width={23} height={16} />,
-  },
-  {
-    title: 'Github',
-    url: links.github,
-    icon: <GithubIcon width={20} height={20} color={Color.primary[500]} />,
-  },
-];
+function renderCol(col: RawNavCol, colIdx: number) {
+  if (col.type === 'title') {
+    return (
+      <h3 key={colIdx} className="lcai-short-title">
+        {col.title}
+      </h3>
+    );
+  }
 
-interface NavItemProps {
-  item: NavLinkItem;
-  className?: string;
+  if (col.type === 'cards') {
+    return (
+      <ul key={colIdx} className="mega-menu-item mega-menu-card-item">
+        {col.items.map((item, idx) => {
+          const iconClass = iconMap[item.iconKey] ?? iconMap['default'];
+          const target = resolveTarget(item.href, item.target);
+          const Tag = target === '_blank' ? 'a' : Link;
+          const props =
+            target === '_blank'
+              ? { href: item.href, target: '_blank' as const }
+              : { href: item.href };
+
+          return (
+            <li key={idx}>
+              <Tag className="lcai-nav-card" {...props}>
+                <span className="icon bg-flashlight-static">
+                  <i className={iconClass} />
+                </span>
+                <span className="content">
+                  <span className="title">{item.label}</span>
+                  {item.desc && <span className="description">{item.desc}</span>}
+                </span>
+                <span className="right-arrow">
+                  <i className="fa-solid fa-arrow-right hover-icon" />
+                  <i className="fa-solid fa-chevron-right default-icon" />
+                </span>
+              </Tag>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
+  return null;
 }
 
-export const NavItem = forwardRef<HTMLAnchorElement, NavItemProps>(function NavItem(
-  { item, className },
-  ref,
-) {
+const Nav: React.FC<Props> = ({ rawMenus }) => {
+  const [activeMenu, setActiveMenu] = useState<number>(-1);
+
   return (
-    <Link
-      ref={ref}
-      className={clsx(
-        'flex items-center gap-2 text-primary-500 decoration-primary-500 underline-offset-2 hover:underline',
-        className,
-      )}
-      target="_blank"
-      rel="noopener noreferrer"
-      href={item.url}
-    >
-      <div className="w-5">{item.icon}</div>
-      <span>{item.title}</span>
-    </Link>
+    <>
+      <ul className="mainmenu">
+        {rawMenus &&
+          rawMenus.map((menu, idx) => (
+            <li
+              key={menu.label}
+              className="with-megamenu has-menu-child-item position-relative non-hover"
+            >
+              <a
+                href="#"
+                onClick={() => setActiveMenu((pre) => (pre === idx ? -1 : idx))}
+                className={activeMenu === idx ? 'open' : ''}
+              >
+                {menu.label} <i className="feather-chevron-down" />
+              </a>
+              <div
+                className={`lightchain-megamenu right-align ${widthClass(menu.width)} ${
+                  activeMenu === idx ? '!block' : ''
+                }`}
+              >
+                <div className="wrapper p-0">
+                  {menu.width === 'xwide' ? (
+                    <div className="lg:flex">
+                      {menu.columns.map((col, ci) => {
+                        if (col.type === 'title') return null;
+                        const prevCol = ci > 0 ? menu.columns[ci - 1] : null;
+                        const heading =
+                          prevCol && prevCol.type === 'title' ? prevCol.title : undefined;
+                        return (
+                          <div key={ci} className="single-mega-item sm:flex-1">
+                            {heading && <h3 className="lcai-short-title">{heading}</h3>}
+                            {renderCol(col, ci)}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : menu.width === 'wide' ? (
+                    <div className="mx-0">
+                      {menu.columns.map((col, ci) => {
+                        if (col.type === 'title') return null;
+                        const prevCol = ci > 0 ? menu.columns[ci - 1] : null;
+                        const heading =
+                          prevCol && prevCol.type === 'title' ? prevCol.title : undefined;
+                        return (
+                          <div key={ci} className="single-mega-item md:flex-1">
+                            {heading && <h5 className="lcai-short-title">{heading}</h5>}
+                            {renderCol(col, ci)}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="single-mega-item">
+                      {menu.columns.map((col, ci) => renderCol(col, ci))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+      </ul>
+    </>
   );
-});
+};
+
+export default Nav;
