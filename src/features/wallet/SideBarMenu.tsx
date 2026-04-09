@@ -144,7 +144,7 @@ export function SideBarMenu({
     <>
       <div
         className={`fixed right-0 top-0 h-full w-88 transform bg-white bg-opacity-95 shadow-lg transition-transform duration-100 ease-in ${
-          isMenuOpen ? 'z-10 translate-x-0' : 'z-0 translate-x-full'
+          isMenuOpen ? 'z-[99] translate-x-0' : 'z-0 translate-x-full'
         }`}
       >
         {isMenuOpen && (
