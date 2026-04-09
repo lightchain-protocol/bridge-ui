@@ -101,7 +101,7 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     chainId: 31337,
     domainId: 7331337,
     name: 'lcaidevnet',
-    displayName: 'LightchainDevnet',
+    displayName: 'LightchainAI',
     nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
     rpcUrls: [{ http: 'https://rpc.devnet.lightchain.ai' }],
     blocks: {

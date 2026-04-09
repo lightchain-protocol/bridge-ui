@@ -29,7 +29,7 @@ export function ImportTokenButton({ token }: ImportTokenButtonProps) {
   return (
     <button
       type="button"
-      className="flex items-center text-sm text-primary-500 hover:text-primary-700 disabled:opacity-50 [&_path]:fill-primary-500 [&_path]:hover:fill-primary-700"
+      className="flex items-center text-sm text-primary-400 hover:text-primary-300 disabled:opacity-50 [&_path]:fill-primary-500 [&_path]:hover:fill-primary-300"
       onClick={handleAddToken}
       disabled={isLoading}
     >

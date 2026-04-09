@@ -1,4 +1,5 @@
 import { Token, TokenAmount, WarpCore } from '@hyperlane-xyz/sdk';
+import { LuArrowLeftRight } from "react-icons/lu";
 import {
   KnownProtocolType,
   ProtocolType,
@@ -167,16 +168,33 @@ export function TransferTokenForm() {
       validateOnBlur={false}
     >
       {({ isValidating }) => (
-        <Form className="flex w-full flex-col items-stretch gap-1.5">
+        <Form className="flex w-full flex-col items-stretch gap-2.5">
           <WarningBanners />
-
-          <TransferSection label="Send">
-            <OriginTokenCard isReview={isReview} setIsNft={setIsNft} />
-          </TransferSection>
-          <SwapTokensButton disabled={isReview} />
-          <TransferSection label="Receive">
-            <DestinationTokenCard isReview={isReview} />
-          </TransferSection>
+            <div className="grid grid-cols-2 gap-[33px] relative">
+              <TokenSelectField
+                name="originTokenKey"
+                selectionMode="origin"
+                disabled={isReview}
+                setIsNft={setIsNft}
+                showLabel={false}
+                className='sm:pr-8 pr-2'
+              />
+              <SwapTokensButton disabled={isReview} />
+              <TokenSelectField
+                name="destinationTokenKey"
+                selectionMode="destination"
+                disabled={isReview}
+                showLabel={false}
+                className='flex-row-reverse sm:pl-8 pl-2'
+                childClass="flex-row-reverse"
+              />
+            </div>
+            <div className="p-2.5 rounded-xl border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.02)] mt-4">
+              <TransferSection>
+                <OriginTokenCard isReview={isReview} setIsNft={setIsNft} />
+                <DestinationTokenCard isReview={isReview} />
+              </TransferSection>
+            </div>
 
           <ReviewDetails isReview={isReview} routeOverrideToken={routeOverrideToken} />
           <ButtonSection
@@ -238,18 +256,14 @@ function SwapTokensButton({ disabled }: { disabled?: boolean }) {
   }, [disabled, values, tokenMap, setValues, multiProvider]);
 
   return (
-    <div className="relative z-10 -my-3 flex justify-center">
+    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] sm:border-[6px] border-4 border-dark rounded-md">
       <button
         type="button"
         onClick={onSwap}
         disabled={disabled}
-        className="group flex h-8 w-8 items-center justify-center rounded border border-gray-400/50 bg-white shadow-button transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="sm:size-[44px] size-8 flex items-center justify-center bg-dark2 hover:bg-darker2"
       >
-        <SwapIcon
-          width={18}
-          height={24}
-          className="transition-transform duration-300 group-hover:rotate-180 group-disabled:rotate-0"
-        />
+        <LuArrowLeftRight className='text-[#7064E9]' />
       </button>
     </div>
   );
@@ -282,39 +296,20 @@ function OriginTokenCard({
   const shouldShowPrice = totalTokenPrice >= 0.01;
 
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between">
-        <WalletDropdown
-          chainName={originToken?.chainName}
-          selectionMode="origin"
-          disabled={isReview}
-        />
-        <ImportTokenButton token={originToken} />
-      </div>
-
-      <div className="rounded-[7px] border border-gray-400/25 bg-white p-3 shadow-input">
-        <TokenSelectField
-          name="originTokenKey"
-          selectionMode="origin"
-          disabled={isReview}
-          setIsNft={setIsNft}
-          showLabel={false}
-        />
-
-        <div className="my-2.5 h-px bg-primary-50" />
+      <div className="rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 p-4">
 
         <div className="flex items-center justify-between gap-2">
           <TextField
             name="amount"
-            placeholder="0"
-            className="w-full flex-1 border-none bg-transparent font-secondary text-xl font-normal text-gray-900 outline-none placeholder:text-gray-900"
+            placeholder="0.00"
+            className="w-full flex-1 border-none bg-transparent font-secondary text-xl font-normal text-contentBody outline-none placeholder:text-content-gray sm:text-2xl"
             type="number"
             step="any"
             disabled={isReview}
           />
           <MaxButton balance={balance} disabled={isReview} isRouteSupported={isRouteSupported} />
         </div>
-        <div className="mt-1 flex items-center justify-between text-xs leading-[18px] text-gray-450">
+        <div className="mt-3 flex items-center justify-between text-xs leading-[18px] text-content-gray">
           <span>
             {shouldShowPrice && !isPriceLoading ? (
               <>
@@ -331,7 +326,6 @@ function OriginTokenCard({
           <TokenBalance label="Balance" balance={balance} />
         </div>
       </div>
-    </div>
   );
 }
 
@@ -365,16 +359,7 @@ function DestinationTokenCard({ isReview }: { isReview: boolean }) {
         <ImportTokenButton token={destinationToken} />
       </div>
 
-      <div className="rounded-[7px] border border-gray-400/25 bg-white p-3 shadow-input">
-        <TokenSelectField
-          name="destinationTokenKey"
-          selectionMode="destination"
-          disabled={isReview}
-          showLabel={false}
-        />
-
-        <div className="my-2.5 h-px bg-primary-50" />
-
+      <div className="rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 p-4">
         <TokenBalance label="Remote Balance" balance={balance} />
       </div>
     </div>
@@ -422,9 +407,9 @@ function MaxButton({
       type="button"
       onClick={onClick}
       disabled={isDisabled}
-      className="rounded border border-gray-300 px-2 py-0.5 font-secondary text-sm text-gray-450 transition-colors hover:border-gray-400 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex h-6 min-w-[52px] items-center justify-center rounded-[30px] bg-[#7064E9] px-3 font-secondary text-xs font-semibold leading-none text-contentBody transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {isLoading ? <SpinnerIcon className="h-4 w-4" /> : 'Max'}
+      {isLoading ? <SpinnerIcon className="h-4 w-4 text-contentBody" /> : 'Max'}
     </button>
   );
 }
@@ -437,7 +422,7 @@ function TokenBalance({
   balance: TokenAmount | null | undefined;
 }) {
   return (
-    <span className="text-xs leading-[18px] text-gray-450">
+    <span className="text-sm font-medium leading-[18px] text-[#7064e9]">
       {balance ? (
         <>
           {label}: {balance.getDecimalFormattedAmount().toFixed(4)} {balance.token.symbol}
@@ -604,7 +589,7 @@ function ButtonSection({
           disabled={!addressConfirmed || !isRouteSupported}
           chainName={originToken?.chainName || ''}
           text={text}
-          classes="w-full mb-4 px-3 py-2.5 font-secondary text-xl text-cream-100"
+          classes="w-full px-3 py-3 font-secondary text-base font-semibold text-contentBody hpl-btn-gd"
         />
       </>
     );
@@ -629,7 +614,7 @@ function ButtonSection({
           type="button"
           color="primary"
           onClick={onEdit}
-          className="px-6 py-1.5 font-secondary"
+          className="px-6 py-2 font-secondary text-sm font-semibold"
           icon={<ChevronIcon direction="w" width={10} height={6} color={Color.white} />}
         >
           <span>Edit</span>
@@ -639,7 +624,7 @@ function ButtonSection({
           type="button"
           color="accent"
           onClick={triggerTransactionsHandler}
-          className="flex-1 px-3 py-1.5 font-secondary text-white"
+          className="flex-1 px-3 py-2 font-secondary text-sm font-semibold text-white"
         >
           {`Send to ${chainDisplayName}`}
         </SolidButton>
@@ -755,8 +740,8 @@ function ReviewDetails({
           isReview ? 'max-h-screen duration-1000 ease-in' : 'max-h-0 duration-500'
         } overflow-hidden transition-all`}
       >
-        <label className="mt-4 block pl-0.5 text-sm text-gray-600">Transactions</label>
-        <div className="mt-1.5 space-y-2 break-all rounded border border-gray-400 bg-gray-150 px-2.5 py-2 text-sm">
+        <label className="mt-4 block pl-0.5 text-sm text-content-gray">Transactions</label>
+        <div className="mt-1.5 space-y-2 break-all rounded-xl border border-[rgba(112,100,233,0.20)] bg-darker2 px-3 py-3 text-sm text-contentBody">
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <SpinnerIcon className="h-5 w-5" />
@@ -765,8 +750,8 @@ function ReviewDetails({
             <>
               {isApproveRequired && (
                 <div>
-                  <h4>Transaction 1: Approve Transfer</h4>
-                  <div className="ml-1.5 mt-1.5 space-y-1.5 border-l border-gray-300 pl-2 text-xs">
+                  <h4 className="text-sm font-semibold text-contentBody">Transaction 1: Approve Transfer</h4>
+                  <div className="ml-1.5 mt-2 space-y-1.5 border-l border-[rgba(112,100,233,0.20)] pl-3 text-xs text-content-gray">
                     <p>{`Router Address: ${originToken?.addressOrDenom}`}</p>
                     {originToken?.collateralAddressOrDenom && (
                       <p>{`Collateral Address: ${originToken.collateralAddressOrDenom}`}</p>
@@ -775,8 +760,8 @@ function ReviewDetails({
                 </div>
               )}
               <div>
-                <h4>{`Transaction${isApproveRequired ? ' 2' : ''}: Transfer Remote`}</h4>
-                <div className="ml-1.5 mt-1.5 space-y-1.5 border-l border-gray-300 pl-2 text-xs">
+                <h4 className="text-sm font-semibold text-contentBody">{`Transaction${isApproveRequired ? ' 2' : ''}: Transfer Remote`}</h4>
+                <div className="ml-1.5 mt-2 space-y-1.5 border-l border-[rgba(112,100,233,0.20)] pl-3 text-xs text-content-gray">
                   {destinationToken?.addressOrDenom && (
                     <p className="flex">
                       <span className="min-w-[7.5rem]">Remote Token</span>

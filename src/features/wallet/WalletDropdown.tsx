@@ -125,7 +125,7 @@ export function WalletDropdown({
       <DropdownMenu
         button={<DropdownWalletButton address={truncatedAddress} />}
         buttonClassname="flex items-center"
-        menuClassname="mt-2 min-w-[200px] rounded-lg border border-gray-200 bg-white py-1 shadow-md"
+        menuClassname="mt-2 min-w-[200px] rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 py-1 px-2 shadow-md"
         menuItems={menuItems}
         buttonProps={{ disabled }}
       />
@@ -154,9 +154,8 @@ function ConnectWalletButton({ chainName }: { chainName?: string }) {
     <button
       type="button"
       onClick={onConnect}
-      className="flex items-center gap-1.5 text-sm text-primary-500 underline transition-colors hover:text-primary-600"
+      className="flex items-center gap-1.5 text-sm text-primary-500 transition-colors hover:text-primary-600"
     >
-      <XIcon width={8} height={8} color={Color.red[500]} />
       <span>Connect Wallet</span>
       <ChevronIcon width={10} height={8} direction="s" color={Color.primary[500]} />
     </button>
@@ -185,16 +184,9 @@ function ConnectMenuItem({ protocol }: { protocol: ProtocolType }) {
 
 function DropdownWalletButton({ address }: { address: string }) {
   return (
-    <div className="flex items-center gap-2 text-sm underline">
-      {address ? (
-        <div className="h-2 w-2 rounded-full bg-green-50" />
-      ) : (
-        <XIcon width={8} height={8} color={Color.red[500]} />
-      )}
-      <div className="flex items-center gap-2 text-primary-500 transition-colors duration-150 hover:text-primary-700 [&_path]:fill-primary-500 [&_path]:hover:fill-primary-700">
-        <span>{address || 'Connect Wallet'}</span>
-        <ChevronIcon width={10} height={6} direction="s" />
-      </div>
+    <div className="flex items-center gap-2 text-primary-400 transition-colors duration-150 hover:text-primary-300 [&_path]:fill-primary-400 [&_path]:hover:fill-primary-300">
+      <span>{address || 'Connect Wallet'}</span>
+      <ChevronIcon width={10} height={6} direction="s" />
     </div>
   );
 }
