@@ -154,7 +154,7 @@ function FilterButton({
               <button
                 type="button"
                 onClick={() => onChange(defaultFilterState)}
-                className="flex items-center gap-1 text-xs text-content-gray hover:text-contentBody"
+                className="flex items-center gap-1 text-xs text-content-gray hover:text-contentBody [&_path]:fill-contentBody"
               >
                 <XIcon width={8} height={8} />
                 Clear

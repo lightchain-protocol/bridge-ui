@@ -28,7 +28,6 @@ import { toast } from 'react-toastify';
 import { RecipientWarningBanner } from '../../components/banner/RecipientWarningBanner';
 import { ConnectAwareSubmitButton } from '../../components/buttons/ConnectAwareSubmitButton';
 import { SolidButton } from '../../components/buttons/SolidButton';
-import { SwapIcon } from '../../components/icons/SwapIcon';
 import { TextField } from '../../components/input/TextField';
 import { WARP_QUERY_PARAMS } from '../../consts/args';
 import { config } from '../../consts/config';
@@ -583,6 +582,7 @@ function ButtonSection({
               setRecipientInfos((state) => ({ ...state, addressConfirmed: checked }))
             }
           />
+
         </div>
 
         <ConnectAwareSubmitButton
