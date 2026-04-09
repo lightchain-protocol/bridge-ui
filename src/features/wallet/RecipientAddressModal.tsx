@@ -47,28 +47,32 @@ export function RecipientAddressModal({
   };
 
   return (
-    <Modal isOpen={isOpen} close={handleClose} panelClassname="max-w-sm p-0 overflow-hidden">
+    <Modal
+      isOpen={isOpen}
+      close={handleClose}
+      panelClassname="max-w-sm overflow-hidden rounded-2xl border border-[rgba(112,100,233,0.20)] bg-dark p-0"
+    >
       <div className="flex items-center justify-between px-4 py-3">
-        <h2 className="text-lg font-medium text-gray-900">Receive Address</h2>
+        <h2 className="text-lg font-medium text-contentBody">Receive Address</h2>
         <button
           type="button"
           aria-label="Close"
           onClick={handleClose}
-          className="text-gray-400 transition-colors hover:text-gray-600"
+          className="text-content-gray transition-colors hover:text-contentBody"
         >
           <XIcon width={12} height={12} />
         </button>
       </div>
-      <div className="px-4 pb-4">
+      <div className="bg-dark px-4 pb-4">
         <input
           type="text"
           value={address}
           onChange={handleAddressChange}
           placeholder="Paste Wallet Address"
-          className={`w-full rounded-lg border px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none ${
+          className={`w-full rounded-xl border bg-[rgba(204,206,239,0.08)] px-4 py-3 text-sm text-contentBody placeholder:text-content-gray focus:outline-none ${
             error
               ? 'border-red-500 focus:border-red-500'
-              : 'border-gray-300 focus:border-primary-500'
+              : 'border-[rgba(112,100,233,0.20)] focus:border-[#7064E9]'
           }`}
         />
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
@@ -76,7 +80,7 @@ export function RecipientAddressModal({
           type="button"
           color="primary"
           onClick={handleSave}
-          className="mt-4 w-full py-3 text-base"
+          className="mt-4 w-full py-3 text-base hpl-btn-gd text-white"
           disabled={!address.trim()}
         >
           Save
