@@ -68,13 +68,13 @@ export function ChainList({
         ))}
 
         {chains.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-gray-500">No chains found</div>
+          <div className="px-4 py-8 text-center text-sm text-content-gray">No chains found</div>
         )}
         {/* Spacer for fade effect */}
         <div className="h-10" />
       </div>
       {/* Bottom fade effect */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-gray-100" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-darker2" />
     </div>
   );
 }
@@ -102,14 +102,14 @@ function ChainButton({
         disabled
           ? 'border-transparent opacity-50'
           : isSelected
-            ? 'border-primary-500 bg-primary-500/10 text-primary-700'
-            : 'border-transparent text-black hover:bg-gray-200'
+            ? 'border-[#7064E9] bg-primary-800 text-contentBody'
+            : 'border-transparent text-contentBody hover:bg-primary-800'
       }`}
       onClick={onClick}
     >
       {icon}
       <span className="min-w-0 flex-1 truncate text-sm font-medium">{label}</span>
-      {showEditIcon && <PencilIcon width={14} height={14} color={Color.gray['500']} />}
+      {showEditIcon && <PencilIcon width={14} height={14} color="#7376AA" />}
     </button>
   );
 }

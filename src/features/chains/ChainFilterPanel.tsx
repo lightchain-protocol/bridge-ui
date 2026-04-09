@@ -61,13 +61,13 @@ export function ChainFilterPanel({
     sortState.sortOrder !== defaultSortState.sortOrder;
 
   return (
-    <div className="flex w-full flex-col rounded-sm bg-gray-100 md:w-[282px]">
+    <div className="flex w-full flex-col rounded-xl border border-[rgba(112,100,233,0.20)] bg-darker2 md:w-[282px]">
       <div className="relative shrink-0 px-4 py-4">
         {showBackButton && (
           <button
             type="button"
             onClick={onBack}
-            className="absolute left-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 md:hidden"
+            className="absolute left-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-content-gray transition-colors hover:bg-primary-800 hover:text-contentBody md:hidden"
           >
             <ChevronIcon direction="w" width={14} height={14} />
           </button>
@@ -82,7 +82,7 @@ export function ChainFilterPanel({
 
       {/* Toolbar: label + filter/sort/edit icons */}
       <div className="flex items-center justify-between px-4 pb-2">
-        <h3 className="font-secondary text-sm font-normal text-black">Chain Selection</h3>
+        <h3 className="font-secondary text-sm font-normal text-contentBody">Chain Selection</h3>
         <div className="flex items-center gap-1">
           <FilterButton
             filterState={filterState}
@@ -94,12 +94,12 @@ export function ChainFilterPanel({
             type="button"
             onClick={() => setIsEditMode((prev) => !prev)}
             title={isEditMode ? 'Exit edit mode' : 'Edit chain metadata'}
-            className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-200"
+            className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-primary-800"
           >
             <PencilIcon
               width={14}
               height={14}
-              color={isEditMode ? Color.primary['500'] : Color.gray['500']}
+              color={isEditMode ? '#7064E9' : '#7376AA'}
             />
           </button>
         </div>
@@ -138,23 +138,23 @@ function FilterButton({
         type="button"
         onClick={() => setIsOpen((p) => !p)}
         title="Filter chains"
-        className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-200"
+        className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-primary-800"
       >
         <FunnelIcon
           width={14}
           height={14}
-          color={isActive ? Color.primary['500'] : Color.gray['500']}
+          color={isActive ? '#7064E9' : '#7376AA'}
         />
       </button>
       {isOpen && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-56 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-white p-3 shadow-md md:left-0 md:right-auto">
+        <div className="absolute right-0 top-full z-20 mt-1 w-56 max-w-[calc(100vw-2rem)] rounded-xl border border-[rgba(112,100,233,0.20)] bg-dark2 p-3 shadow-md md:left-0 md:right-auto">
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-500">Filters</span>
+            <span className="text-xs font-medium text-content-gray">Filters</span>
             {isActive && (
               <button
                 type="button"
                 onClick={() => onChange(defaultFilterState)}
-                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600"
+                className="flex items-center gap-1 text-xs text-content-gray hover:text-contentBody"
               >
                 <XIcon width={8} height={8} />
                 Clear
@@ -164,7 +164,7 @@ function FilterButton({
 
           {/* Type filter */}
           <div className="mb-3">
-            <label className="mb-1.5 block text-xs text-gray-500">Type</label>
+            <label className="mb-1.5 block text-xs text-content-gray">Type</label>
             <div className="flex gap-1">
               {Object.values(FilterTestnet).map((opt) => (
                 <button
@@ -175,8 +175,8 @@ function FilterButton({
                   }
                   className={`rounded px-2.5 py-1 text-xs transition-colors ${
                     filterState.type === opt
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-[#7064E9] text-white'
+                      : 'bg-primary-800 text-content-gray hover:bg-primary-700 hover:text-contentBody'
                   }`}
                 >
                   {toTitleCase(opt)}
@@ -187,7 +187,7 @@ function FilterButton({
 
           {/* Protocol filter */}
           <div>
-            <label className="mb-1.5 block text-xs text-gray-500">Protocol</label>
+            <label className="mb-1.5 block text-xs text-content-gray">Protocol</label>
             <div className="flex flex-wrap gap-1">
               {Object.values(ProtocolType).map((opt) => (
                 <button
@@ -201,8 +201,8 @@ function FilterButton({
                   }
                   className={`rounded px-2.5 py-1 text-xs transition-colors ${
                     filterState.protocol === opt
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-[#7064E9] text-white'
+                      : 'bg-primary-800 text-content-gray hover:bg-primary-700 hover:text-contentBody'
                   }`}
                 >
                   {toTitleCase(opt)}
@@ -244,23 +244,23 @@ function SortButton({
         type="button"
         onClick={() => setIsOpen((p) => !p)}
         title={`Sort: ${toTitleCase(sortState.sortBy)} (${sortState.sortOrder})`}
-        className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-200"
+        className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-primary-800"
       >
         <UpDownArrowsIcon
           width={14}
           height={14}
-          color={isActive ? Color.primary['500'] : Color.gray['500']}
+          color={isActive ? '#7064E9' : '#7376AA'}
         />
       </button>
       {isOpen && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-md">
-          <div className="flex items-center justify-between border-b border-gray-100 px-3 py-1.5">
-            <span className="text-xs font-medium text-gray-500">Sort by</span>
+        <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-xl border border-[rgba(112,100,233,0.20)] bg-dark2 py-1 shadow-md">
+          <div className="flex items-center justify-between border-b border-[rgba(112,100,233,0.12)] px-3 py-1.5">
+            <span className="text-xs font-medium text-content-gray">Sort by</span>
             <button
               type="button"
               onClick={toggleOrder}
               title="Toggle sort order"
-              className="rounded p-0.5 hover:bg-gray-100"
+              className="rounded p-0.5 hover:bg-primary-800"
             >
               <ArrowIcon
                 direction={sortState.sortOrder === SortOrder.Asc ? 'n' : 's'}
@@ -277,8 +277,8 @@ function SortButton({
                 onChange({ sortBy: opt, sortOrder: sortState.sortOrder });
                 setIsOpen(false);
               }}
-              className={`w-full px-3 py-1.5 text-left text-xs transition-colors hover:bg-gray-100 ${
-                sortState.sortBy === opt ? 'font-medium text-primary-500' : 'text-gray-700'
+              className={`w-full px-3 py-1.5 text-left text-xs transition-colors hover:bg-primary-800 ${
+                sortState.sortBy === opt ? 'font-medium text-[#7064E9]' : 'text-contentBody'
               }`}
             >
               {toTitleCase(opt)}

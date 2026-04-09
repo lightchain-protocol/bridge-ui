@@ -20,7 +20,7 @@ export function SearchInput({
       <SearchIcon
         width={16}
         height={16}
-        className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50"
+        className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50 [&_path]:fill-contentBody"
       />
       <TextInput
         ref={inputRef}
@@ -29,7 +29,7 @@ export function SearchInput({
         placeholder={placeholder}
         aria-label={ariaLabel}
         name="search"
-        className="!mt-0 w-full pl-9 pr-8 all:border-gray-300 all:py-2 all:text-sm all:focus:border-blue-400"
+        className="!mt-0 w-full rounded-xl border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.08)] pl-9 pr-8 text-sm text-contentBody placeholder:text-content-gray all:py-2 all:focus:border-[#7064E9]"
         autoComplete="off"
       />
       {value && (
@@ -37,7 +37,7 @@ export function SearchInput({
           type="button"
           aria-label="Clear search"
           onClick={() => onChange('')}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-content-gray hover:text-contentBody"
         >
           <XIcon width={12} height={12} />
         </button>

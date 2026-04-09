@@ -43,7 +43,7 @@ export function TokenListPanel({
   }, []);
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col bg-white">
+    <div className="flex min-w-0 flex-1 flex-col rounded-xl border border-[rgba(112,100,233,0.20)] bg-darker2">
       <div className="shrink-0 md:p-4">
         <SearchInput
           inputRef={inputRef}
