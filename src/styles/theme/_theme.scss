@@ -391,6 +391,13 @@
 
 }
 
+.hpl-transfer-details-modal {
+  .htw-bg-black\/25 {
+    background-color: rgba(0, 0, 0, 0.72) !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
 
 
 .htw-bg-white {
