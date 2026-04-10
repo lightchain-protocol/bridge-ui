@@ -143,13 +143,13 @@ export function SideBarMenu({
   return (
     <>
       <div
-        className={`fixed right-0 top-0 h-full w-88 transform bg-white bg-opacity-95 shadow-lg transition-transform duration-100 ease-in ${
-          isMenuOpen ? 'z-10 translate-x-0' : 'z-0 translate-x-full'
+        className={`hpl-sidebar fixed right-0 top-0 h-full w-88 transform bg-primary-900 shadow-lg transition-transform duration-100 ease-in ${
+          isMenuOpen ? 'z-[99] translate-x-0' : 'z-0 translate-x-full'
         }`}
       >
         {isMenuOpen && (
           <button
-            className="absolute left-0 top-0 flex h-full w-9 -translate-x-full items-center justify-center rounded-l bg-accent-50/30 backdrop-blur-[1.5px] transition-all"
+            className="hpl-sidebar-btn absolute left-0 top-0 flex h-full w-9 -translate-x-full items-center justify-center rounded-l-md transition-all hover:bg-opacity-80"
             onClick={() => onClose()}
           >
             <Image src={CollapseIcon} width={15} height={24} alt="" />
@@ -158,26 +158,26 @@ export function SideBarMenu({
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex h-full w-full flex-col overflow-y-auto"
+          className="flex h-full w-full flex-col overflow-y-auto pt-4"
         >
-          <div className="w-full bg-accent-gradient px-3.5 py-2 text-base font-normal tracking-wider text-white shadow-accent-glow">
+          <div className="hpl-sidebar-title w-full rounded-t-md px-3.5 py-2 text-base font-medium text-primary-100">
             Connected Wallets
           </div>
           <AccountList
             multiProvider={multiProvider}
             onClickConnectWallet={onClickConnectWallet}
             onCopySuccess={onCopySuccess}
-            className="px-3 py-3"
+            className="hpl-sidebar-list space-y-3 px-3 py-3"
             chainName={originChainName}
           />
-          <div className="flex w-full items-center justify-between bg-accent-gradient px-3.5 py-2 shadow-accent-glow">
-            <span className="text-base font-normal tracking-wider text-white">
+          <div className="hpl-sidebar-title mb-4 flex w-full items-center justify-between px-3.5 py-2 text-primary-100">
+            <span className="text-base font-medium"> 
               Transfer History
             </span>
             <button
               onClick={refresh}
               disabled={isLoading}
-              className="rounded p-1 hover:bg-accent-500/50 disabled:opacity-50"
+              className="rounded-md p-1 text-primary-100 transition-colors hover:bg-primary-700 disabled:opacity-50"
               title="Refresh"
             >
               <RefreshIcon
@@ -197,7 +197,7 @@ export function SideBarMenu({
               <>
                 <div className="flex w-full grow flex-col divide-y">
                   {mergedTransfers.length === 0 && !isLoading && (
-                    <div className="py-6 text-center text-sm text-gray-500">No transfers yet</div>
+                    <div className="py-6 text-center text-sm text-content-gray">No transfers yet</div>
                   )}
                   {mergedTransfers.map((item) => (
                     <TransferSummary
@@ -220,7 +220,7 @@ export function SideBarMenu({
                   </div>
                 )}
                 {!hasMore && mergedTransfers.length > 0 && (
-                  <div className="py-3 text-center text-xs text-gray-400">No more transfers</div>
+                  <div className="py-3 text-center text-xs text-content-gray">No more transfers</div>
                 )}
               </>
             )}
@@ -288,27 +288,27 @@ function TransferSummary({
   return (
     <button onClick={onClick} className={`${styles.btn} justify-between py-3`}>
       <div className="flex gap-2.5">
-        <div className="flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center rounded-full bg-gray-100 px-1.5">
+        <div className="flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center rounded-full bg-primary-800 px-1.5">
           <ChainLogo chainName={originChain} size={20} />
         </div>
         <div className="flex flex-col">
           <div className="flex flex-col">
             <div className="items flex items-baseline">
               {formattedAmount && (
-                <span className="text-sm font-normal text-gray-800">{formattedAmount}</span>
+                <span className="text-sm font-normal text-contentBody">{formattedAmount}</span>
               )}
               <span
-                className={`text-sm font-normal text-gray-800 ${formattedAmount ? 'ml-1' : ''}`}
+                className={`text-sm font-normal text-contentBody ${formattedAmount ? 'ml-1' : ''}`}
               >
                 {token?.symbol || 'Unknown token'}
               </span>
             </div>
             <div className="mt-1 flex flex-row items-center">
-              <span className="text-xxs font-normal tracking-wide text-gray-900">
+              <span className="text-xxs font-normal tracking-wide text-content-gray">
                 {getChainDisplayName(multiProvider, originChain, true)}
               </span>
               <Image className="mx-1" src={ArrowRightIcon} width={10} height={10} alt="" />
-              <span className="text-xxs font-normal tracking-wide text-gray-900">
+              <span className="text-xxs font-normal tracking-wide text-content-gray">
                 {getChainDisplayName(multiProvider, destChain, true)}
               </span>
             </div>
@@ -343,21 +343,21 @@ function LocalTransferSummary({
   return (
     <button key={timestamp} onClick={onClick} className={`${styles.btn} justify-between py-3`}>
       <div className="flex gap-2.5">
-        <div className="flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center rounded-full bg-gray-100 px-1.5">
+        <div className="flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center rounded-full bg-primary-800 px-1.5">
           <ChainLogo chainName={origin} size={20} />
         </div>
         <div className="flex flex-col">
           <div className="flex flex-col">
             <div className="items flex items-baseline">
-              <span className="text-sm font-normal text-gray-800">{amount}</span>
-              <span className="ml-1 text-sm font-normal text-gray-800">{token?.symbol || ''}</span>
+              <span className="text-sm font-normal text-contentBody">{amount}</span>
+              <span className="ml-1 text-sm font-normal text-contentBody">{token?.symbol || ''}</span>
             </div>
             <div className="mt-1 flex flex-row items-center">
-              <span className="text-xxs font-normal tracking-wide text-gray-900">
+              <span className="text-xxs font-normal tracking-wide text-content-gray">
                 {getChainDisplayName(multiProvider, origin, true)}
               </span>
               <Image className="mx-1" src={ArrowRightIcon} width={10} height={10} alt="" />
-              <span className="text-xxs font-normal tracking-wide text-gray-900">
+              <span className="text-xxs font-normal tracking-wide text-content-gray">
                 {getChainDisplayName(multiProvider, destination, true)}
               </span>
             </div>
@@ -376,5 +376,5 @@ function LocalTransferSummary({
 }
 
 const styles = {
-  btn: 'w-full flex items-center px-1 py-2 text-sm hover:bg-gray-200 active:scale-95 transition-all duration-500 cursor-pointer rounded-sm',
+  btn: 'w-full flex cursor-pointer items-center rounded-lg border border-border-soft bg-surface-base-soft px-3 py-2 text-sm transition-all duration-300 hover:bg-primary-800 active:scale-95',
 };

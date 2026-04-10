@@ -1,7 +1,7 @@
 import { Token } from '@hyperlane-xyz/sdk';
 import { useField, useFormikContext } from 'formik';
 import { useState } from 'react';
-import { ChevronLargeIcon } from '../../components/icons/ChevronLargeIcon';
+import { ChevronIcon } from '@hyperlane-xyz/widgets';
 import { WARP_QUERY_PARAMS } from '../../consts/args';
 import { updateQueryParams } from '../../utils/queryParams';
 import { trackTokenSelectionEvent } from '../analytics/utils';
@@ -23,6 +23,8 @@ type Props = {
   disabled?: boolean;
   setIsNft?: (value: boolean) => void;
   showLabel?: boolean;
+  className?: string;
+  childClass?: string;
 };
 
 export function TokenSelectField({
@@ -32,6 +34,8 @@ export function TokenSelectField({
   disabled,
   setIsNft,
   showLabel = true,
+  className,
+  childClass,
 }: Props) {
   const { values, setFieldValue } = useFormikContext<TransferFormValues>();
   const [{ value: tokenKey }, , { setValue: setTokenKey }] = useField<string | undefined>(name);
@@ -116,6 +120,8 @@ export function TokenSelectField({
           disabled={disabled}
           onClick={openTokenSelectModal}
           multiProvider={multiProvider}
+          childClass={childClass}
+          className={className}
         />
       </div>
 
@@ -145,41 +151,47 @@ function TokenButton({
   disabled,
   onClick,
   multiProvider,
+  childClass,
+  className,
 }: {
   token?: Token;
   disabled?: boolean;
   onClick: () => void;
   multiProvider: ReturnType<typeof useMultiProvider>;
+  childClass?: string;
+  className?: string;
 }) {
   const chainDisplayName = token ? getChainDisplayName(multiProvider, token.chainName) : '';
 
   return (
     <button
       type="button"
-      className={`${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
+      className={`sm:px-4 px-2 py-2.5 w-full rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 flex items-center justify-between sm:gap-4 gap-2 hover:bg-darker2 transition-colors ${disabled ? styles.disabled : styles.enabled} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
       {token ? (
-        <div className="flex min-w-0 flex-1 items-center gap-2.5">
-          <TokenChainIcon token={token} size={36} />
-          <div className="flex min-w-0 flex-col items-start">
-            <span className="font-secondary text-lg font-normal text-gray-900">{token.symbol}</span>
-            <span className="text-sm text-gray-900">{chainDisplayName}</span>
+        <div className={`flex items-center justify-between sm:gap-4 gap-2.5 ${childClass}`}>
+          <div className="sm:size-[50px] size-5">
+            <TokenChainIcon token={token} size={36} />
+          </div>
+          <div className="flex flex-col items-start gap-1.5">
+            <span className="sm:text-sm text-[10px] font-medium text-gray-400 leading-none">{token.symbol}</span>
+            <span className="sm:text-lg text-xs font-medium text-contentBody leading-none">{chainDisplayName}</span>
           </div>
         </div>
       ) : (
         <span className="text-sm text-gray-400">Select token</span>
       )}
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-400 bg-white drop-shadow-button transition-colors duration-150 group-hover:bg-gray-50">
-        <ChevronLargeIcon width={14} height={18} />
-      </div>
+     
+      <ChevronIcon className='sm:size-3.5 size-3' direction="s" color="#7376AA" />
+
     </button>
   );
 }
 
 const styles = {
-  base: 'w-full py-2 flex items-center justify-between transition-all rounded-xl px-1.5 border duration-150 border-gray-400/25 shadow-sm group',
-  enabled: 'hover:bg-gray-50 cursor-pointer',
+  base: 'px-2 py-1.5 w-full flex items-center justify-between text-sm rounded-lg outline-none transition-colors duration-500',
+  enabled: 'cursor-pointer',
   disabled: 'cursor-not-allowed opacity-60',
 };

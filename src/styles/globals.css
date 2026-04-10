@@ -3,31 +3,6 @@
 @tailwind utilities;
 
 /*
-Custom Fonts (optional - falls back to system fonts if not available)
-Place font files in public/fonts/ directory
-=====================================================================
-*/
-
-/* PP Valve - Secondary font */
-@font-face {
-  font-family: 'PP Valve';
-  src: url('/fonts/PPValve-PlainVariable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Custom fonts — fetched via `pnpm run fetch-fonts` (requires S3 creds). Falls back to system-ui if missing. */
-/* PP Fraktion Mono - Primary font */
-@font-face {
-  font-family: 'PP Fraktion Mono';
-  src: url('/fonts/PPFraktionMono-Variable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/*
 Normalization
 =============
 */
@@ -68,7 +43,7 @@ Text and shadows
   text-shadow: 0 0 #010101;
 }
 
-/*
+/* 
 Scrollbar Overrides
 ===================
 */
@@ -76,24 +51,6 @@ Scrollbar Overrides
 body {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #e8caff transparent;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #e8caff;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #d4a3ff;
 }
 
 /* phones */
@@ -115,7 +72,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* clears the 'X' from Internet Explorer */
+/* clears the ‘X’ from Internet Explorer */
 input[type='search']::-ms-clear {
   display: none;
   width: 0;
@@ -127,7 +84,7 @@ input[type='search']::-ms-reveal {
   height: 0;
 }
 
-/* clears the 'X' from Chrome */
+/* clears the ‘X’ from Chrome */
 input[type='search']::-webkit-search-decoration,
 input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-results-button,
@@ -190,7 +147,7 @@ Toasts
 ======
 */
 :root {
-  --toastify-color-light: #ffffff;
+  --toastify-color-light: #14152c;
   --toastify-color-dark: #2e3338;
   --toastify-color-info: #3498db;
   --toastify-color-success: #35d07f;
@@ -207,10 +164,10 @@ Toasts
   --toastify-toast-background: #fff;
   --toastify-toast-min-height: 64px;
   --toastify-toast-max-height: 800px;
-  --toastify-font-family: Roboto, sans-serif;
+  --toastify-font-family: inter, sans-serif;
   --toastify-z-index: 9999;
 
-  --toastify-text-color-light: #2e3338;
+  --toastify-text-color-light: #7064e9;
   --toastify-text-color-dark: #fff;
 
   --toastify-text-color-info: #fff;
@@ -235,6 +192,23 @@ Toasts
   --toastify-color-progress-success: var(--toastify-color-success);
   --toastify-color-progress-warning: var(--toastify-color-warning);
   --toastify-color-progress-error: var(--toastify-color-error);
+
+  --rt-color-dark: #0f1021 !important;
+  --rt-color-white: #7376aa !important;
+}
+
+/* wallet modal  */
+
+[data-rk] {
+  --rk-colors-modalBackground: #14152c !important;
+  --rk-colors-accentColor: #7064e9 !important;
+  --rk-colors-closeButton: #7064e9 !important;
+  --rk-colors-closeButtonBackground: #0f1021;
+  --rk-colors-modalBackdrop: rgba(0, 0, 0, 0.4) !important;
+  --rk-colors-modalText: #ccceef !important;
+  --rk-colors-modalTextSecondary: #5a5c87 !important;
+  --rk-colors-downloadTopCardBackground: #0f1021 !important;
+  --rk-colors-downloadBottomCardBackground: #0f1021 !important;
 }
 
 /*
@@ -252,63 +226,4 @@ Fixes for cosmos chain selection modal
 */
 div[data-floating-ui-portal] > div {
   z-index: 10000;
-}
-
-/*
-Refiner widget z-index override
-===============================
-Needs to be higher than Intercom chatbox (z-index: 2147483000)
-*/
-#refiner-widget-wrapper {
-  z-index: 2147483001 !important;
-}
-
-/*
-Chain Edit Modal - Widget style overrides
-==========================================
-Override htw- prefixed Tailwind classes from @hyperlane-xyz/widgets
-ChainDetailsMenu to match v2 styling
-*/
-.chain-edit-container {
-  font-family: var(--font-secondary, 'PP Valve', system-ui, sans-serif);
-}
-
-/* Section headers */
-.chain-edit-container h2 {
-  font-family: var(--font-secondary, 'PP Valve', system-ui, sans-serif);
-  font-size: 1rem;
-}
-
-.chain-edit-container h3 {
-  font-family: var(--font-secondary, 'PP Valve', system-ui, sans-serif);
-  color: var(--color-gray-500, #6b7280);
-}
-
-/* Text inputs */
-.chain-edit-container input[type='text'],
-.chain-edit-container textarea {
-  font-family: var(--font-primary, 'PP Fraktion Mono', monospace);
-  border-color: #d1d5db;
-  border-radius: 4px;
-  font-size: 0.8125rem;
-}
-
-.chain-edit-container input[type='text']:focus,
-.chain-edit-container textarea:focus {
-  border-color: var(--color-primary-500, #9a0dff);
-  outline: none;
-}
-
-/* Buttons inside the widget */
-.chain-edit-container button {
-  font-family: var(--font-secondary, 'PP Valve', system-ui, sans-serif);
-}
-
-/* Links */
-.chain-edit-container a {
-  color: var(--color-primary-500, #9a0dff);
-}
-
-.chain-edit-container a:hover {
-  text-decoration: underline;
 }

@@ -35,9 +35,13 @@ export function ChainEditModal({ isOpen, close, chainName, onClickBack }: Props)
   if (!metadata) return null;
 
   return (
-    <Modal isOpen={isOpen} close={close} panelClassname="p-0 max-w-lg overflow-hidden">
+    <Modal
+      isOpen={isOpen}
+      close={close}
+      panelClassname="max-w-lg overflow-hidden rounded-2xl border border-[rgba(112,100,233,0.20)] bg-dark p-0 shadow-[0_0_40px_rgba(0,0,0,0.35)]"
+    >
       <ModalHeader>{`Edit ${displayName}`}</ModalHeader>
-      <div className="chain-edit-container max-h-[80vh] overflow-auto p-4">
+      <div className="chain-edit-container max-h-[80vh] overflow-auto bg-dark px-4 pb-4">
         <ChainDetailsMenu
           chainMetadata={metadata}
           overrideChainMetadata={overrides}

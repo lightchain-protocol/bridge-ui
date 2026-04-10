@@ -230,8 +230,8 @@ export function TokenList({
 
   if (tokens.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center px-4 py-12 text-gray-500">
-        <div className="text-base font-medium">No tokens found</div>
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-12 text-content-gray">
+        <div className="text-base font-medium text-contentBody">No tokens found</div>
         <div className="mt-2 text-sm">Try a different search or chain filter</div>
       </div>
     );
@@ -240,8 +240,8 @@ export function TokenList({
   return (
     <div className="relative flex-1 overflow-hidden">
       <div ref={scrollRef} className="h-full overflow-auto">
-        <div className="sticky top-0 z-10 border-b border-primary-50 bg-white px-4 pb-2 pt-2">
-          <h3 className={`${styles.base} text-sm text-black`}>Token Selection</h3>
+        <div className="sticky top-0 z-10 border-b border-[rgba(112,100,233,0.16)] bg-darker2 px-4 pb-2 pt-2">
+          <h3 className={`${styles.base} text-sm text-contentBody`}>Token Selection</h3>
         </div>
         <div className="py-2 md:px-3">
           {tokens.map((token) => {
@@ -266,8 +266,8 @@ export function TokenList({
           })}
 
           {isLimited && (
-            <div className="mx-1 mb-3 mt-2 rounded-lg bg-blue-50 px-3 py-4 text-center">
-              <p className="text-sm text-blue-600">Search or select a chain to see more tokens</p>
+            <div className="mx-1 mb-3 mt-2 rounded-lg border border-[rgba(112,100,233,0.20)] bg-primary-800 px-3 py-4 text-center">
+              <p className="text-sm text-contentBody">Search or select a chain to see more tokens</p>
             </div>
           )}
           {/* Spacer for fade effect */}
@@ -275,7 +275,7 @@ export function TokenList({
         </div>
       </div>
       {/* Bottom fade effect */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 hidden h-12 bg-gradient-to-b from-transparent to-cream-200 md:block" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 hidden h-12 bg-gradient-to-b from-transparent to-darker2 md:block" />
     </div>
   );
 }
@@ -321,34 +321,34 @@ const TokenButton = React.memo(function TokenButton({
   return (
     <button
       type="button"
-      className="group mb-2 flex h-[60px] w-full items-center rounded-[3px] px-3 transition-colors hover:bg-gray-100"
+      className="group mb-2 flex h-[60px] w-full items-center rounded-lg border border-transparent px-3 transition-colors hover:border-[rgba(112,100,233,0.16)] hover:bg-primary-800"
       onClick={() => onSelect(token)}
     >
       <TokenChainIcon token={token} size={36} />
 
       <div className="ml-3 min-w-0 flex-1 text-left">
         <div className="flex items-center gap-2">
-          <span className={`${styles.base} text-base text-black`}>{token.symbol || 'Unknown'}</span>
-          <span className="text-xs text-gray-500">{chainDisplayName}</span>
+          <span className={`${styles.base} text-base text-contentBody`}>{token.symbol || 'Unknown'}</span>
+          <span className="text-xs text-content-gray">{chainDisplayName}</span>
         </div>
-        <div className={`${styles.base} mt-0.5 truncate text-xs text-gray-500`}>
+        <div className={`${styles.base} mt-0.5 truncate text-xs text-content-gray`}>
           {token.name || 'Unknown Token'}
         </div>
       </div>
 
       <div className="ml-2 shrink-0 text-right">
         {isBalanceLoading && !primaryValue ? (
-          <div className="mb-1 ml-auto h-4 w-14 animate-pulse rounded bg-gray-100" />
+          <div className="mb-1 ml-auto h-4 w-14 animate-pulse rounded bg-primary-800" />
         ) : primaryValue ? (
           <>
-            <div className={`${styles.base} text-sm font-medium text-black`}>{primaryValue}</div>
+            <div className={`${styles.base} text-sm font-medium text-contentBody`}>{primaryValue}</div>
             {secondaryValue && (
-              <div className={`${styles.base} text-xs text-gray-400`}>{secondaryValue}</div>
+              <div className={`${styles.base} text-xs text-content-gray`}>{secondaryValue}</div>
             )}
           </>
         ) : null}
         {showRouteUnavailable && (
-          <div className="flex items-center justify-end gap-1 whitespace-nowrap text-[10px] text-gray-400">
+          <div className="flex items-center justify-end gap-1 whitespace-nowrap text-[10px] text-content-gray">
             <span>Route unavailable</span>
             <Tooltip
               content={routeTooltipMessage}

@@ -7,8 +7,7 @@ export const Color = {
   black: themeColors.black,
   white: themeColors.white,
   gray: themeColors.gray,
-  primary: themeColors.primary,
+  primary: themeColors.dark,
   accent: themeColors.accent,
   red: themeColors.red,
-  cream: themeColors.cream,
 } as const;
