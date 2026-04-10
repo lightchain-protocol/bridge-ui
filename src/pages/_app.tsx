@@ -5,8 +5,6 @@ import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
 import { ToastContainer, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../public/css/plugins/feature.css';
-import '../../public/css/plugins/fontawesome-all.min.css';
 import '../../sentry.client.config';
 import { ErrorBoundary } from '../components/errors/ErrorBoundary';
 import { AppLayout } from '../components/layout/AppLayout';

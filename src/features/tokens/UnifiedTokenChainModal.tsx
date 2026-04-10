@@ -1,7 +1,6 @@
 import { Token } from '@hyperlane-xyz/sdk';
 import { Modal } from '@hyperlane-xyz/widgets';
 import { useCallback, useState } from 'react';
-import { ModalHeader } from '../../components/layout/ModalHeader';
 import { trackChainSelectionEvent } from '../analytics/utils';
 import { ChainFilterPanel } from '../chains/ChainFilterPanel';
 import { ChainInfo } from '../chains/hooks';

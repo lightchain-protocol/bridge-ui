@@ -65,6 +65,7 @@
     "next": "^15.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.6.0",
     "react-toastify": "^10.0.6",
     "refiner-js": "1.2.4",
     "starknetkit": "2.6.1",
@@ -74,6 +75,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.967.0",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.1",
     "@next/bundle-analyzer": "^15.0.2",
@@ -97,12 +99,12 @@
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.8",
+    "sass": "^1.99.0",
     "tailwindcss": "^3.4.15",
     "ts-node": "^10.9.2",
     "typescript": "5.6.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.0.5",
-    "@aws-sdk/client-s3": "^3.967.0",
     "yaml": "^2.6.0",
     "yaml-loader": "^0.8.1"
   },

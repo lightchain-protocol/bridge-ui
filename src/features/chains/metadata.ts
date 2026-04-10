@@ -1,4 +1,4 @@
-import { IRegistry, chainMetadata as publishedChainMetadata } from '@hyperlane-xyz/registry';
+import { IRegistry } from '@hyperlane-xyz/registry';
 import {
   ChainMap,
   ChainMetadata,

@@ -29,6 +29,10 @@ export default function Document() {
         <meta property="og:type" content="website" />
         <meta property="og:image" content={`${APP_URL}/logo.png`} />
         <meta property="og:description" content={APP_DESCRIPTION} />
+
+        {/* Static public CSS — do not import via _app (webpack would resolve missing font files). */}
+        <link rel="stylesheet" href="/css/plugins/feature.css" />
+        <link rel="stylesheet" href="/css/plugins/fontawesome-all.min.css" />
       </Head>
       <body className={`${MAIN_FONT.variable} font-sans text-black`}>
         <Main />

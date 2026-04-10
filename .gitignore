@@ -42,6 +42,3 @@ npm-debug.log*
 
 .opencode
 .sisyphus
-
-# fonts (downloaded via scripts/fetch-fonts.mjs)
-public/fonts/
