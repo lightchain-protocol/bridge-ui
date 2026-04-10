@@ -641,12 +641,29 @@
     }
   }
 
-  .htw-space-y-1\.5 {
+  .htw-space-y-4 {
     button {
-      color: #7064e9;
+      
+      .htw-text-xs {
+        color: #7064e9;
+      }
+      svg {
+        path {
+          fill: #7064e9;
+        }
+      }
 
       &:hover {
         text-decoration: none;
+
+        .htw-text-xs {
+        color: #6f64e9e1;
+      }
+      svg {
+        path {
+          fill: #6f64e9e1;
+        }
+      }
       }
     }
   }

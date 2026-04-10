@@ -10,7 +10,6 @@ import {
 } from '@hyperlane-xyz/widgets';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SearchInput } from '../../components/input/SearchInput';
-import { Color } from '../../styles/Color';
 import {
   ChainFilterState,
   FilterTestnet,
@@ -260,7 +259,7 @@ function SortButton({
               type="button"
               onClick={toggleOrder}
               title="Toggle sort order"
-              className="rounded p-0.5 [&_path]:fill-contentBody"
+              className="rounded p-0.5 [&_path]:fill-contentBody hover:[&_path]:fill-[#7064e9]"
             >
               <ArrowIcon
                 direction={sortState.sortOrder === SortOrder.Asc ? 'n' : 's'}

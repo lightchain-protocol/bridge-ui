@@ -37,7 +37,7 @@ export function SearchInput({
           type="button"
           aria-label="Clear search"
           onClick={() => onChange('')}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-content-gray hover:text-contentBody"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-content-gray hover:text-contentBody [&_path]:fill-content-gray hover:[&_path]:fill-contentBody transition-colors"
         >
           <XIcon width={12} height={12} />
         </button>
