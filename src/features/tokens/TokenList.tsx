@@ -275,7 +275,7 @@ export function TokenList({
         </div>
       </div>
       {/* Bottom fade effect */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 hidden h-12 bg-gradient-to-b from-transparent to-darker2 md:block" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 hidden h-12 bg-gradient-to-b from-transparent to-darker2 md:block rounded-b-xl" />
     </div>
   );
 }

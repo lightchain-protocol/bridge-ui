@@ -6,8 +6,7 @@ import {
   useAccountForChain,
   useConnectFns,
   useDisconnectFns,
-  useModal,
-  XIcon,
+  useModal
 } from '@hyperlane-xyz/widgets';
 import React, { useCallback, useMemo } from 'react';
 import { Color } from '../../styles/Color';
@@ -76,7 +75,6 @@ export function WalletDropdown({
     }
 
     if (isDestination) {
-      if (items.length > 0) items.push(<MenuSeparator key="sep-1" />);
       items.push(
         <MenuItemButton key="paste" onClick={openModal}>
           Paste wallet address
@@ -124,8 +122,8 @@ export function WalletDropdown({
     <>
       <DropdownMenu
         button={<DropdownWalletButton address={truncatedAddress} />}
-        buttonClassname="flex items-center"
-        menuClassname="mt-2 min-w-[200px] rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 py-1 px-2 shadow-md"
+        buttonClassname="flex items-center border-0 bg-transparent outline-none ring-0 shadow-none focus:outline-none focus:ring-0"
+        menuClassname="mt-2 flex min-w-[200px] flex-col gap-1.5 rounded-md border border-transparent bg-dark p-2 shadow-md outline-none ring-0"
         menuItems={menuItems}
         buttonProps={{ disabled }}
       />
@@ -175,7 +173,7 @@ function ConnectMenuItem({ protocol }: { protocol: ProtocolType }) {
     <button
       type="button"
       onClick={onConnect}
-      className="w-full rounded-lg px-4 py-2.5 text-left text-sm text-contentBody transition-colors hover:bg-primary-800"
+      className="w-full rounded-lg px-4 py-2 text-left text-sm text-contentBody transition-colors bg-dark2 hover:bg-darker2"
     >
       Connect wallet
     </button>
@@ -184,7 +182,7 @@ function ConnectMenuItem({ protocol }: { protocol: ProtocolType }) {
 
 function DropdownWalletButton({ address }: { address: string }) {
   return (
-    <div className="flex items-center gap-2 text-content-gray transition-colors duration-150 hover:text-contentBody [&_path]:fill-content-gray [&_path]:hover:fill-contentBody">
+    <div className="flex items-center gap-2 border-0 bg-transparent text-sm text-content-gray outline-none ring-0 transition-colors duration-150 hover:text-contentBody [&_path]:fill-content-gray [&_path]:hover:fill-contentBody">
       <span>{address || 'Connect Wallet'}</span>
       <ChevronIcon width={10} height={6} direction="s" />
     </div>
@@ -196,7 +194,7 @@ function MenuItemButton({ onClick, children }: { onClick: () => void; children: 
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-lg px-4 py-2.5 text-left text-sm text-contentBody transition-colors hover:bg-primary-800"
+      className="w-full rounded-lg px-4 py-2 text-left text-sm text-contentBody transition-colors bg-dark2 hover:bg-darker2"
     >
       {children}
     </button>
