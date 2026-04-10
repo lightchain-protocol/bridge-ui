@@ -29,7 +29,7 @@ export function SearchInput({
         placeholder={placeholder}
         aria-label={ariaLabel}
         name="search"
-        className="!mt-0 w-full rounded-xl border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.08)] pl-9 pr-8 text-sm text-contentBody placeholder:text-content-gray all:py-2 all:focus:border-[#7064E9]"
+        className="!mt-0 w-full rounded-xl border border-[rgba(111,100,233,0.4)] bg-[rgba(204,206,239,0.08)] pl-9 pr-8 text-sm text-contentBody placeholder:text-content-gray all:py-2 all:focus:border-[#7064E9]"
         autoComplete="off"
       />
       {value && (

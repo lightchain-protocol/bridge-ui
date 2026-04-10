@@ -154,7 +154,7 @@ function FilterButton({
               <button
                 type="button"
                 onClick={() => onChange(defaultFilterState)}
-                className="flex items-center gap-1 text-xs text-content-gray hover:text-contentBody [&_path]:fill-contentBody"
+                className="flex items-center gap-1 text-xs text-content-gray hover:text-contentBody [&_path]:fill-content-gray [&_path]:hover:fill-contentBody transition-colors"
               >
                 <XIcon width={8} height={8} />
                 Clear
@@ -260,7 +260,7 @@ function SortButton({
               type="button"
               onClick={toggleOrder}
               title="Toggle sort order"
-              className="rounded p-0.5 hover:bg-primary-800"
+              className="rounded p-0.5 [&_path]:fill-contentBody"
             >
               <ArrowIcon
                 direction={sortState.sortOrder === SortOrder.Asc ? 'n' : 's'}

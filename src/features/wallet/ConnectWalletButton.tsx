@@ -18,7 +18,7 @@ export function ConnectWalletButton() {
       multiProvider={multiProvider}
       onClickWhenUnconnected={() => setShowEnvSelectModal(true)}
       onClickWhenConnected={() => setIsSideBarOpen(true)}
-      className="rounded-lg hpl-btn-gd btn-header [&_*]:text-white [&_path]:fill-white"
+      className="rounded-lg hpl-btn-gd btn-header [&_*]:text-white [&_path]:fill-white uppercase font-medium py-2.5"
       countClassName="bg-white/20"
       chainName={originChainName}
     />

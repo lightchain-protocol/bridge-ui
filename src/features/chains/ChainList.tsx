@@ -108,7 +108,7 @@ function ChainButton({
       onClick={onClick}
     >
       {icon}
-      <span className="min-w-0 flex-1 truncate text-sm font-medium">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium text-left">{label}</span>
       {showEditIcon && <PencilIcon width={14} height={14} color="#7376AA" />}
     </button>
   );
