@@ -73,7 +73,7 @@ export function ChainList({
         <div className="h-10" />
       </div>
       {/* Bottom fade effect */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-darker2" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-darker2 rounded-b-xl" />
     </div>
   );
 }
