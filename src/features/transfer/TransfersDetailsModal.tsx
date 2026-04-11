@@ -10,12 +10,12 @@ import {
   useTimeout,
   useWalletDetails,
   WideChevronIcon,
+  XIcon,
 } from '@hyperlane-xyz/widgets';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChainLogo } from '../../components/icons/ChainLogo';
 import { TokenIcon } from '../../components/icons/TokenIcon';
-import { ModalHeader } from '../../components/layout/ModalHeader';
 import LinkIcon from '../../images/icons/external-link-icon.svg';
 import { Color } from '../../styles/Color';
 import { formatTimestamp } from '../../utils/date';
@@ -119,12 +119,31 @@ export function TransfersDetailsModal({
   const explorerLink = getHypExplorerLink(multiProvider, origin, msgId);
 
   return (
-    <Modal isOpen={isOpen} close={onClose} panelClassname="max-w-sm">
-      <ModalHeader className="h-8 shadow-accent-glow" />
-      <div className="p-4">
+    <Modal
+      isOpen={isOpen}
+      close={onClose}
+      dialogClassname="hpl-transfer-details-modal"
+      panelClassname="max-w-sm overflow-hidden rounded-2xl border border-[rgba(112,100,233,0.20)] bg-dark p-0 shadow-[0_0_40px_rgba(0,0,0,0.35)]"
+    >
+      <div className="flex items-center justify-between border-b border-[rgba(112,100,233,0.18)] bg-darker2 px-6 py-4">
+        <div className="flex flex-col">
+          <h3 className="font-secondary text-base font-medium tracking-wide text-contentBody">
+            Transfer Details
+          </h3>
+          {isFinal && <span className="mt-0.5 text-xs text-content-gray">{date}</span>}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close transfer details"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(112,100,233,0.18)] bg-dark text-content-gray transition-colors hover:bg-primary-800 hover:text-contentBody"
+        >
+          <XIcon width={12} height={12} color={Color.gray['300']} />
+        </button>
+      </div>
+      <div className="bg-dark p-6 text-contentBody">
         {isFinal && (
-          <div className="flex justify-between">
-            <h2 className="text-xs font-normal text-gray-900">{date}</h2>
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center text-xs font-normal">
               {isSent ? (
                 <h3 className="text-green-50">Sent</h3>
@@ -142,29 +161,29 @@ export function TransfersDetailsModal({
           </div>
         )}
 
-        <div>
-          <div className="mt-4 flex w-full items-center justify-center rounded-sm border border-gray-400/25 bg-card-gradient py-2 shadow-card">
+        <div className="mt-5 space-y-4">
+          <div className="flex w-full items-center justify-center rounded-xl border border-[rgba(112,100,233,0.20)] bg-dark2 px-4 py-3 shadow-[0_0_20px_rgba(0,0,0,0.2)]">
             <TokenIcon token={token} size={24} />
-            <div className="items ml-2 flex items-baseline font-secondary text-sm font-normal">
+            <div className="ml-2 flex items-baseline font-secondary text-sm font-normal">
               <span>{amount}</span>
-              <span className="ml-1">{token?.symbol}</span>
+              <span className="ml-1 text-content-gray">{token?.symbol}</span>
             </div>
           </div>
 
-          <div className="-mt-2 flex items-center justify-around rounded-sm border border-gray-400/25 bg-card-gradient py-5 shadow-card">
-            <div className="ml-2 flex flex-col items-center">
+          <div className="flex items-center justify-around rounded-xl border border-[rgba(112,100,233,0.20)] bg-darker2 px-4 py-4 shadow-[0_0_20px_rgba(0,0,0,0.2)]">
+            <div className="flex flex-col items-center">
               <ChainLogo chainName={origin} size={36} />
-              <span className="mt-1 text-xs font-normal tracking-wider">
+              <span className="mt-1 text-xs font-normal tracking-wider text-contentBody">
                 {getChainDisplayName(multiProvider, origin, true)}
               </span>
             </div>
-            <div className="mb-6 flex sm:space-x-1.5">
+            <div className="mx-4 flex items-center gap-1 sm:gap-1.5">
               <WideChevron />
               <WideChevron />
             </div>
-            <div className="mr-2 flex flex-col items-center">
+            <div className="flex flex-col items-center">
               <ChainLogo chainName={destination} size={36} />
-              <span className="mt-1 text-xs font-normal tracking-wider">
+              <span className="mt-1 text-xs font-normal tracking-wider text-contentBody">
                 {getChainDisplayName(multiProvider, destination, true)}
               </span>
             </div>
@@ -203,10 +222,10 @@ export function TransfersDetailsModal({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-4">
-            <SpinnerIcon width={60} height={60} className="mt-3" />
-            <div className="mt-5 text-center text-sm text-gray-600">{statusDescription}</div>
+            <SpinnerIcon width={60} height={60} color={Color.white} className="mt-3" />
+            <div className="mt-5 text-center text-sm text-content-gray">{statusDescription}</div>
             {showSignWarning && (
-              <div className="mt-3 text-center text-sm text-gray-600">
+              <div className="mt-3 text-center text-sm text-content-gray">
                 If your wallet does not show a transaction request or never confirms, please try the
                 transfer again.
               </div>
@@ -251,17 +270,22 @@ function TransferProperty({ name, value, url }: { name: string; value: string; u
   return (
     <div>
       <div className="flex items-center justify-between">
-        <label className="text-xs leading-normal tracking-wider text-gray-350">{name}</label>
+        <label className="text-xs leading-normal tracking-wider text-content-gray">{name}</label>
         <div className="flex items-center space-x-2">
           {url && (
             <a href={url} target="_blank" rel="noopener noreferrer">
-              <Image src={LinkIcon} width={14} height={14} alt="" />
+              <Image src={LinkIcon} width={14} height={14} alt="" className="opacity-70 invert" />
             </a>
           )}
-          <CopyButton copyValue={value} width={14} height={14} className="opacity-40" />
+          <CopyButton
+            copyValue={value}
+            width={14}
+            height={14}
+            className="opacity-40 invert transition-opacity hover:opacity-100"
+          />
         </div>
       </div>
-      <div className="mt-1 truncate text-xs leading-normal tracking-wider text-gray-900">
+      <div className="mt-1 truncate text-xs leading-normal tracking-wider text-contentBody">
         {value}
       </div>
     </div>
