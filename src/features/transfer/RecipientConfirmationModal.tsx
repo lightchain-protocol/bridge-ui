@@ -32,7 +32,7 @@ export function RecipientConfirmationModal({
     <Modal
       isOpen={isOpen}
       close={close}
-      dialogClassname="hpl-transfer-details-modal"
+      dialogClassname="hpl-recipient-details-modal"
       panelClassname="flex max-w-sm flex-col gap-4 overflow-hidden rounded-2xl border border-[rgba(112,100,233,0.20)] bg-dark p-0 shadow-[0_0_40px_rgba(0,0,0,0.35)]"
     >
       <div className="border-b border-[rgba(112,100,233,0.18)] bg-darker2 px-4 py-3">
