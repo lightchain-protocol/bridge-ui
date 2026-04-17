@@ -9,14 +9,10 @@ export function RecipientConfirmationModal({
   isOpen,
   close,
   onConfirm,
-  recipientOverride,
-  descriptionOverride,
 }: {
   isOpen: boolean;
   close: () => void;
   onConfirm: () => void;
-  recipientOverride?: string;
-  descriptionOverride?: string;
 }) {
   const { values } = useFormikContext<TransferFormValues>();
   const multiProvider = useMultiProvider();
@@ -30,16 +26,13 @@ export function RecipientConfirmationModal({
     destinationToken?.chainName,
     accounts,
   );
-  const recipient = recipientOverride || values.recipient || connectedDestAddress || '';
-  const description =
-    descriptionOverride ||
-    'The recipient address has no funds on the destination chain. Is this address correct?';
+  const recipient = values.recipient || connectedDestAddress || '';
 
   return (
     <Modal
       isOpen={isOpen}
       close={close}
-      dialogClassname="hpl-recipient-details-modal"
+      dialogClassname="hpl-transfer-details-modal"
       panelClassname="flex max-w-sm flex-col gap-4 overflow-hidden rounded-2xl border border-[rgba(112,100,233,0.20)] bg-dark p-0 shadow-[0_0_40px_rgba(0,0,0,0.35)]"
     >
       <div className="border-b border-[rgba(112,100,233,0.18)] bg-darker2 px-4 py-3">
@@ -48,7 +41,9 @@ export function RecipientConfirmationModal({
         </h3>
       </div>
       <div className="px-4 pb-4">
-        <p className="text-center text-sm text-contentBody">{description}</p>
+        <p className="text-center text-sm text-contentBody">
+          The recipient address has no funds on the destination chain. Is this address correct?
+        </p>
         <p className="mt-3 w-full rounded-xl border border-[rgba(112,100,233,0.20)] bg-dark2 p-2 text-center text-sm text-contentBody">
           {recipient}
         </p>
