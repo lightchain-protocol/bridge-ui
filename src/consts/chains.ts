@@ -70,19 +70,19 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
       },
     ],
     logoURI: '/logos/eth.png',
-    mailbox: '0x3746b02CDfE03e6Fd4Bd1EE864f2ea79a1DE1DE2'
+    mailbox: '0x3746b02CDfE03e6Fd4Bd1EE864f2ea79a1DE1DE2',
   },
-  lcai: {
+  lcaitestnet: {
     protocol: ProtocolType.Ethereum,
-    chainId: 504,
-    domainId: 504,
-    name: 'lcai',
+    chainId: 8200,
+    domainId: 8200,
+    name: 'lcaitestnet',
     displayName: 'LightchainAI',
     nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
-    rpcUrls: [{ http: 'https://light-testnet-rpc.lightchain.ai' }],
+    rpcUrls: [{ http: 'https://rpc.testnet.lightchain.ai' }],
     blockExplorers: [
       {
-        name: 'LightchainAI Explorer',
+        name: 'LightchainAI Testnet Explorer',
         url: 'https://testnet.lightscan.app',
         apiUrl: 'https://testnet.lightscan.app/api',
         family: ExplorerFamily.Blockscout,
@@ -94,23 +94,7 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
       estimateBlockTime: 10,
     },
     logoURI: '/logos/lcai.png',
-    mailbox: '0xc631131599FAc2bFc2Bb7B707E17DBaBf066046C',
-  },
-  lcaidevnet: {
-    protocol: ProtocolType.Ethereum,
-    chainId: 31337,
-    domainId: 7331337,
-    name: 'lcaidevnet',
-    displayName: 'LightchainAI',
-    nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
-    rpcUrls: [{ http: 'https://rpc.devnet.lightchain.ai' }],
-    blocks: {
-      confirmations: 1,
-      reorgPeriod: 1,
-      estimateBlockTime: 10,
-    },
-    logoURI: '/logos/lcai.png',
-    mailbox: '0xceCE1D7B73a34e1073AB21ceBf626189bE6AAb77'
+    mailbox: '0x39AF7e7967e45f6dbdA1559885bDF432Fd20288e',
   },
 };
 
