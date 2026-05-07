@@ -1,8 +1,9 @@
 import { IToken } from '@hyperlane-xyz/sdk';
-import { isHttpsUrl, isRelativeUrl } from '@hyperlane-xyz/utils';
+import { isHttpsUrl } from '@hyperlane-xyz/utils';
 import { Circle } from '@hyperlane-xyz/widgets';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { links } from '../../consts/links';
+import { useChainMetadata } from '../../features/chains/hooks';
 
 interface Props {
   token?: IToken | null;
@@ -10,24 +11,37 @@ interface Props {
 }
 
 export function TokenIcon({ token, size = 32 }: Props) {
+  const chainMetadata = useChainMetadata(token?.chainName);
+  const chainId = typeof chainMetadata?.chainId === 'number' ? chainMetadata.chainId : undefined;
+
+  const candidates = useMemo(
+    () => buildCandidates(token, chainId, size),
+    [token, chainId, size],
+  );
+
+  const tokenKey = token ? `${token.chainName}::${token.addressOrDenom}` : '';
+  const [attempt, setAttempt] = useState(0);
+  const [activeKey, setActiveKey] = useState(tokenKey);
+  if (activeKey !== tokenKey) {
+    setActiveKey(tokenKey);
+    setAttempt(0);
+  }
+
+  const src = candidates[attempt];
   const title = token?.symbol || '';
   const character = title ? title.charAt(0).toUpperCase() : '';
   const fontSize = Math.floor(size / 2);
-
-  const [fallbackToText, setFallbackToText] = useState(false);
-  const imageSrc = getImageSrc(token);
   const bgColorSeed =
-    token && (!imageSrc || fallbackToText)
-      ? (Buffer.from(token.addressOrDenom).at(0) || 0) % 5
-      : undefined;
+    token && !src ? (Buffer.from(token.addressOrDenom).at(0) || 0) % 5 : undefined;
 
   return (
     <Circle size={size} bgColorSeed={bgColorSeed} title={title}>
-      {imageSrc && !fallbackToText ? (
+      {src ? (
         <img
-          src={imageSrc}
+          key={src}
+          src={src}
           className="h-full w-full p-0.5"
-          onError={() => setFallbackToText(true)}
+          onError={() => setAttempt((i) => i + 1)}
           loading="lazy"
         />
       ) : (
@@ -37,11 +51,32 @@ export function TokenIcon({ token, size = 32 }: Props) {
   );
 }
 
-function getImageSrc(token?: IToken | null) {
-  if (!token?.logoURI) return null;
-  // If it's a valid, direct URL, return it
-  if (isHttpsUrl(token.logoURI)) return token.logoURI;
-  // Otherwise assume it's a relative URL to the registry base
-  if (isRelativeUrl(token.logoURI)) return `${links.imgPath}${token.logoURI}`;
-  return null;
+function buildCandidates(
+  token: IToken | null | undefined,
+  chainId: number | undefined,
+  size: number,
+): string[] {
+  if (!token) return [];
+  const out: string[] = [];
+  const logo = token.logoURI;
+
+  if (logo) {
+    if (isHttpsUrl(logo)) {
+      out.push(logo);
+    } else if (logo.startsWith('/')) {
+      out.push(logo);
+    } else {
+      out.push(`${links.imgPath}/${logo.replace(/^\.?\/?/, '')}`);
+    }
+  }
+
+  const addr = token.addressOrDenom;
+  if (chainId && addr && /^0x[0-9a-fA-F]{40}$/.test(addr)) {
+    const px = Math.max(48, Math.round(size * 2));
+    out.push(
+      `https://token-icons.llamao.fi/icons/tokens/${chainId}/${addr.toLowerCase()}?h=${px}&w=${px}`,
+    );
+  }
+
+  return out;
 }
