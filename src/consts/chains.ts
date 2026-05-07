@@ -27,6 +27,93 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   //   ...solaxy,
   //   mailbox: solaxyAddresses.mailbox,
   // },
+  ethereum: {
+    blockExplorers: [
+      {
+        apiKey: 'GP69JEAP2W7YFJT9ZJTEPGQT6Y6KMW44ZN',
+        apiUrl: 'https://api.etherscan.io/v2/api?chainid=1',
+        family: ExplorerFamily.Etherscan,
+        name: 'Etherscan',
+        url: 'https://etherscan.io',
+      },
+      {
+        apiUrl: 'https://eth.blockscout.com/api',
+        family: ExplorerFamily.Blockscout,
+        name: 'Blockscout',
+        url: 'https://blockscout.com/eth/mainnet',
+      },
+      {
+        apiUrl: 'https://api.routescan.io/v2/network/mainnet/evm/1/etherscan/api',
+        family: ExplorerFamily.Routescan,
+        name: 'Ethereum Explorer',
+        url: 'https://1.routescan.io',
+      },
+    ],
+    blocks: {
+      confirmations: 2,
+      estimateBlockTime: 14,
+      reorgPeriod: 2,
+    },
+    chainId: 1,
+    deployer: {
+      name: 'Abacus Works',
+      url: 'https://www.hyperlane.xyz',
+    },
+    displayName: 'Ethereum',
+    domainId: 1,
+    gasCurrencyCoinGeckoId: 'ethereum',
+    gnosisSafeTransactionServiceUrl: 'https://safe-transaction-mainnet.safe.global/',
+    name: 'ethereum',
+    nativeToken: {
+      decimals: 18,
+      name: 'Ether',
+      symbol: 'ETH',
+    },
+    protocol: ProtocolType.Ethereum,
+    rpcUrls: [
+      {
+        http: 'https://ethereum.publicnode.com',
+      },
+      {
+        http: 'https://eth.drpc.org',
+      },
+      {
+        http: 'https://rpc.flashbots.net',
+      },
+      {
+        http: 'https://eth.blockrazor.xyz',
+      },
+      {
+        http: 'https://eth-pokt.nodies.app',
+      },
+    ],
+    logoURI: '/logos/eth.png',
+    mailbox: '0x287cf56E5b1435Ae59BF9Ce6443F055A0321a063',
+  },
+  lcai: {
+    protocol: ProtocolType.Ethereum,
+    chainId: 9200,
+    domainId: 9200,
+    name: 'lcai',
+    displayName: 'LightchainAI',
+    nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
+    rpcUrls: [{ http: 'https://rpc.mainnet.lightchain.ai' }],
+    blockExplorers: [
+      {
+        name: 'LightchainAI Explorer',
+        url: 'https://mainnet.lightscan.app',
+        apiUrl: 'https://mainnet.lightscan.app/api',
+        family: ExplorerFamily.Blockscout,
+      },
+    ],
+    blocks: {
+      confirmations: 1,
+      reorgPeriod: 1,
+      estimateBlockTime: 7,
+    },
+    logoURI: '/logos/lcai.png',
+    mailbox: '0x142a9CEf00ACcAddB76283c49A1Bf37f20c1F00e',
+  },
   sepolia: {
     blockExplorers: [
       {
