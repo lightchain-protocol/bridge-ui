@@ -171,13 +171,11 @@ function TokenButton({
       disabled={disabled}
     >
       {token ? (
-        <div className={`flex items-center justify-between sm:gap-4 gap-2.5 ${childClass}`}>
-          <div className="sm:size-[50px] size-5">
-            <TokenChainIcon token={token} size={36} />
-          </div>
-          <div className="flex flex-col items-start gap-1.5">
-            <span className="sm:text-sm text-[10px] font-medium text-gray-400 leading-none">{token.symbol}</span>
-            <span className="sm:text-lg text-xs font-medium text-contentBody leading-none">{chainDisplayName}</span>
+        <div className={`flex items-center sm:gap-3 gap-2 ${childClass}`}>
+          <TokenChainIcon token={token} size={36} />
+          <div className="flex flex-col items-start gap-0.5">
+            <span className="sm:text-base text-sm font-semibold text-contentBody leading-tight">{token.symbol}</span>
+            <span className="sm:text-xs text-[10px] font-normal text-content-gray leading-tight">{chainDisplayName}</span>
           </div>
         </div>
       ) : (
