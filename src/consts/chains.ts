@@ -114,75 +114,75 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     logoURI: '/logos/lcai.png',
     mailbox: '0x142a9CEf00ACcAddB76283c49A1Bf37f20c1F00e',
   },
-  sepolia: {
-    blockExplorers: [
-      {
-        apiUrl: 'https://api-sepolia.etherscan.io/api',
-        family: ExplorerFamily.Etherscan,
-        name: 'Etherscan',
-        url: 'https://sepolia.etherscan.io',
-      },
-    ],
-    blocks: {
-      confirmations: 1,
-      estimateBlockTime: 13,
-      reorgPeriod: 2,
-    },
-    chainId: 11155111,
-    deployer: {
-      name: 'Abacus Works',
-      url: 'https://www.hyperlane.xyz',
-    },
-    displayName: 'Sepolia',
-    domainId: 11155111,
-    gasCurrencyCoinGeckoId: 'ethereum',
-    gnosisSafeTransactionServiceUrl: 'https://safe-transaction-sepolia.safe.global',
-    isTestnet: true,
-    name: 'sepolia',
-    nativeToken: {
-      decimals: 18,
-      name: 'Ether',
-      symbol: 'ETH',
-    },
-    protocol: ProtocolType.Ethereum,
-    rpcUrls: [
-      {
-        http: 'https://ethereum-sepolia.publicnode.com',
-      },
-      {
-        http: 'https://ethereum-sepolia.blockpi.network/v1/rpc/public',
-      },
-      {
-        http: 'https://rpc.sepolia.org',
-      },
-    ],
-    logoURI: '/logos/eth.png',
-    mailbox: '0x3746b02CDfE03e6Fd4Bd1EE864f2ea79a1DE1DE2',
-  },
-  lcaitestnet: {
-    protocol: ProtocolType.Ethereum,
-    chainId: 8200,
-    domainId: 8200,
-    name: 'lcaitestnet',
-    displayName: 'LightchainAI',
-    nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
-    rpcUrls: [{ http: 'https://rpc.testnet.lightchain.ai' }],
-    blockExplorers: [
-      {
-        name: 'LightchainAI Testnet Explorer',
-        url: 'https://testnet.lightscan.app',
-        apiUrl: 'https://testnet.lightscan.app/api',
-        family: ExplorerFamily.Blockscout,
-      },
-    ],
-    blocks: {
-      confirmations: 1,
-      reorgPeriod: 1,
-      estimateBlockTime: 10,
-    },
-    logoURI: '/logos/lcai.png',
-    mailbox: '0x39AF7e7967e45f6dbdA1559885bDF432Fd20288e',
-  },
+  // sepolia: {
+  //   blockExplorers: [
+  //     {
+  //       apiUrl: 'https://api-sepolia.etherscan.io/api',
+  //       family: ExplorerFamily.Etherscan,
+  //       name: 'Etherscan',
+  //       url: 'https://sepolia.etherscan.io',
+  //     },
+  //   ],
+  //   blocks: {
+  //     confirmations: 1,
+  //     estimateBlockTime: 13,
+  //     reorgPeriod: 2,
+  //   },
+  //   chainId: 11155111,
+  //   deployer: {
+  //     name: 'Abacus Works',
+  //     url: 'https://www.hyperlane.xyz',
+  //   },
+  //   displayName: 'Sepolia',
+  //   domainId: 11155111,
+  //   gasCurrencyCoinGeckoId: 'ethereum',
+  //   gnosisSafeTransactionServiceUrl: 'https://safe-transaction-sepolia.safe.global',
+  //   isTestnet: true,
+  //   name: 'sepolia',
+  //   nativeToken: {
+  //     decimals: 18,
+  //     name: 'Ether',
+  //     symbol: 'ETH',
+  //   },
+  //   protocol: ProtocolType.Ethereum,
+  //   rpcUrls: [
+  //     {
+  //       http: 'https://ethereum-sepolia.publicnode.com',
+  //     },
+  //     {
+  //       http: 'https://ethereum-sepolia.blockpi.network/v1/rpc/public',
+  //     },
+  //     {
+  //       http: 'https://rpc.sepolia.org',
+  //     },
+  //   ],
+  //   logoURI: '/logos/eth.png',
+  //   mailbox: '0x3746b02CDfE03e6Fd4Bd1EE864f2ea79a1DE1DE2',
+  // },
+  // lcaitestnet: {
+  //   protocol: ProtocolType.Ethereum,
+  //   chainId: 8200,
+  //   domainId: 8200,
+  //   name: 'lcaitestnet',
+  //   displayName: 'LightchainAI',
+  //   nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
+  //   rpcUrls: [{ http: 'https://rpc.testnet.lightchain.ai' }],
+  //   blockExplorers: [
+  //     {
+  //       name: 'LightchainAI Testnet Explorer',
+  //       url: 'https://testnet.lightscan.app',
+  //       apiUrl: 'https://testnet.lightscan.app/api',
+  //       family: ExplorerFamily.Blockscout,
+  //     },
+  //   ],
+  //   blocks: {
+  //     confirmations: 1,
+  //     reorgPeriod: 1,
+  //     estimateBlockTime: 10,
+  //   },
+  //   logoURI: '/logos/lcai.png',
+  //   mailbox: '0x39AF7e7967e45f6dbdA1559885bDF432Fd20288e',
+  // },
 };
 
 // rent account payment for (mostly for) SVM chains added on top of IGP,
