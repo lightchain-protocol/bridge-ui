@@ -227,3 +227,17 @@ Fixes for cosmos chain selection modal
 div[data-floating-ui-portal] > div {
   z-index: 10000;
 }
+
+/* Footer mega title (matches LCAIPresale TextPressure gradient) */
+.footer-bottom-animated .footer-gradient-text {
+  background: linear-gradient(80deg, #7064e9 -5.02%, #dd00ac 50.44%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+.footer-bottom-animated .footer-gradient-text span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
