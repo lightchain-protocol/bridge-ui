@@ -1,16 +1,52 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import PixelBlast from "../ui/PixelBlast";
 import TextPressure from "../ui/TextPressure";
 
+type TitleScale = { letterSpacing: number; minFontSize: number };
+
+/**
+ * On narrow widths, `letterSpacing` + `minFontSize` made the word wider than the
+ * title row; `.footer-bottom-animated` uses `overflow-hidden`, so the line was clipped.
+ */
+function useFooterTitleScale(): TitleScale {
+  const [scale, setScale] = useState<TitleScale>({ letterSpacing: 20, minFontSize: 36 });
+
+  useEffect(() => {
+    const sync = () => {
+      const w = window.innerWidth;
+      if (w <= 639) {
+        setScale({ letterSpacing: 4, minFontSize: 22 });
+      } else if (w <= 900) {
+        setScale({ letterSpacing: 12, minFontSize: 28 });
+      } else {
+        setScale({ letterSpacing: 20, minFontSize: 36 });
+      }
+    };
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, []);
+
+  return scale;
+}
+
 export default function FooterBottomAnimated() {
+  const { letterSpacing, minFontSize } = useFooterTitleScale();
+
   return (
     <div className="footer-bottom-animated relative isolate z-2 w-full overflow-hidden">
-      <div className="container mx-auto px-4 border-t border-border-soft pt-10 pb-8 xl:pb-4 relative z-11">
-        <p className="text-base font-medium text-content-default text-center">Copyright © 2026 <Link href="/" className="text-content-strong lcai-link-hover">Lightchain Protocol</Link></p>
+      <div className="container mx-auto border-0 px-4 pb-4 pt-4 sm:pb-8 lg:pt-10 xl:pb-4 relative z-11">
+        <p className="mb--0 text-center text-base font-medium text-content-default">
+          Copyright © 2026{" "}
+          <Link href="/" className="text-content-strong lcai-link-hover">
+            Lightchain Protocol
+          </Link>
+        </p>
       </div>
-      <div className="relative max-w-[1500px] mx-auto z-10 flex h-[90px] items-center justify-center px-4 sm:h-[110px] sm:px-12 md:h-[150px] lg:h-[200px] xl:h-[300px]">
+      <div className="relative z-10 mx-auto flex h-[90px] w-full max-w-[300px] min-w-0 items-center justify-center px-4 sm:h-[110px] sm:max-w-[500px] sm:px-8 md:h-[150px] md:px-12 lg:h-[200px] lg:max-w-[1000px] 2xl:h-[300px] 2xl:max-w-[1500px]">
         <TextPressure
           text="Lightchain"
           flex={false}
@@ -21,10 +57,10 @@ export default function FooterBottomAnimated() {
           italic={false}
           textColor="transparent"
           strokeColor="#f5f3ff"
-          minFontSize={36}
+          minFontSize={minFontSize}
           maxFontSize={300}
-          letterSpacing={20}
-          classNameTextPressure="flex w-full items-center justify-center footer-gradient-text z-[10]"
+          letterSpacing={letterSpacing}
+          classNameTextPressure="flex w-full min-w-0 items-center justify-center footer-gradient-text z-[10]"
         />
       </div>
 

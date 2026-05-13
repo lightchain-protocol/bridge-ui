@@ -2,7 +2,6 @@
 
 import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
 import Head from 'next/head';
-import Image from 'next/image';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { APP_NAME } from '../../consts/app';
 import { config } from '../../consts/config';
@@ -19,6 +18,8 @@ import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
 import Footer from '../footer/Footer';
 import type { RawFooterConfig } from '../footer/types/types';
 import { Header } from '../nav/Header';
+import DottedLineBackground from '../ui/DottedLineBackground';
+import SoftAurora from '../ui/SoftAurora';
 
 export function AppLayout({ children }: PropsWithChildren) {
   const { showEnvSelectModal, setShowEnvSelectModal, isSideBarOpen, setIsSideBarOpen } = useStore(
@@ -56,19 +57,31 @@ export function AppLayout({ children }: PropsWithChildren) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{APP_NAME}</title>
       </Head>
-      <div id="app-content" className="min-w-screen relative w-full">
+      <div id="app-content" className="min-w-screen relative w-full bg-[#000000]">
         <Header rawMenus={navConfig} />
-        <div className="mx-auto relative">
-          <Image
-            className="absolute top-0 left-0 h-full w-full"
-            src="/images/bg/grid.png"
-            width={1917}
-            height={1170}
-            alt="Background"
-          />
-          <main className="main-wrapper flex w-full flex-1 items-center justify-center px-3 py-10 sm:py-24 lg:py-[120px]">
-            {children}
+        <div className="mx-auto relative overflow-hidden">
+          <main className="main-wrapper flex w-full flex-1 items-center justify-center px-3 py-10 sm:py-24 lg:py-[120px] overflow-hidden container mx-auto relative z-10">
+              {children}
+              <DottedLineBackground lineCount={5} />
           </main>
+          <div className="absolute top-0 left-0 w-full h-full z-[1]">
+              <SoftAurora
+                speed={0.9}
+                scale={1.7}
+                brightness={1.9}
+                color1="#644aff"
+                color2="#e100ff"
+                noiseFrequency={3}
+                noiseAmplitude={2}
+                bandHeight={0.5}
+                bandSpread={1}
+                octaveDecay={0.1}
+                layerOffset={0.15}
+                colorSpeed={1}
+                enableMouseInteraction
+                mouseInfluence={0.15}
+              />
+            </div>
         </div>
         {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>

@@ -44,7 +44,7 @@ const Footer = ({ rawFooter }: Props) => {
 
   return (
     <footer className="lightchain-footer footer-style-default footer-style-3 position-relative variation-2 mt-0">
-      <div className="footer-top pb--0">
+      <div className="footer-top pb--0 bg-[#000000]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
             <SingleFooter data={services} />

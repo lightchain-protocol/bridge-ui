@@ -48,7 +48,7 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline' ${STYLE_SRC_HOSTS.join(' ')};
   connect-src *;
   img-src 'self' blob: data: ${IMG_SRC_HOSTS.join(' ')};
-  font-src 'self' data: https://js.intercomcdn.com https://fonts.intercomcdn.com;
+  font-src 'self' data: https://js.intercomcdn.com https://fonts.intercomcdn.com https://res.cloudinary.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';

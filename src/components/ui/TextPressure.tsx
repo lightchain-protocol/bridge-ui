@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createAnimationVisibilityController } from '../../lib/animationVisibility';
 
 interface TextPressureProps {
@@ -113,7 +113,10 @@ const TextPressure: React.FC<TextPressureProps> = ({
         const isSmall = viewportW <= 900;
         const effectiveMax = isSmall ? Math.min(maxFontSize, 96) : maxFontSize;
 
-        let newFontSize = containerW / (chars.length / 2);
+        /** `letter-spacing` adds horizontal space; sizing from `containerW` alone overflows with nowrap. */
+        const letterExtra = letterSpacing * Math.max(0, chars.length - 1);
+        const widthForGlyphs = Math.max(1, containerW - letterExtra);
+        let newFontSize = widthForGlyphs / (chars.length / 2);
         newFontSize = Math.max(newFontSize, minFontSize);
 
         setFontSize(Math.min(newFontSize, effectiveMax));
@@ -130,7 +133,7 @@ const TextPressure: React.FC<TextPressureProps> = ({
                 setLineHeight(yRatio);
             }
         });
-    }, [chars.length, minFontSize, maxFontSize, scale]);
+    }, [chars.length, letterSpacing, minFontSize, maxFontSize, scale]);
 
     useEffect(() => {
         const debouncedSetSize = debounce(setSize, 100);
