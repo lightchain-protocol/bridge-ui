@@ -19,7 +19,20 @@ const FRAME_SRC_HOSTS = [
   'https://intercom-sheets.com',
   'https://intercom-reporting.com',
 ];
-const STYLE_SRC_HOSTS = ['https://js.refiner.io', 'https://storage.refiner.io'];
+const STYLE_SRC_HOSTS = [
+  'https://js.refiner.io',
+  'https://storage.refiner.io',
+  'https://fonts.googleapis.com',
+  'https://fonts.reown.com',
+];
+const FONT_SRC_HOSTS = [
+  'https://js.intercomcdn.com',
+  'https://fonts.intercomcdn.com',
+  'https://res.cloudinary.com',
+  'https://fonts.gstatic.com',
+  'https://fonts.reown.com',
+  'https://fonts.googleapis.com'
+];
 const IMG_SRC_HOSTS = [
   'https://*.walletconnect.com',
   'https://*.reown.com',
@@ -48,11 +61,11 @@ const MEDIA_SRC_HOSTS = [
 ];
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ''} ${SCRIPT_SRC_HOSTS.join(' ')};
+  script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} ${SCRIPT_SRC_HOSTS.join(' ')};
   style-src 'self' 'unsafe-inline' ${STYLE_SRC_HOSTS.join(' ')};
   connect-src *;
   img-src 'self' blob: data: ${IMG_SRC_HOSTS.join(' ')};
-  font-src 'self' data: https://js.intercomcdn.com https://fonts.intercomcdn.com https://res.cloudinary.com;
+  font-src 'self' data: ${FONT_SRC_HOSTS.join(' ')};
   object-src 'none';
   base-uri 'self';
   form-action 'self';
@@ -82,14 +95,19 @@ const securityHeaders = [
     key: 'Referrer-Policy',
     value: 'strict-origin-when-cross-origin',
   },
+  // Required for AppKit wallet popups (WalletConnect, OAuth)
+  {
+    key: 'Cross-Origin-Opener-Policy',
+    value: 'same-origin-allow-popups',
+  },
   // Note, causes a problem for firefox: https://github.com/MetaMask/metamask-extension/issues/3133
   ...(ENABLE_CSP_HEADER
     ? [
-        {
-          key: 'Content-Security-Policy',
-          value: cspHeader,
-        },
-      ]
+      {
+        key: 'Content-Security-Policy',
+        value: cspHeader,
+      },
+    ]
     : []),
 ];
 
