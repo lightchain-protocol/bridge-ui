@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 
+const path = require('path');
 const { version } = require('./package.json');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
@@ -11,6 +12,8 @@ const ENABLE_CSP_HEADER = true;
 const FRAME_SRC_HOSTS = [
   'https://*.walletconnect.com',
   'https://*.walletconnect.org',
+  'https://*.reown.com',
+  'https://secure.walletconnect.org',
   'https://cdn.solflare.com',
   'https://js.refiner.io',
   'https://intercom-sheets.com',
@@ -19,6 +22,7 @@ const FRAME_SRC_HOSTS = [
 const STYLE_SRC_HOSTS = ['https://js.refiner.io', 'https://storage.refiner.io'];
 const IMG_SRC_HOSTS = [
   'https://*.walletconnect.com',
+  'https://*.reown.com',
   'https://*.githubusercontent.com',
   'https://cdn.jsdelivr.net/gh/hyperlane-xyz/hyperlane-registry@main/',
   'https://js.refiner.io',
@@ -91,6 +95,15 @@ const securityHeaders = [
 
 const nextConfig = {
   webpack(config, { isServer }) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@rainbow-me/rainbowkit': path.resolve(__dirname, 'src/vendor/rainbowkit-shim.ts'),
+    };
+
+    if (!isServer) {
+      config.externals.push('pino-pretty', 'lokijs', 'encoding');
+    }
+
     config.module.rules.push({
       test: /\.ya?ml$/,
       use: 'yaml-loader',

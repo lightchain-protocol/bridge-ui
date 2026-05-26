@@ -1,6 +1,7 @@
 'use client';
 
 import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
+import { useAppKit } from '@reown/appkit/react';
 import Head from 'next/head';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { APP_NAME } from '../../consts/app';
@@ -22,6 +23,7 @@ import DottedLineBackground from '../ui/DottedLineBackground';
 import SoftAurora from '../ui/SoftAurora';
 
 export function AppLayout({ children }: PropsWithChildren) {
+  const { open } = useAppKit();
   const { showEnvSelectModal, setShowEnvSelectModal, isSideBarOpen, setIsSideBarOpen } = useStore(
     (s) => ({
       showEnvSelectModal: s.showEnvSelectModal,
@@ -59,29 +61,29 @@ export function AppLayout({ children }: PropsWithChildren) {
       </Head>
       <div id="app-content" className="min-w-screen relative w-full bg-[#000000]">
         <Header rawMenus={navConfig} />
-        <div className="mx-auto relative overflow-hidden">
-          <main className="main-wrapper flex w-full flex-1 items-center justify-center px-3 py-10 sm:py-24 lg:py-[120px] overflow-hidden container mx-auto relative z-10">
-              {children}
-              <DottedLineBackground lineCount={5} />
+        <div className="relative mx-auto overflow-hidden">
+          <main className="main-wrapper container relative z-10 mx-auto flex w-full flex-1 items-center justify-center overflow-hidden px-3 py-10 sm:py-24 lg:py-[120px]">
+            {children}
+            <DottedLineBackground lineCount={5} />
           </main>
-          <div className="absolute top-0 left-0 w-full h-full z-[1]">
-              <SoftAurora
-                speed={0.9}
-                scale={1.7}
-                brightness={1.9}
-                color1="#644aff"
-                color2="#e100ff"
-                noiseFrequency={3}
-                noiseAmplitude={2}
-                bandHeight={0.5}
-                bandSpread={1}
-                octaveDecay={0.1}
-                layerOffset={0.15}
-                colorSpeed={1}
-                enableMouseInteraction
-                mouseInfluence={0.15}
-              />
-            </div>
+          <div className="absolute left-0 top-0 z-[1] h-full w-full">
+            <SoftAurora
+              speed={0.9}
+              scale={1.7}
+              brightness={1.9}
+              color1="#644aff"
+              color2="#e100ff"
+              noiseFrequency={3}
+              noiseAmplitude={2}
+              bandHeight={0.5}
+              bandSpread={1}
+              octaveDecay={0.1}
+              layerOffset={0.15}
+              colorSpeed={1}
+              enableMouseInteraction
+              mouseInfluence={0.15}
+            />
+          </div>
         </div>
         {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>
@@ -97,7 +99,7 @@ export function AppLayout({ children }: PropsWithChildren) {
       <SideBarMenu
         onClose={() => setIsSideBarOpen(false)}
         isOpen={isSideBarOpen}
-        onClickConnectWallet={() => setShowEnvSelectModal(true)}
+        onClickConnectWallet={() => open()}
       />
     </>
   );
