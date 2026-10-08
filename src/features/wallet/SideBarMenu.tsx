@@ -1,27 +1,20 @@
-import type { ChainName } from '@hyperlane-xyz/sdk';
-import { fromWei, normalizeAddress } from '@hyperlane-xyz/utils';
 import { AccountList, SpinnerIcon, useAccounts } from '@hyperlane-xyz/widgets';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LuHistory, LuRefreshCw, LuWallet, LuX } from 'react-icons/lu';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { LuExternalLink, LuHistory, LuRefreshCw, LuWallet, LuX } from 'react-icons/lu';
 import { toast } from 'react-toastify';
+import type { Address } from 'viem';
 import { ChainLogo } from '../../components/icons/ChainLogo';
 import { config } from '../../consts/config';
+import { ZAP } from '../../consts/zap';
 import ArrowRightIcon from '../../images/icons/arrow-right.svg';
 import { useMultiProvider } from '../chains/hooks';
 import { getChainDisplayName } from '../chains/utils';
-import { MessageStatus } from '../messages/types';
-import {
-  messageToTransferContext,
-  TransferItem,
-  TransferItemType,
-  useMergedTransferHistory,
-} from '../messages/useMergedTransferHistory';
-import { useMessageHistory } from '../messages/useMessageHistory';
-import { RouterAddressInfo, useStore } from '../store';
+import { mergeHistory, useBridgeHistory } from '../history/useBridgeHistory';
+import { useStore } from '../store';
 import { tryFindToken, useWarpCore } from '../tokens/hooks';
 import { TransfersDetailsModal } from '../transfer/TransfersDetailsModal';
-import { TransferContext, TransferStatus } from '../transfer/types';
+import { TransferContext } from '../transfer/types';
 import { getIconByTransferStatus, STATUSES_WITH_ICON } from '../transfer/utils';
 
 export function SideBarMenu({
@@ -40,89 +33,40 @@ export function SideBarMenu({
   const [selectedTransfer, setSelectedTransfer] = useState<TransferContext | null>(null);
 
   const multiProvider = useMultiProvider();
+  const warpCore = useWarpCore();
 
-  const { transfers, transferLoading, originChainName, routerAddressesByChainMap } = useStore(
-    (s) => ({
-      transfers: s.transfers,
-      transferLoading: s.transferLoading,
-      originChainName: s.originChainName,
-      routerAddressesByChainMap: s.routerAddressesByChainMap,
-    }),
-  );
+  const { transfers, transferLoading, originChainName } = useStore((s) => ({
+    transfers: s.transfers,
+    transferLoading: s.transferLoading,
+    originChainName: s.originChainName,
+  }));
 
-  // Get all connected wallet addresses (normalized for consistent matching)
+  // Connected EVM wallet (the bridge is EVM-only on both ends)
   const { accounts } = useAccounts(multiProvider, config.addressBlacklist);
-  const walletAddresses = useMemo(() => {
-    const addresses: string[] = [];
+  const wallet = useMemo(() => {
     for (const accountInfo of Object.values(accounts)) {
-      if (accountInfo.addresses) {
-        for (const addrInfo of accountInfo.addresses) {
-          if (addrInfo.address) {
-            addresses.push(normalizeAddress(addrInfo.address));
-          }
-        }
-      }
+      const addr = accountInfo.addresses?.[0]?.address;
+      if (addr) return addr as Address;
     }
-    return addresses;
+    return undefined;
   }, [accounts]);
 
-  // Get all warp route addresses from configured routes (normalized)
-  const warpRouteAddresses = useMemo(() => {
-    const addresses: string[] = [];
-    for (const addressMap of Object.values(routerAddressesByChainMap)) {
-      for (const addr of Object.keys(addressMap)) {
-        addresses.push(normalizeAddress(addr));
-      }
-    }
-    return addresses;
-  }, [routerAddressesByChainMap]);
-
-  // Fetch message history from API
-  const { messages, isLoading, isRefreshing, hasMore, loadMore, refresh } = useMessageHistory(
-    walletAddresses,
-    warpRouteAddresses,
-    multiProvider,
-  );
-
-  // Merge local transfers with API messages
-  const warpCore = useWarpCore();
-  const allMergedTransfers = useMergedTransferHistory(transfers, messages);
-
-  // Filter out API messages with unknown tokens
+  // LCAI bridge history straight from the warp-route events, merged with this browser's local list
+  const history = useBridgeHistory(wallet);
+  const isLoading = history.isLoading;
+  const isRefreshing = history.isFetching && !history.isLoading;
+  const refresh = () => void history.refetch();
   const mergedTransfers = useMemo(
-    () =>
-      allMergedTransfers.filter((item) => {
-        if (item.type === TransferItemType.Local) return true;
-        const originChain = multiProvider.tryGetChainName(item.data.originDomainId);
-        if (!originChain) return false;
-        return !!tryFindToken(warpCore, originChain, item.data.sender);
-      }),
-    [allMergedTransfers, multiProvider, warpCore],
+    () => mergeHistory(transfers, history.data ?? []),
+    [transfers, history.data],
   );
-
-  // Infinite scroll handler
-  const handleScroll = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container || isLoading || !hasMore) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    if (scrollHeight - scrollTop - clientHeight < 100) {
-      loadMore();
-    }
-  }, [isLoading, hasMore, loadMore]);
 
   const onCopySuccess = () => {
     toast.success('Address copied to clipboard', { autoClose: 2000 });
   };
 
-  const handleItemClick = (item: TransferItem) => {
-    if (item.type === TransferItemType.Local) {
-      setSelectedTransfer(item.data);
-    } else {
-      setSelectedTransfer(
-        messageToTransferContext(item.data, multiProvider, warpCore, routerAddressesByChainMap),
-      );
-    }
+  const handleItemClick = (item: TransferContext) => {
+    setSelectedTransfer(item);
     setIsModalOpen(true);
   };
 
@@ -175,7 +119,6 @@ export function SideBarMenu({
 
         <div
           ref={scrollContainerRef}
-          onScroll={handleScroll}
           className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-5"
         >
           {/* Accounts */}
@@ -223,17 +166,12 @@ export function SideBarMenu({
                     </div>
                   )}
                   {mergedTransfers.map((item) => (
-                    <TransferSummary
-                      key={
-                        item.type === TransferItemType.Local
-                          ? `local-${item.data.timestamp}-${item.data.originTxHash || item.data.msgId || ''}`
-                          : `api-${item.data.msgId}`
-                      }
-                      item={item}
+                    <LocalTransferSummary
+                      key={`${item.timestamp}-${item.originTxHash || item.msgId || ''}`}
+                      transfer={item}
                       onClick={() => handleItemClick(item)}
                       multiProvider={multiProvider}
                       warpCore={warpCore}
-                      routerAddressesByChainMap={routerAddressesByChainMap}
                     />
                   ))}
                 </div>
@@ -242,9 +180,9 @@ export function SideBarMenu({
                     <SpinnerIcon className="h-5 w-5" />
                   </div>
                 )}
-                {!hasMore && mergedTransfers.length > 0 && (
-                  <div className="py-3 text-center text-xs text-content-gray">
-                    No more transfers
+                {history.isError && (
+                  <div className="py-3 text-center text-xs text-red-300">
+                    Could not load on-chain history. Showing this device only.
                   </div>
                 )}
               </>
@@ -266,91 +204,6 @@ export function SideBarMenu({
   );
 }
 
-function TransferSummary({
-  item,
-  onClick,
-  multiProvider,
-  warpCore,
-  routerAddressesByChainMap,
-}: {
-  item: TransferItem;
-  onClick: () => void;
-  multiProvider: ReturnType<typeof useMultiProvider>;
-  warpCore: ReturnType<typeof useWarpCore>;
-  routerAddressesByChainMap: Record<ChainName, Record<string, RouterAddressInfo>>;
-}) {
-  if (item.type === TransferItemType.Local) {
-    return (
-      <LocalTransferSummary
-        transfer={item.data}
-        onClick={onClick}
-        multiProvider={multiProvider}
-        warpCore={warpCore}
-      />
-    );
-  }
-
-  const msg = item.data;
-  const originChain = multiProvider.tryGetChainName(msg.originDomainId) || '';
-  const destChain = multiProvider.tryGetChainName(msg.destinationDomainId) || '';
-  const status =
-    msg.status === MessageStatus.Delivered
-      ? TransferStatus.Delivered
-      : TransferStatus.ConfirmedTransfer;
-
-  // Find token by sender (origin warp route address - the token contract)
-  const token = tryFindToken(warpCore, originChain, msg.sender);
-
-  // Format amount using wire decimals from precomputed map
-  let formattedAmount = '';
-  if (msg.warpTransfer?.amount && token) {
-    const normalizedSender = normalizeAddress(msg.sender);
-    const routerInfo = routerAddressesByChainMap[originChain]?.[normalizedSender];
-    const wireDecimals = routerInfo?.wireDecimals ?? token.decimals;
-    formattedAmount = fromWei(msg.warpTransfer.amount, wireDecimals);
-  }
-
-  return (
-    <button onClick={onClick} className={`${styles.btn} justify-between py-3`}>
-      <div className="flex gap-2.5">
-        <div className="flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center rounded-full bg-primary-800 px-1.5">
-          <ChainLogo chainName={originChain} size={20} />
-        </div>
-        <div className="flex flex-col">
-          <div className="flex flex-col">
-            <div className="items flex items-baseline">
-              {formattedAmount && (
-                <span className="text-sm font-normal text-contentBody">{formattedAmount}</span>
-              )}
-              <span
-                className={`text-sm font-normal text-contentBody ${formattedAmount ? 'ml-1' : ''}`}
-              >
-                {token?.symbol || 'Unknown token'}
-              </span>
-            </div>
-            <div className="mt-1 flex flex-row items-center">
-              <span className="text-xxs font-normal tracking-wide text-content-gray">
-                {getChainDisplayName(multiProvider, originChain, true)}
-              </span>
-              <Image className="mx-1" src={ArrowRightIcon} width={10} height={10} alt="" />
-              <span className="text-xxs font-normal tracking-wide text-content-gray">
-                {getChainDisplayName(multiProvider, destChain, true)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex h-5 w-5">
-        {STATUSES_WITH_ICON.includes(status) ? (
-          <Image src={getIconByTransferStatus(status)} width={25} height={25} alt="" />
-        ) : (
-          <SpinnerIcon className="-ml-1 mr-3 h-5 w-5" />
-        )}
-      </div>
-    </button>
-  );
-}
-
 function LocalTransferSummary({
   transfer,
   onClick,
@@ -362,41 +215,72 @@ function LocalTransferSummary({
   multiProvider: ReturnType<typeof useMultiProvider>;
   warpCore: ReturnType<typeof useWarpCore>;
 }) {
-  const { amount, origin, destination, status, timestamp, originTokenAddressOrDenom } = transfer;
+  const {
+    amount,
+    origin,
+    destination,
+    status,
+    timestamp,
+    originTokenAddressOrDenom,
+    originTxHash,
+    destinationTxHash,
+  } = transfer;
   const token = tryFindToken(warpCore, origin, originTokenAddressOrDenom);
+  const symbol = token?.symbol || 'LCAI';
+
+  // Prefer the Lightchain side on Lightscan; fall back to the origin tx on the other explorer.
+  const isToLightchain = destination === ZAP.destinationChainName;
+  const scanUrl = destinationTxHash
+    ? isToLightchain
+      ? ZAP.destinationTxUrl(destinationTxHash)
+      : ZAP.explorerTxUrl(destinationTxHash)
+    : originTxHash
+      ? isToLightchain
+        ? ZAP.explorerTxUrl(originTxHash)
+        : ZAP.destinationTxUrl(originTxHash)
+      : undefined;
+  const amountDisplay = Number(amount).toLocaleString('en-US', { maximumFractionDigits: 4 });
 
   return (
     <button key={timestamp} onClick={onClick} className={`${styles.btn} justify-between py-3`}>
       <div className="flex gap-2.5">
-        <div className="flex h-[2.25rem] w-[2.25rem] flex-col items-center justify-center rounded-full bg-primary-800 px-1.5">
-          <ChainLogo chainName={origin} size={20} />
+        <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dark [&_img]:size-full">
+          <ChainLogo chainName={origin} size={36} />
         </div>
-        <div className="flex flex-col">
-          <div className="flex flex-col">
-            <div className="items flex items-baseline">
-              <span className="text-sm font-normal text-contentBody">{amount}</span>
-              <span className="ml-1 text-sm font-normal text-contentBody">
-                {token?.symbol || ''}
-              </span>
-            </div>
-            <div className="mt-1 flex flex-row items-center">
-              <span className="text-xxs font-normal tracking-wide text-content-gray">
-                {getChainDisplayName(multiProvider, origin, true)}
-              </span>
-              <Image className="mx-1" src={ArrowRightIcon} width={10} height={10} alt="" />
-              <span className="text-xxs font-normal tracking-wide text-content-gray">
-                {getChainDisplayName(multiProvider, destination, true)}
-              </span>
-            </div>
+        <div className="flex flex-col text-left">
+          <div className="flex items-baseline gap-1">
+            <span className="text-sm font-medium text-contentBody">{amountDisplay}</span>
+            <span className="text-sm text-contentBody">{symbol}</span>
+          </div>
+          <div className="mt-0.5 flex items-center gap-1 text-xxs tracking-wide text-content-gray">
+            <span>{getChainDisplayName(multiProvider, origin, true)}</span>
+            <Image src={ArrowRightIcon} width={10} height={10} alt="" />
+            <span>{getChainDisplayName(multiProvider, destination, true)}</span>
+            <span className="mx-1 opacity-40">·</span>
+            <span>{new Date(timestamp).toLocaleDateString()}</span>
           </div>
         </div>
       </div>
-      <div className="flex h-5 w-5">
-        {STATUSES_WITH_ICON.includes(status) ? (
-          <Image src={getIconByTransferStatus(status)} width={25} height={25} alt="" />
-        ) : (
-          <SpinnerIcon className="-ml-1 mr-3 h-5 w-5" />
+      <div className="flex items-center gap-2">
+        {scanUrl && (
+          <a
+            href={scanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            title={destinationTxHash ? 'View delivery on Lightscan' : 'View transaction'}
+            className="flex size-7 items-center justify-center rounded-full text-content-gray transition-colors hover:bg-dark2 hover:text-contentBody"
+          >
+            <LuExternalLink className="size-3.5" />
+          </a>
         )}
+        <div className="flex h-5 w-5 items-center justify-center">
+          {STATUSES_WITH_ICON.includes(status) ? (
+            <Image src={getIconByTransferStatus(status)} width={22} height={22} alt="" />
+          ) : (
+            <SpinnerIcon className="h-5 w-5" />
+          )}
+        </div>
       </div>
     </button>
   );

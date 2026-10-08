@@ -1,3 +1,5 @@
+import { parseAbiItem } from 'viem';
+
 export const quoterV2Abi = [
   {
     type: 'function',
@@ -35,7 +37,23 @@ export const hypCollateralAbi = [
   },
 ] as const;
 
+export const zappedEvent = parseAbiItem(
+  'event Zapped(address indexed sender, address indexed recipient, uint256 ethSwapped, uint256 gasPayment, uint256 lcaiBridged, bytes32 messageId)',
+);
+
 export const lcaiZapAbi = [
+  {
+    type: 'event',
+    name: 'Zapped',
+    inputs: [
+      { name: 'sender', type: 'address', indexed: true },
+      { name: 'recipient', type: 'address', indexed: true },
+      { name: 'ethSwapped', type: 'uint256', indexed: false },
+      { name: 'gasPayment', type: 'uint256', indexed: false },
+      { name: 'lcaiBridged', type: 'uint256', indexed: false },
+      { name: 'messageId', type: 'bytes32', indexed: false },
+    ],
+  },
   {
     type: 'function',
     name: 'zapToLightchain',

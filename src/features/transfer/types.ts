@@ -34,6 +34,7 @@ export interface TransferContext {
   sender: Address;
   recipient: Address;
   originTxHash?: string;
+  destinationTxHash?: string; // set once delivery is observed on the destination chain
   msgId?: string;
   timestamp: number;
 }

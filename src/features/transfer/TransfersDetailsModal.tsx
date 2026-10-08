@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChainLogo } from '../../components/icons/ChainLogo';
 import { TokenIcon } from '../../components/icons/TokenIcon';
+import { ZAP } from '../../consts/zap';
 import LinkIcon from '../../images/icons/external-link-icon.svg';
 import { Color } from '../../styles/Color';
 import { formatTimestamp } from '../../utils/date';
@@ -54,6 +55,7 @@ export function TransfersDetailsModal({
     recipient,
     originTokenAddressOrDenom,
     originTxHash,
+    destinationTxHash,
     msgId,
     timestamp,
   } = transfer || {};
@@ -202,6 +204,17 @@ export function TransfersDetailsModal({
                 name="Origin Transaction Hash"
                 value={originTxHash}
                 url={originTxUrl}
+              />
+            )}
+            {destinationTxHash && (
+              <TransferProperty
+                name="Destination Transaction Hash"
+                value={destinationTxHash}
+                url={
+                  destination === ZAP.destinationChainName
+                    ? ZAP.destinationTxUrl(destinationTxHash)
+                    : ZAP.explorerTxUrl(destinationTxHash)
+                }
               />
             )}
             {msgId && <TransferProperty name="Message ID" value={msgId} />}
