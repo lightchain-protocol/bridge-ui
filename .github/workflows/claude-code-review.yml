@@ -41,8 +41,15 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
+    env:
+      HAS_ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
     steps:
+      - name: Skip when ANTHROPIC_API_KEY is not configured
+        if: env.HAS_ANTHROPIC_KEY != 'true'
+        run: echo "::notice::ANTHROPIC_API_KEY secret is not set; skipping Claude review."
+
       - name: Get PR SHA
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         id: pr-sha
         uses: actions/github-script@v7
         with:
@@ -59,12 +66,14 @@ jobs:
             }
 
       - name: Checkout repository
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ steps.pr-sha.outputs.head_sha }}
           fetch-depth: 0
 
       - name: Run Claude Code Review
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -99,8 +108,15 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
+    env:
+      HAS_ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
     steps:
+      - name: Skip when ANTHROPIC_API_KEY is not configured
+        if: env.HAS_ANTHROPIC_KEY != 'true'
+        run: echo "::notice::ANTHROPIC_API_KEY secret is not set; skipping Claude review."
+
       - name: Get PR SHA
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         id: pr-sha
         uses: actions/github-script@v7
         with:
@@ -117,12 +133,14 @@ jobs:
             }
 
       - name: Checkout repository
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ steps.pr-sha.outputs.head_sha }}
           fetch-depth: 2
 
       - name: Run Claude Security Review
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         uses: anthropics/claude-code-security-review@25e460eb0a12077f0c6a1934d5dbae2f50785dda
         with:
           claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -165,8 +183,15 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
+    env:
+      HAS_ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
     steps:
+      - name: Skip when ANTHROPIC_API_KEY is not configured
+        if: env.HAS_ANTHROPIC_KEY != 'true'
+        run: echo "::notice::ANTHROPIC_API_KEY secret is not set; skipping Claude review."
+
       - name: Get PR SHA
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         id: pr-sha
         uses: actions/github-script@v7
         with:
@@ -187,12 +212,14 @@ jobs:
             }
 
       - name: Checkout repository
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ steps.pr-sha.outputs.head_sha || github.sha }}
           fetch-depth: 0
 
       - name: Run Claude Code Assistant
+        if: env.HAS_ANTHROPIC_KEY == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
