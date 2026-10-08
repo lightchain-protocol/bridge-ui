@@ -14,10 +14,19 @@ interface ZapNetworkConfig {
   quoterV2: Address;
   swapRouter02: Address;
   poolFee: number;
-  collateralRouter: Address; // Hyperlane HypERC20Collateral for LCAI
+  collateralRouter: Address; // Hyperlane HypERC20Collateral for LCAI (source chain)
+  nativeRouter: Address; // Hyperlane HypNative for LCAI (Lightchain)
   explorerTxUrl: (hash: string) => string; // source-chain tx
+  destinationTxUrl: (hash: string) => string; // Lightscan tx
   destinationAddressUrl: (address: string) => string; // Lightscan page where the LCAI lands
+  // Etherscan-compatible `module=logs&action=getLogs` endpoints, used to rebuild bridge history
+  // without an indexer (Hyperlane's explorer does not cover Lightchain).
+  sourceLogsApi: string;
+  destinationLogsApi: string;
 }
+
+// Public Etherscan key already shipped in chains.ts; Lightscan (Blockscout) needs none.
+const ETHERSCAN_API_KEY = 'GP69JEAP2W7YFJT9ZJTEPGQT6Y6KMW44ZN';
 
 // Mainnet pool: 0x0d047a370611437a1b8e6c2a95ea36f69fdda3be. Route: hyperlane-bridge/lcai/configs.
 const mainnet: ZapNetworkConfig = {
@@ -33,8 +42,12 @@ const mainnet: ZapNetworkConfig = {
   swapRouter02: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
   poolFee: 3000,
   collateralRouter: '0x01f80bb8e78e79881E8Ec7832fB6C2c59f64e353',
+  nativeRouter: '0xEc7096A3116EE769457C939617375Ec1785AA6f1',
   explorerTxUrl: (hash) => `https://etherscan.io/tx/${hash}`,
+  destinationTxUrl: (hash) => `https://mainnet.lightscan.app/tx/${hash}`,
   destinationAddressUrl: (address) => `https://mainnet.lightscan.app/address/${address}`,
+  sourceLogsApi: `https://api.etherscan.io/v2/api?chainid=1&apikey=${ETHERSCAN_API_KEY}`,
+  destinationLogsApi: 'https://mainnet.lightscan.app/api',
 };
 
 // Sepolia pool: 0x46E84fE79693235f98898341e237200e11282e61 (demo liquidity only). Route: hyperlane-bridge/testnet/configs.
@@ -51,8 +64,12 @@ const testnet: ZapNetworkConfig = {
   swapRouter02: '0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E',
   poolFee: 3000,
   collateralRouter: '0xa4d14290Cc01ec798a7852cB1b3b314ea8F992AF',
+  nativeRouter: '0x5Ff6b59Bf2eB5fD64176650011b0d74E8A55300b',
   explorerTxUrl: (hash) => `https://sepolia.etherscan.io/tx/${hash}`,
+  destinationTxUrl: (hash) => `https://testnet.lightscan.app/tx/${hash}`,
   destinationAddressUrl: (address) => `https://testnet.lightscan.app/address/${address}`,
+  sourceLogsApi: `https://api.etherscan.io/v2/api?chainid=11155111&apikey=${ETHERSCAN_API_KEY}`,
+  destinationLogsApi: 'https://testnet.lightscan.app/api',
 };
 
 export const ZAP = IS_TESTNET ? testnet : mainnet;
