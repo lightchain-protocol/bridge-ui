@@ -315,7 +315,9 @@ function TokenChip({
 }) {
   return (
     <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-[rgba(112,100,233,0.24)] bg-dark2 py-1.5 pl-1.5 pr-4">
-      <ChainLogo chainName={chainName} size={28} background />
+      <span className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dark [&_img]:size-full [&_svg]:size-full">
+        <ChainLogo chainName={chainName} size={28} />
+      </span>
       <div className="leading-tight">
         <div className="text-sm font-semibold text-contentBody">{symbol}</div>
         <div className="text-[11px] text-content-gray">{network}</div>
