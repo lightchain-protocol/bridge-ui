@@ -2,8 +2,7 @@ import { APP_DESCRIPTION, APP_NAME, APP_URL } from '../../../consts/app';
 import { config } from '../../../consts/config';
 
 export function getAppKitMetadata() {
-  const origin =
-    typeof window !== 'undefined' ? window.location.origin : `https://${APP_URL}`;
+  const origin = typeof window !== 'undefined' ? window.location.origin : `https://${APP_URL}`;
 
   return {
     name: APP_NAME,
@@ -16,8 +15,8 @@ export function getAppKitMetadata() {
 export function getAppKitProjectId() {
   if (config.walletConnectProjectId) return config.walletConnectProjectId;
 
-  // Public project ID for localhost testing only — create your own at dashboard.reown.com
-  if (config.isDevMode) return 'b56e18d47c72ab683b10814fe9495694';
+  // Lightchain AI project (dashboard.reown.com) — dev fallback only; prod must set the env var
+  if (config.isDevMode) return '675ab88c974b1d13ffc2fe0bc470bf1a';
 
   return '';
 }

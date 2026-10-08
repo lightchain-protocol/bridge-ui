@@ -1,11 +1,9 @@
 'use client';
 
-import { MultiProtocolWalletModal } from '@hyperlane-xyz/widgets';
 import { useAppKit } from '@reown/appkit/react';
 import Head from 'next/head';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { APP_NAME } from '../../consts/app';
-import { config } from '../../consts/config';
 import { initIntercom } from '../../features/analytics/intercom';
 import { initRefiner } from '../../features/analytics/refiner';
 import { EVENT_NAME } from '../../features/analytics/types';
@@ -24,14 +22,10 @@ import SoftAurora from '../ui/SoftAurora';
 
 export function AppLayout({ children }: PropsWithChildren) {
   const { open } = useAppKit();
-  const { showEnvSelectModal, setShowEnvSelectModal, isSideBarOpen, setIsSideBarOpen } = useStore(
-    (s) => ({
-      showEnvSelectModal: s.showEnvSelectModal,
-      setShowEnvSelectModal: s.setShowEnvSelectModal,
-      isSideBarOpen: s.isSideBarOpen,
-      setIsSideBarOpen: s.setIsSideBarOpen,
-    }),
-  );
+  const { isSideBarOpen, setIsSideBarOpen } = useStore((s) => ({
+    isSideBarOpen: s.isSideBarOpen,
+    setIsSideBarOpen: s.setIsSideBarOpen,
+  }));
   const [footerConfig, setFooterConfig] = useState<RawFooterConfig | null>(null);
   const [navConfig, setNavConfig] = useState<RawNavConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,14 +82,6 @@ export function AppLayout({ children }: PropsWithChildren) {
         {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>
 
-      <MultiProtocolWalletModal
-        isOpen={showEnvSelectModal}
-        close={() => setShowEnvSelectModal(false)}
-        protocols={config.walletProtocols}
-        onProtocolSelected={(protocol) =>
-          trackEvent(EVENT_NAME.WALLET_CONNECTION_INITIATED, { protocol })
-        }
-      />
       <SideBarMenu
         onClose={() => setIsSideBarOpen(false)}
         isOpen={isSideBarOpen}

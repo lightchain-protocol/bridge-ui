@@ -1,6 +1,6 @@
 import { ChainMap } from '@hyperlane-xyz/sdk';
-import { ProtocolType } from '@hyperlane-xyz/utils';
 import { ADDRESS_BLACKLIST } from './blacklist';
+import { IS_TESTNET } from './network';
 
 const isDevMode = process?.env?.NODE_ENV === 'development';
 const version = process?.env?.NEXT_PUBLIC_VERSION || '2.0.0';
@@ -30,7 +30,6 @@ interface Config {
   transferBlacklist: string; // comma-separated list of routes between which transfers are disabled. Expects Caip2Id-Caip2Id (e.g. ethereum:1-sealevel:1399811149)
   version: string; // Matches version number in package.json
   walletConnectProjectId: string; // Project ID provided by walletconnect
-  walletProtocols: ProtocolType[] | undefined; // Wallet Protocols to show in the wallet connect modal. Leave undefined to include all of them
   rpcOverrides: string; // JSON string containing a map of chain names to an object with an URL for RPC overrides (For an example check the .env.example file)
   enableTrackingEvents: boolean; // Allow tracking events to happen on some actions;
   featuredTokens: string[]; // List of featured tokens to prioritize in token picker (format: "chainName-symbol")
@@ -41,8 +40,8 @@ export const config: Config = Object.freeze({
   chainWalletWhitelists,
   enableExplorerLink: false,
   explorerApiUrl,
-  defaultOriginToken: 'ethereum-LCAI',
-  defaultDestinationToken: 'lcai-LCAI',
+  defaultOriginToken: IS_TESTNET ? 'sepolia-LCAI' : 'ethereum-LCAI',
+  defaultDestinationToken: IS_TESTNET ? 'lcaitestnet-LCAI' : 'lcai-LCAI',
   isDevMode,
   registryUrl,
   registryBranch,
@@ -51,14 +50,6 @@ export const config: Config = Object.freeze({
   version,
   transferBlacklist,
   walletConnectProjectId,
-  walletProtocols: [
-    ProtocolType.Ethereum,
-    // ProtocolType.Sealevel,
-    // ProtocolType.Cosmos,
-    // ProtocolType.Starknet,
-    // ProtocolType.Radix,
-    // ProtocolType.Aleo,
-  ],
   shouldDisableChains: false,
   rpcOverrides,
   enableTrackingEvents: false,

@@ -42,3 +42,7 @@ npm-debug.log*
 
 .opencode
 .sisyphus
+
+# local deploy keys, never commit
+testnetkey.txt
+*.key
