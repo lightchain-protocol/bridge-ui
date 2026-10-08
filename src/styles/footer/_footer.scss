@@ -112,16 +112,13 @@ p {
     var(--color-blacker)
   );
   .footer-top {
-    padding: 100px 0 !important;
-    padding-bottom: 70px;
+    padding-top: 100px !important;
     @media #{$sm-layout} {
-      padding: 50px 0 !important;
-      padding-bottom: 50px;
+      padding-top: 50px !important;
     }
   
     @media #{$md-layout, $lg-layout} {
-      padding: 70px 0 !important;
-      padding-bottom: 70px;
+      padding-top: 70px !important;
     }
     .lightchain-footer-widget {
       text-align: left;

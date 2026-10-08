@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { resolveTarget } from '../../utils/resolveTarget';
 import { socialIconMap } from '../../utils/socialIconMap';
+import FooterBottomAnimated from './FooterBottomAnimated';
 import SingleFooter from './props/SingleFooter';
 import type { RawFooterConfig } from './types/types';
+
 
 type Props = {
   rawFooter: RawFooterConfig;
@@ -43,8 +43,8 @@ const Footer = ({ rawFooter }: Props) => {
   ];
 
   return (
-    <footer className="lightchain-footer footer-style-default footer-style-3 position-relative variation-2 bg-one mt-0">
-      <div className="footer-top">
+    <footer className="lightchain-footer footer-style-default footer-style-3 position-relative variation-2 mt-0">
+      <div className="footer-top pb--0 bg-[#000000]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
             <SingleFooter data={services} />
@@ -52,27 +52,11 @@ const Footer = ({ rawFooter }: Props) => {
             <SingleFooter data={solutions} />
             <SingleFooter data={company} />
           </div>
-          <div className="separator-animated variation-2 height-1 animated-true mt_sm--20 mt--70 mb--30 mt_md--30 mb_md--20 sm--30 mb_sm--20"></div>
-          <div className="flex flex-wrap justify-between">
-            <div className="w-full md:w-1/2 lg:w-1/3">
-              <div className="lightchain-footer-widget">
-                <div className="logo inline-flex">
-                  <Link href="/">
-                    <Image src="/logo.svg" width={201} height={35} alt="Corporate Logo" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="w-full md:w-1/2 lg:w-1/3">
-              <p className="copyright-text mb-0">
-                Copyright © {new Date().getFullYear()}
-                <Link href="#" className="btn-read-more ps-2">
-                  <span>Lightchain Protocol</span>
-                </Link>
-              </p>
-            </div>
-          </div>
+          <div className="separator-animated variation-2 height-1 animated-true mt_sm--20 mt--70 mb--0 mt_md--30 mb_md--0 sm--30 mb_sm--0"></div>
+         
         </div>
+        
+        <FooterBottomAnimated />
       </div>
     </footer>
   );

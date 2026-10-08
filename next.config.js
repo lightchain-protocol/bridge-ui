@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 
+const path = require('path');
 const { version } = require('./package.json');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
@@ -11,14 +12,30 @@ const ENABLE_CSP_HEADER = true;
 const FRAME_SRC_HOSTS = [
   'https://*.walletconnect.com',
   'https://*.walletconnect.org',
+  'https://*.reown.com',
+  'https://secure.walletconnect.org',
   'https://cdn.solflare.com',
   'https://js.refiner.io',
   'https://intercom-sheets.com',
   'https://intercom-reporting.com',
 ];
-const STYLE_SRC_HOSTS = ['https://js.refiner.io', 'https://storage.refiner.io'];
+const STYLE_SRC_HOSTS = [
+  'https://js.refiner.io',
+  'https://storage.refiner.io',
+  'https://fonts.googleapis.com',
+  'https://fonts.reown.com',
+];
+const FONT_SRC_HOSTS = [
+  'https://js.intercomcdn.com',
+  'https://fonts.intercomcdn.com',
+  'https://res.cloudinary.com',
+  'https://fonts.gstatic.com',
+  'https://fonts.reown.com',
+  'https://fonts.googleapis.com'
+];
 const IMG_SRC_HOSTS = [
   'https://*.walletconnect.com',
+  'https://*.reown.com',
   'https://*.githubusercontent.com',
   'https://cdn.jsdelivr.net/gh/hyperlane-xyz/hyperlane-registry@main/',
   'https://js.refiner.io',
@@ -44,11 +61,11 @@ const MEDIA_SRC_HOSTS = [
 ];
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ''} ${SCRIPT_SRC_HOSTS.join(' ')};
+  script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} ${SCRIPT_SRC_HOSTS.join(' ')};
   style-src 'self' 'unsafe-inline' ${STYLE_SRC_HOSTS.join(' ')};
   connect-src *;
   img-src 'self' blob: data: ${IMG_SRC_HOSTS.join(' ')};
-  font-src 'self' data: https://js.intercomcdn.com https://fonts.intercomcdn.com;
+  font-src 'self' data: ${FONT_SRC_HOSTS.join(' ')};
   object-src 'none';
   base-uri 'self';
   form-action 'self';
@@ -78,19 +95,33 @@ const securityHeaders = [
     key: 'Referrer-Policy',
     value: 'strict-origin-when-cross-origin',
   },
+  // Required for AppKit wallet popups (WalletConnect, OAuth)
+  {
+    key: 'Cross-Origin-Opener-Policy',
+    value: 'same-origin-allow-popups',
+  },
   // Note, causes a problem for firefox: https://github.com/MetaMask/metamask-extension/issues/3133
   ...(ENABLE_CSP_HEADER
     ? [
-        {
-          key: 'Content-Security-Policy',
-          value: cspHeader,
-        },
-      ]
+      {
+        key: 'Content-Security-Policy',
+        value: cspHeader,
+      },
+    ]
     : []),
 ];
 
 const nextConfig = {
   webpack(config, { isServer }) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@rainbow-me/rainbowkit': path.resolve(__dirname, 'src/vendor/rainbowkit-shim.ts'),
+    };
+
+    if (!isServer) {
+      config.externals.push('pino-pretty', 'lokijs', 'encoding');
+    }
+
     config.module.rules.push({
       test: /\.ya?ml$/,
       use: 'yaml-loader',

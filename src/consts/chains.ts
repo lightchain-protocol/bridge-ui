@@ -1,11 +1,12 @@
 import { ChainMap, ChainMetadata, ExplorerFamily } from '@hyperlane-xyz/sdk';
 import { ProtocolType } from '@hyperlane-xyz/utils';
+import { IS_TESTNET } from './network';
 
 // A map of chain names to ChainMetadata
 // Chains can be defined here, in chains.json, or in chains.yaml
 // Chains already in the SDK need not be included here unless you want to override some fields
 // Schema here: https://github.com/hyperlane-xyz/hyperlane-monorepo/blob/main/typescript/sdk/src/metadata/chainMetadataTypes.ts
-export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
+const mainnetChains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   // solanamainnet: {
   //   ...solanamainnet,
   //   // SVM chains require mailbox addresses for the token adapters
@@ -27,6 +28,96 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   //   ...solaxy,
   //   mailbox: solaxyAddresses.mailbox,
   // },
+  ethereum: {
+    blockExplorers: [
+      {
+        apiKey: 'GP69JEAP2W7YFJT9ZJTEPGQT6Y6KMW44ZN',
+        apiUrl: 'https://api.etherscan.io/v2/api?chainid=1',
+        family: ExplorerFamily.Etherscan,
+        name: 'Etherscan',
+        url: 'https://etherscan.io',
+      },
+      {
+        apiUrl: 'https://eth.blockscout.com/api',
+        family: ExplorerFamily.Blockscout,
+        name: 'Blockscout',
+        url: 'https://blockscout.com/eth/mainnet',
+      },
+      {
+        apiUrl: 'https://api.routescan.io/v2/network/mainnet/evm/1/etherscan/api',
+        family: ExplorerFamily.Routescan,
+        name: 'Ethereum Explorer',
+        url: 'https://1.routescan.io',
+      },
+    ],
+    blocks: {
+      confirmations: 2,
+      estimateBlockTime: 14,
+      reorgPeriod: 2,
+    },
+    chainId: 1,
+    deployer: {
+      name: 'Abacus Works',
+      url: 'https://www.hyperlane.xyz',
+    },
+    displayName: 'Ethereum',
+    domainId: 1,
+    gasCurrencyCoinGeckoId: 'ethereum',
+    gnosisSafeTransactionServiceUrl: 'https://safe-transaction-mainnet.safe.global/',
+    name: 'ethereum',
+    nativeToken: {
+      decimals: 18,
+      name: 'Ether',
+      symbol: 'ETH',
+    },
+    protocol: ProtocolType.Ethereum,
+    rpcUrls: [
+      {
+        http: 'https://ethereum.publicnode.com',
+      },
+      {
+        http: 'https://eth.drpc.org',
+      },
+      {
+        http: 'https://rpc.flashbots.net',
+      },
+      {
+        http: 'https://eth.blockrazor.xyz',
+      },
+      {
+        http: 'https://eth-pokt.nodies.app',
+      },
+    ],
+    logoURI: '/logos/eth.png',
+    mailbox: '0x287cf56E5b1435Ae59BF9Ce6443F055A0321a063',
+  },
+  lcai: {
+    protocol: ProtocolType.Ethereum,
+    chainId: 9200,
+    domainId: 9200,
+    name: 'lcai',
+    displayName: 'LightchainAI',
+    nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
+    rpcUrls: [{ http: 'https://rpc.mainnet.lightchain.ai' }],
+    blockExplorers: [
+      {
+        name: 'LightchainAI Explorer',
+        url: 'https://mainnet.lightscan.app',
+        apiUrl: 'https://mainnet.lightscan.app/api',
+        family: ExplorerFamily.Blockscout,
+      },
+    ],
+    blocks: {
+      confirmations: 1,
+      reorgPeriod: 1,
+      estimateBlockTime: 7,
+    },
+    logoURI: '/logos/lcai.png',
+    mailbox: '0x142a9CEf00ACcAddB76283c49A1Bf37f20c1F00e',
+  },
+};
+
+const testnetChains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   sepolia: {
     blockExplorers: [
       {
@@ -59,15 +150,9 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     },
     protocol: ProtocolType.Ethereum,
     rpcUrls: [
-      {
-        http: 'https://ethereum-sepolia.publicnode.com',
-      },
-      {
-        http: 'https://ethereum-sepolia.blockpi.network/v1/rpc/public',
-      },
-      {
-        http: 'https://rpc.sepolia.org',
-      },
+      { http: 'https://ethereum-sepolia.publicnode.com' },
+      { http: 'https://ethereum-sepolia.blockpi.network/v1/rpc/public' },
+      { http: 'https://rpc.sepolia.org' },
     ],
     logoURI: '/logos/eth.png',
     mailbox: '0x3746b02CDfE03e6Fd4Bd1EE864f2ea79a1DE1DE2',
@@ -77,7 +162,8 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     chainId: 8200,
     domainId: 8200,
     name: 'lcaitestnet',
-    displayName: 'LightchainAI',
+    displayName: 'LightchainAI Testnet',
+    isTestnet: true,
     nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
     rpcUrls: [{ http: 'https://rpc.testnet.lightchain.ai' }],
     blockExplorers: [
@@ -97,6 +183,8 @@ export const chains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     mailbox: '0x39AF7e7967e45f6dbdA1559885bDF432Fd20288e',
   },
 };
+
+export const chains = IS_TESTNET ? testnetChains : mainnetChains;
 
 // rent account payment for (mostly for) SVM chains added on top of IGP,
 // not exact but should be pretty close to actual payment

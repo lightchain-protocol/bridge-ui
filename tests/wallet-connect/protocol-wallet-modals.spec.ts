@@ -30,27 +30,17 @@ test.describe('Wallet Connect - Protocol Modals', () => {
     await page.getByText('Send').first().waitFor({ state: 'visible' });
   });
 
-  test('EVM: should show RainbowKit modal for Ethereum', async ({ page }) => {
+  test('EVM: should show AppKit modal for Ethereum', async ({ page }) => {
     // Default origin is Ethereum (EVM) - click the main Connect wallet button
     await page
       .getByRole('main')
       .getByRole('button', { name: 'Connect wallet', exact: true })
       .click();
 
-    const dialog = page.getByRole('dialog', { name: 'Connect a Wallet' });
+    const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
-    await expect(
-      dialog.getByRole('heading', { name: 'Connect a Wallet' }),
-    ).toBeVisible();
-    await expect(
-      dialog.getByRole('button', { name: 'MetaMask' }),
-    ).toBeVisible();
-    await expect(
-      dialog.getByRole('button', { name: 'WalletConnect' }),
-    ).toBeVisible();
-    await expect(
-      dialog.getByRole('button', { name: 'Coinbase Wallet' }),
-    ).toBeVisible();
+    await expect(dialog.getByText('MetaMask', { exact: true })).toBeVisible();
+    await expect(dialog.getByText('WalletConnect', { exact: true })).toBeVisible();
 
     // Close
     await dialog.getByRole('button', { name: 'Close' }).click();

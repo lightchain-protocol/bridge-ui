@@ -1,16 +1,57 @@
+import clsx from 'clsx';
+import { useState } from 'react';
+import { ZapForm } from '../zap/ZapForm';
 import { TransferTokenForm } from './TransferTokenForm';
-import { Card } from '../../components/layout/Card';
+
+type Tab = 'buy' | 'bridge';
+
+const TABS: Array<{ id: Tab; label: string; hint: string }> = [
+  { id: 'buy', label: 'Buy & Bridge', hint: 'ETH → LCAI on Lightchain, one transaction' },
+  { id: 'bridge', label: 'Bridge', hint: 'Move LCAI you already hold' },
+];
 
 export function TransferTokenCard() {
+  const [tab, setTab] = useState<Tab>('buy');
+
   return (
-    <div className="sm:w-[664px] border border-[rgba(112,100,233,0.24)] rounded-xl relative">
-      <div className="absolute left-3.5 top-3.5 w-[calc(100%-28px)] h-[calc(100%-28px)] rounded-[790px] bg-[linear-gradient(90deg,_#2765FF_0%,_#BA2AF9_100%)] blur-[100px]bg-[linear-gradient(90deg,_#2765FF_0%,_#BA2AF9_100%)] blur-[100px]"></div>
-      <div className="bg-darker2 py-6 px-3 rounded-t-xl relative z-[2]">
-        <h1 className="text-contentBody text-center text-2xl font-semibold leading-[1.3]">LCAI Bridge</h1>
+    <div className="relative w-full min-w-0 max-w-full sm:w-[520px]">
+      {/* Glow behind the card */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-6 -z-10 rounded-[32px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(221,0,172,0.18),transparent_70%)] blur-2xl"
+      />
+      <div className="min-w-0 rounded-3xl border border-[rgba(112,100,233,0.22)] bg-dark/80 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+        <div className="flex flex-col gap-3 px-4 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <h1 className="text-lg font-semibold tracking-tight text-contentBody">LCAI Bridge</h1>
+          <div
+            role="tablist"
+            className="flex self-start rounded-full border border-[rgba(112,100,233,0.2)] bg-darker2 p-1"
+          >
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                role="tab"
+                type="button"
+                aria-selected={tab === t.id}
+                title={t.hint}
+                onClick={() => setTab(t.id)}
+                className={clsx(
+                  'rounded-full px-4 py-1.5 text-sm font-medium transition-all',
+                  tab === t.id
+                    ? 'bg-dark2 text-contentBody shadow-[inset_0_0_0_1px_rgba(112,100,233,0.35)]'
+                    : 'text-content-gray hover:text-contentBody',
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="px-4 pt-1 text-xs text-content-gray sm:px-6">
+          {TABS.find((t) => t.id === tab)?.hint}
+        </p>
+        <div className="p-4 sm:p-6">{tab === 'buy' ? <ZapForm /> : <TransferTokenForm />}</div>
       </div>
-      <Card className="rounded-b-xl">
-        <TransferTokenForm />
-      </Card>
     </div>
   );
 }
