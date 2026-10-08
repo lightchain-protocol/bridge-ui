@@ -1,13 +1,13 @@
 import type { ChainName } from '@hyperlane-xyz/sdk';
 import { fromWei, normalizeAddress } from '@hyperlane-xyz/utils';
-import { AccountList, RefreshIcon, SpinnerIcon, useAccounts } from '@hyperlane-xyz/widgets';
+import { AccountList, SpinnerIcon, useAccounts } from '@hyperlane-xyz/widgets';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { LuHistory, LuRefreshCw, LuWallet, LuX } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 import { ChainLogo } from '../../components/icons/ChainLogo';
 import { config } from '../../consts/config';
 import ArrowRightIcon from '../../images/icons/arrow-right.svg';
-import CollapseIcon from '../../images/icons/collapse-icon.svg';
 import { useMultiProvider } from '../chains/hooks';
 import { getChainDisplayName } from '../chains/utils';
 import { MessageStatus } from '../messages/types';
@@ -142,62 +142,85 @@ export function SideBarMenu({
 
   return (
     <>
+      {/* Backdrop */}
       <div
-        className={`hpl-sidebar fixed right-0 top-0 h-full w-88 transform bg-primary-900 shadow-lg transition-transform duration-100 ease-in ${
-          isMenuOpen ? 'z-[99] translate-x-0' : 'z-0 translate-x-full'
+        aria-hidden
+        onClick={() => onClose()}
+        className={`fixed inset-0 z-[98] bg-black/50 backdrop-blur-[2px] transition-opacity duration-200 ${
+          isMenuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+      />
+      <aside
+        role="dialog"
+        aria-label="Wallet and transfer history"
+        className={`hpl-sidebar fixed right-0 top-0 z-[99] flex h-full w-full max-w-[400px] flex-col border-l border-[rgba(112,100,233,0.22)] bg-dark/90 shadow-[-24px_0_80px_rgba(0,0,0,0.55)] backdrop-blur-xl transition-transform duration-200 ease-out sm:my-3 sm:h-[calc(100%-1.5rem)] sm:rounded-l-3xl sm:border ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {isMenuOpen && (
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pb-3 pt-5">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-contentBody">Wallet</h2>
+            <p className="text-xs text-content-gray">Connected accounts and transfer history</p>
+          </div>
           <button
-            className="hpl-sidebar-btn absolute left-0 top-0 flex h-full w-9 -translate-x-full items-center justify-center rounded-l-md transition-all hover:bg-opacity-80"
+            type="button"
             onClick={() => onClose()}
+            title="Close"
+            className="flex size-9 items-center justify-center rounded-full border border-[rgba(112,100,233,0.24)] bg-dark2 text-content-gray transition-colors hover:text-contentBody"
           >
-            <Image src={CollapseIcon} width={15} height={24} alt="" />
+            <LuX className="size-4" />
           </button>
-        )}
+        </div>
+
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex h-full w-full flex-col overflow-y-auto pt-4"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-5"
         >
-          <div className="hpl-sidebar-title w-full rounded-t-md px-3.5 py-2 text-base font-medium text-primary-100">
-            Connected Wallets
-          </div>
-          <AccountList
-            multiProvider={multiProvider}
-            onClickConnectWallet={onClickConnectWallet}
-            onCopySuccess={onCopySuccess}
-            className="hpl-sidebar-list space-y-3 px-3 py-3"
-            chainName={originChainName}
-          />
-          <div className="hpl-sidebar-title mb-4 flex w-full items-center justify-between px-3.5 py-2 text-primary-100">
-            <span className="text-base font-medium"> 
-              Transfer History
-            </span>
+          {/* Accounts */}
+          <section className="rounded-2xl border border-[rgba(112,100,233,0.16)] bg-darker2/80 p-3">
+            <div className="mb-2 flex items-center gap-2 px-1 text-xs font-medium uppercase tracking-wide text-content-gray">
+              <LuWallet className="size-3.5" />
+              Connected wallets
+            </div>
+            <AccountList
+              multiProvider={multiProvider}
+              onClickConnectWallet={onClickConnectWallet}
+              onCopySuccess={onCopySuccess}
+              className="hpl-sidebar-list space-y-2"
+              chainName={originChainName}
+            />
+          </section>
+
+          {/* History */}
+          <div className="mb-2 mt-5 flex items-center justify-between px-1">
+            <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-content-gray">
+              <LuHistory className="size-3.5" />
+              Transfer history
+            </div>
             <button
+              type="button"
               onClick={refresh}
               disabled={isLoading}
-              className="rounded-md p-1 text-primary-100 transition-colors hover:bg-primary-700 disabled:opacity-50"
+              className="flex size-7 items-center justify-center rounded-full text-content-gray transition-colors hover:bg-dark2 hover:text-contentBody disabled:opacity-50"
               title="Refresh"
             >
-              <RefreshIcon
-                width={20}
-                height={20}
-                color="white"
-                className={isLoading ? 'animate-spin' : ''}
-              />
+              <LuRefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
           </div>
-          <div className="flex grow flex-col px-3.5 pb-4">
+          <div className="flex grow flex-col">
             {isRefreshing ? (
               <div className="flex justify-center py-6">
                 <SpinnerIcon className="h-5 w-5" />
               </div>
             ) : (
               <>
-                <div className="flex w-full grow flex-col divide-y">
+                <div className="flex w-full grow flex-col gap-2">
                   {mergedTransfers.length === 0 && !isLoading && (
-                    <div className="py-6 text-center text-sm text-content-gray">No transfers yet</div>
+                    <div className="rounded-2xl border border-dashed border-[rgba(112,100,233,0.2)] py-8 text-center text-sm text-content-gray">
+                      No transfers yet
+                    </div>
                   )}
                   {mergedTransfers.map((item) => (
                     <TransferSummary
@@ -226,7 +249,7 @@ export function SideBarMenu({
             )}
           </div>
         </div>
-      </div>
+      </aside>
       {selectedTransfer && (
         <TransfersDetailsModal
           isOpen={isModalOpen}
@@ -376,5 +399,5 @@ function LocalTransferSummary({
 }
 
 const styles = {
-  btn: 'w-full flex cursor-pointer items-center rounded-lg border border-border-soft bg-surface-base-soft px-3 py-2 text-sm transition-all duration-300 hover:bg-primary-800 active:scale-95',
+  btn: 'w-full flex cursor-pointer items-center rounded-2xl border border-[rgba(112,100,233,0.16)] bg-darker2/80 px-3 py-2 text-sm transition-all duration-200 hover:border-[rgba(112,100,233,0.4)] hover:bg-dark2 active:scale-[0.99]',
 };

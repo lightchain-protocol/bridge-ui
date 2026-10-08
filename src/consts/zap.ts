@@ -15,7 +15,8 @@ interface ZapNetworkConfig {
   swapRouter02: Address;
   poolFee: number;
   collateralRouter: Address; // Hyperlane HypERC20Collateral for LCAI
-  explorerTxUrl: (hash: string) => string;
+  explorerTxUrl: (hash: string) => string; // source-chain tx
+  destinationAddressUrl: (address: string) => string; // Lightscan page where the LCAI lands
 }
 
 // Mainnet pool: 0x0d047a370611437a1b8e6c2a95ea36f69fdda3be. Route: hyperlane-bridge/lcai/configs.
@@ -33,6 +34,7 @@ const mainnet: ZapNetworkConfig = {
   poolFee: 3000,
   collateralRouter: '0x01f80bb8e78e79881E8Ec7832fB6C2c59f64e353',
   explorerTxUrl: (hash) => `https://etherscan.io/tx/${hash}`,
+  destinationAddressUrl: (address) => `https://mainnet.lightscan.app/address/${address}`,
 };
 
 // Sepolia pool: 0x46E84fE79693235f98898341e237200e11282e61 (demo liquidity only). Route: hyperlane-bridge/testnet/configs.
@@ -50,6 +52,7 @@ const testnet: ZapNetworkConfig = {
   poolFee: 3000,
   collateralRouter: '0xa4d14290Cc01ec798a7852cB1b3b314ea8F992AF',
   explorerTxUrl: (hash) => `https://sepolia.etherscan.io/tx/${hash}`,
+  destinationAddressUrl: (address) => `https://testnet.lightscan.app/address/${address}`,
 };
 
 export const ZAP = IS_TESTNET ? testnet : mainnet;

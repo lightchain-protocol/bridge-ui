@@ -160,9 +160,11 @@ export function ZapForm() {
           <ExternalLinkButton href={ZAP.explorerTxUrl(txHash)}>
             Etherscan
           </ExternalLinkButton>
-          <ExternalLinkButton href={`https://explorer.hyperlane.xyz/?search=${txHash}`}>
-            Hyperlane Explorer
-          </ExternalLinkButton>
+          {recipient && (
+            <ExternalLinkButton href={ZAP.destinationAddressUrl(recipient)}>
+              Lightscan
+            </ExternalLinkButton>
+          )}
         </div>
         <PrimaryButton
           onClick={() => {
