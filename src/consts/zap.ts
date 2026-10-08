@@ -15,7 +15,8 @@ interface ZapNetworkConfig {
   swapRouter02: Address;
   poolFee: number;
   collateralRouter: Address; // Hyperlane HypERC20Collateral for LCAI
-  explorerTxUrl: (hash: string) => string;
+  explorerTxUrl: (hash: string) => string; // source-chain tx
+  destinationAddressUrl: (address: string) => string; // Lightscan page where the LCAI lands
 }
 
 // Mainnet pool: 0x0d047a370611437a1b8e6c2a95ea36f69fdda3be. Route: hyperlane-bridge/lcai/configs.
@@ -33,6 +34,7 @@ const mainnet: ZapNetworkConfig = {
   poolFee: 3000,
   collateralRouter: '0x01f80bb8e78e79881E8Ec7832fB6C2c59f64e353',
   explorerTxUrl: (hash) => `https://etherscan.io/tx/${hash}`,
+  destinationAddressUrl: (address) => `https://mainnet.lightscan.app/address/${address}`,
 };
 
 // Sepolia pool: 0x46E84fE79693235f98898341e237200e11282e61 (demo liquidity only). Route: hyperlane-bridge/testnet/configs.
@@ -50,6 +52,7 @@ const testnet: ZapNetworkConfig = {
   poolFee: 3000,
   collateralRouter: '0xa4d14290Cc01ec798a7852cB1b3b314ea8F992AF',
   explorerTxUrl: (hash) => `https://sepolia.etherscan.io/tx/${hash}`,
+  destinationAddressUrl: (address) => `https://testnet.lightscan.app/address/${address}`,
 };
 
 export const ZAP = IS_TESTNET ? testnet : mainnet;
@@ -65,10 +68,11 @@ export const LCAI_POOL_FEE = ZAP.poolFee;
 export const LCAI_COLLATERAL_ROUTER = ZAP.collateralRouter;
 
 // LcaiZap contract (lcai-smart-contract/contracts/LcaiZap.sol).
-// Testnet: deployed on Sepolia (lcai-smart-contract#17). Mainnet: unset until deployed; env var overrides either.
-const TESTNET_ZAP_ADDRESS: Address = '0xEdeCE82309F12a1cb17eEe9DdDF095e845aEC49e';
+// Deployed via Ignition (lcai-smart-contract, ignition/deployments/lcai-zap-*). Env var overrides either.
+const TESTNET_ZAP_ADDRESS: Address = '0xEdeCE82309F12a1cb17eEe9DdDF095e845aEC49e'; // Sepolia
+const MAINNET_ZAP_ADDRESS: Address = '0x91961D28700c6524C74C4C660A3EA236550d0b27'; // Ethereum
 export const LCAI_ZAP_ADDRESS = (process?.env?.NEXT_PUBLIC_LCAI_ZAP_ADDRESS ||
-  (IS_TESTNET ? TESTNET_ZAP_ADDRESS : '')) as Address | '';
+  (IS_TESTNET ? TESTNET_ZAP_ADDRESS : MAINNET_ZAP_ADDRESS)) as Address;
 
 export const ZAP_SLIPPAGE_BPS = 100; // 1%
 export const ZAP_DEADLINE_SECONDS = 20 * 60;
