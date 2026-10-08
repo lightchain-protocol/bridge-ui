@@ -64,8 +64,11 @@ export const UNISWAP_SWAP_ROUTER_02 = ZAP.swapRouter02;
 export const LCAI_POOL_FEE = ZAP.poolFee;
 export const LCAI_COLLATERAL_ROUTER = ZAP.collateralRouter;
 
-// LcaiZap contract (lcai-smart-contract/contracts/LcaiZap.sol). Unset until deployed on the target network.
-export const LCAI_ZAP_ADDRESS = (process?.env?.NEXT_PUBLIC_LCAI_ZAP_ADDRESS || '') as Address | '';
+// LcaiZap contract (lcai-smart-contract/contracts/LcaiZap.sol).
+// Testnet: deployed on Sepolia (lcai-smart-contract#17). Mainnet: unset until deployed; env var overrides either.
+const TESTNET_ZAP_ADDRESS: Address = '0xEdeCE82309F12a1cb17eEe9DdDF095e845aEC49e';
+export const LCAI_ZAP_ADDRESS = (process?.env?.NEXT_PUBLIC_LCAI_ZAP_ADDRESS ||
+  (IS_TESTNET ? TESTNET_ZAP_ADDRESS : '')) as Address | '';
 
 export const ZAP_SLIPPAGE_BPS = 100; // 1%
 export const ZAP_DEADLINE_SECONDS = 20 * 60;
