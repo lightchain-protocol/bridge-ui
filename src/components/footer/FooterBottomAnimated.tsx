@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import PixelBlast from "../ui/PixelBlast";
-import TextPressure from "../ui/TextPressure";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import PixelBlast from '../ui/PixelBlast';
+import TextPressure from '../ui/TextPressure';
 
 type TitleScale = { letterSpacing: number; minFontSize: number };
 
@@ -26,8 +26,8 @@ function useFooterTitleScale(): TitleScale {
       }
     };
     sync();
-    window.addEventListener("resize", sync);
-    return () => window.removeEventListener("resize", sync);
+    window.addEventListener('resize', sync);
+    return () => window.removeEventListener('resize', sync);
   }, []);
 
   return scale;
@@ -37,16 +37,16 @@ export default function FooterBottomAnimated() {
   const { letterSpacing, minFontSize } = useFooterTitleScale();
 
   return (
-    <div className="footer-bottom-animated relative isolate z-2 w-full overflow-hidden">
-      <div className="container mx-auto border-0 px-4 pb-4 pt-4 sm:pb-8 lg:pt-10 xl:pb-4 relative z-11">
-        <p className="mb--0 text-center text-base font-medium text-content-default">
-          Copyright © 2026{" "}
+    <div className="footer-bottom-animated z-2 relative isolate w-full overflow-hidden">
+      <div className="z-11 container relative mx-auto border-0 px-4 pb-4 pt-4 sm:pb-8 lg:pt-10 xl:pb-4">
+        <p className="text-content-default mb--0 text-center text-base font-medium">
+          Copyright © 2026{' '}
           <Link href="/" className="text-content-strong lcai-link-hover">
             Lightchain Protocol
           </Link>
         </p>
       </div>
-      <div className="relative z-10 mx-auto flex h-[90px] w-full max-w-[300px] min-w-0 items-center justify-center px-4 sm:h-[110px] sm:max-w-[500px] sm:px-8 md:h-[150px] md:px-12 lg:h-[200px] lg:max-w-[1000px] 2xl:h-[300px] 2xl:max-w-[1500px]">
+      <div className="relative z-10 mx-auto flex h-[90px] w-full min-w-0 max-w-[300px] items-center justify-center px-4 sm:h-[110px] sm:max-w-[500px] sm:px-8 md:h-[150px] md:px-12 lg:h-[200px] lg:max-w-[1000px] 2xl:h-[300px] 2xl:max-w-[1500px]">
         <TextPressure
           text="Lightchain"
           flex={false}

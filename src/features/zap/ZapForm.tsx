@@ -157,9 +157,7 @@ export function ZapForm() {
           </p>
         </div>
         <div className="flex gap-3 text-sm">
-          <ExternalLinkButton href={ZAP.explorerTxUrl(txHash)}>
-            Etherscan
-          </ExternalLinkButton>
+          <ExternalLinkButton href={ZAP.explorerTxUrl(txHash)}>Etherscan</ExternalLinkButton>
           {recipient && (
             <ExternalLinkButton href={ZAP.destinationAddressUrl(recipient)}>
               Lightscan

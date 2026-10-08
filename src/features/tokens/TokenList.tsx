@@ -267,7 +267,9 @@ export function TokenList({
 
           {isLimited && (
             <div className="mx-1 mb-3 mt-2 rounded-lg border border-[rgba(112,100,233,0.20)] bg-primary-800 px-3 py-4 text-center">
-              <p className="text-sm text-contentBody">Search or select a chain to see more tokens</p>
+              <p className="text-sm text-contentBody">
+                Search or select a chain to see more tokens
+              </p>
             </div>
           )}
           {/* Spacer for fade effect */}
@@ -275,7 +277,7 @@ export function TokenList({
         </div>
       </div>
       {/* Bottom fade effect */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 hidden h-12 bg-gradient-to-b from-transparent to-darker2 md:block rounded-b-xl" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 hidden h-12 rounded-b-xl bg-gradient-to-b from-transparent to-darker2 md:block" />
     </div>
   );
 }
@@ -328,7 +330,9 @@ const TokenButton = React.memo(function TokenButton({
 
       <div className="ml-3 min-w-0 flex-1 text-left">
         <div className="flex items-center gap-2">
-          <span className={`${styles.base} text-base text-contentBody`}>{token.symbol || 'Unknown'}</span>
+          <span className={`${styles.base} text-base text-contentBody`}>
+            {token.symbol || 'Unknown'}
+          </span>
           <span className="text-xs text-content-gray">{chainDisplayName}</span>
         </div>
         <div className={`${styles.base} mt-0.5 truncate text-xs text-content-gray`}>
@@ -341,7 +345,9 @@ const TokenButton = React.memo(function TokenButton({
           <div className="mb-1 ml-auto h-4 w-14 animate-pulse rounded bg-primary-800" />
         ) : primaryValue ? (
           <>
-            <div className={`${styles.base} text-sm font-medium text-contentBody`}>{primaryValue}</div>
+            <div className={`${styles.base} text-sm font-medium text-contentBody`}>
+              {primaryValue}
+            </div>
             {secondaryValue && (
               <div className={`${styles.base} text-xs text-content-gray`}>{secondaryValue}</div>
             )}

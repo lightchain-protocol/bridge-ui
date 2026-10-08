@@ -14,31 +14,31 @@ function isNearViewport(element: Element, margin: number) {
 export function createAnimationVisibilityController(
   element: Element,
   onChange: (isVisible: boolean) => void,
-  margin = 320
+  margin = 320,
 ): VisibilityCleanup {
   let isInViewport = isNearViewport(element, margin);
 
   const update = () => {
-    onChange(isInViewport && document.visibilityState !== "hidden");
+    onChange(isInViewport && document.visibilityState !== 'hidden');
   };
 
   const observer =
-    typeof IntersectionObserver === "undefined"
+    typeof IntersectionObserver === 'undefined'
       ? null
       : new IntersectionObserver(
           ([entry]) => {
             isInViewport = entry.isIntersecting;
             update();
           },
-          { rootMargin: `${margin}px` }
+          { rootMargin: `${margin}px` },
         );
 
   observer?.observe(element);
-  document.addEventListener("visibilitychange", update);
+  document.addEventListener('visibilitychange', update);
   update();
 
   return () => {
     observer?.disconnect();
-    document.removeEventListener("visibilitychange", update);
+    document.removeEventListener('visibilitychange', update);
   };
 }

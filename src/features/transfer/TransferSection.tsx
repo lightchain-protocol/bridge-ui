@@ -5,7 +5,5 @@ type TransferSectionProps = {
 };
 
 export function TransferSection({ children }: TransferSectionProps) {
-  return (
-      <div className="flex flex-col gap-3">{children}</div>
-  );
+  return <div className="flex flex-col gap-3">{children}</div>;
 }

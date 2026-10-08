@@ -15,20 +15,20 @@
   z-index: 99;
   position: relative;
   .header-wrapper {
-      padding: 0 50px;
-  
-      @media #{$laptop-device} {
-        padding: 0 30px;
-      }
-  
-      @media #{$smlg-device} {
-        padding: 0 20px;
-      }
-  
-      @media #{$sm-layout} {
-        padding: 0 10px;
-      }
+    padding: 0 50px;
+
+    @media #{$laptop-device} {
+      padding: 0 30px;
     }
+
+    @media #{$smlg-device} {
+      padding: 0 20px;
+    }
+
+    @media #{$sm-layout} {
+      padding: 0 10px;
+    }
+  }
   .logo {
     a {
       display: flex;
@@ -136,7 +136,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 100%;
-  i{
+  i {
     margin-bottom: 3px;
     margin-left: 1px;
   }

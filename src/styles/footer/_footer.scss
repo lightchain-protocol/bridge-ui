@@ -4,14 +4,14 @@
     Footer Style Here
 ------------------------*/
 p {
-    font-size: var(--font-size-b2);
-    line-height: var(--line-height-b2);
-    font-weight: var(--p-regular);
-    color: var(--color-body);
-    margin: 0 0 30px;
+  font-size: var(--font-size-b2);
+  line-height: var(--line-height-b2);
+  font-weight: var(--p-regular);
+  color: var(--color-body);
+  margin: 0 0 30px;
 }
 .footer-style-3 .copyright-text {
-    text-align: right;
+  text-align: right;
 }
 .logo {
   a {
@@ -35,11 +35,7 @@ p {
     from(var(--color-black)),
     to(var(--color-blacker))
   );
-  background-image: linear-gradient(
-    0deg,
-    var(--color-black),
-    var(--color-blacker)
-  );
+  background-image: linear-gradient(0deg, var(--color-black), var(--color-blacker));
   .footer-top {
     padding: 120px 0;
     .lightchain-footer-widget {
@@ -106,17 +102,13 @@ p {
     from(var(--color-black)),
     to(var(--color-blacker))
   );
-  background-image: linear-gradient(
-    0deg,
-    var(--color-black),
-    var(--color-blacker)
-  );
+  background-image: linear-gradient(0deg, var(--color-black), var(--color-blacker));
   .footer-top {
     padding-top: 100px !important;
     @media #{$sm-layout} {
       padding-top: 50px !important;
     }
-  
+
     @media #{$md-layout, $lg-layout} {
       padding-top: 70px !important;
     }
@@ -242,7 +234,6 @@ p {
   }
 
   &.variation-2 {
-
     .footer-top,
     .copyright-style-one {
       background: transparent;
@@ -250,7 +241,7 @@ p {
   }
 
   &.bg-one {
-    background: url("../../images/bg/footer-bg-01.png") no-repeat center center / cover !important;
+    background: url('../../images/bg/footer-bg-01.png') no-repeat center center / cover !important;
   }
 }
 
@@ -280,12 +271,12 @@ p {
   text-align: left;
 }
 .footer-style-default .footer-top .lightchain-footer-widget .title {
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 20px;
-    color: var(--color-heading);
-    line-height: 1.25;
-    font-family: var(--secondary-font);
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: var(--color-heading);
+  line-height: 1.25;
+  font-family: var(--secondary-font);
 }
 .separator-animated {
   position: relative;
@@ -302,7 +293,7 @@ p {
 
   &.animated-true {
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       width: 3%;
       height: 100%;
@@ -338,7 +329,7 @@ p {
     transition: 0.3s;
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       bottom: 0;
       left: 0;
@@ -351,7 +342,7 @@ p {
 
     &::before {
       position: absolute;
-      content: "";
+      content: '';
       left: auto;
       bottom: 2px;
       background: var(--color-primary);
@@ -374,8 +365,8 @@ p {
   }
 }
 .bg-flashlight-static {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 .lcai-icon-box {
   height: 30px;
@@ -393,7 +384,7 @@ p {
         width: 14px;
         height: 14px;
         border-radius: 23.11px;
-        background: linear-gradient(180deg, #5B4BFF 0%, #FFF 100%);
+        background: linear-gradient(180deg, #5b4bff 0%, #fff 100%);
         filter: blur(5px);
       }
     }
@@ -416,30 +407,30 @@ p {
   }
 }
 footer {
-.link-hover {
-  a {
-    display: inline-block;
-    position: relative;
-    &::after {
-      position: absolute;
-      content: "";
-      left: auto;
-      bottom: 0;
-      background: currentColor;
-      width: 0;
-      height: 2px;
-      transition: 0.3s;
-      right: 0;
-    }
-    &:hover {
+  .link-hover {
+    a {
+      display: inline-block;
+      position: relative;
       &::after {
-        width: 100%;
-        left: 0;
-        right: auto;
+        position: absolute;
+        content: '';
+        left: auto;
+        bottom: 0;
+        background: currentColor;
+        width: 0;
+        height: 2px;
+        transition: 0.3s;
+        right: 0;
+      }
+      &:hover {
+        &::after {
+          width: 100%;
+          left: 0;
+          right: auto;
+        }
       }
     }
   }
-}
 }
 
 // Bg flashlight Static
@@ -448,24 +439,25 @@ footer {
   overflow: hidden;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: linear-gradient(to bottom,
-        var(--color-primary),
-        rgba(39, 39, 55, 0.2));
+    background: linear-gradient(to bottom, var(--color-primary), rgba(39, 39, 55, 0.2));
     opacity: 0.2;
     width: 100%;
     height: 100%;
-    transition: 0.5s, top 0s, left 0s;
+    transition:
+      0.5s,
+      top 0s,
+      left 0s;
     border-radius: var(--radius);
     transition: all 0.3s ease-in-out;
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 2px;
     background: var(--color-blackest);
@@ -473,7 +465,7 @@ footer {
     transition: all 0.3s ease-in-out;
   }
 
-  &>* {
+  & > * {
     z-index: 2;
     position: relative;
   }
@@ -486,36 +478,33 @@ footer {
 
   &.bg-secondary {
     &::before {
-      background: radial-gradient(var(--color-secondary),
-          transparent,
-          transparent);
+      background: radial-gradient(var(--color-secondary), transparent, transparent);
     }
   }
 
   &.bg-tertiary {
     &::before {
-      background: radial-gradient(var(--color-tertiary),
-          transparent,
-          transparent);
+      background: radial-gradient(var(--color-tertiary), transparent, transparent);
     }
   }
 }
-.bg-flashlight-static:after,.bg-flashlight-static:before {
-    content: "";
-    position: absolute;
-    border-radius: var(--radius);
-    transition: all .3s ease-in-out
+.bg-flashlight-static:after,
+.bg-flashlight-static:before {
+  content: '';
+  position: absolute;
+  border-radius: var(--radius);
+  transition: all 0.3s ease-in-out;
 }
 
 .bg-flashlight-static:after {
-    inset: 2px;
-    background: var(--color-blackest);
+  inset: 2px;
+  background: var(--color-blackest);
 }
 .bottom-flashlight {
   position: relative;
 
   &::before {
-    content: "";
+    content: '';
     width: 50px;
     height: 50px;
     background: var(--color-primary);
@@ -528,7 +517,7 @@ footer {
 }
 .container {
   @media #{$small-mobile} {
-      width: 100%;
-      max-width: 100%;
-    }
+    width: 100%;
+    max-width: 100%;
+  }
 }

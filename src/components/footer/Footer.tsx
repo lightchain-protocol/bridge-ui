@@ -6,7 +6,6 @@ import FooterBottomAnimated from './FooterBottomAnimated';
 import SingleFooter from './props/SingleFooter';
 import type { RawFooterConfig } from './types/types';
 
-
 type Props = {
   rawFooter: RawFooterConfig;
 };
@@ -52,10 +51,9 @@ const Footer = ({ rawFooter }: Props) => {
             <SingleFooter data={solutions} />
             <SingleFooter data={company} />
           </div>
-          <div className="separator-animated variation-2 height-1 animated-true mt_sm--20 mt--70 mb--0 mt_md--30 mb_md--0 sm--30 mb_sm--0"></div>
-         
+          <div className="separator-animated variation-2 height-1 animated-true mt_sm--20 mt--70 mt_md--30 mb_md--0 sm--30 mb_sm--0 mb--0"></div>
         </div>
-        
+
         <FooterBottomAnimated />
       </div>
     </footer>

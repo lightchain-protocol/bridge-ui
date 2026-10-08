@@ -1,5 +1,4 @@
 import { Token, TokenAmount, WarpCore } from '@hyperlane-xyz/sdk';
-import { LuArrowLeftRight } from "react-icons/lu";
 import {
   KnownProtocolType,
   ProtocolType,
@@ -24,6 +23,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { LuArrowLeftRight } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 import { RecipientWarningBanner } from '../../components/banner/RecipientWarningBanner';
 import { ConnectAwareSubmitButton } from '../../components/buttons/ConnectAwareSubmitButton';
@@ -169,31 +169,31 @@ export function TransferTokenForm() {
       {({ isValidating }) => (
         <Form className="flex w-full flex-col items-stretch gap-2.5">
           <WarningBanners />
-            <div className="grid grid-cols-2 gap-[33px] relative">
-              <TokenSelectField
-                name="originTokenKey"
-                selectionMode="origin"
-                disabled={isReview}
-                setIsNft={setIsNft}
-                showLabel={false}
-                className='sm:pr-8 pr-2'
-              />
-              <SwapTokensButton disabled={isReview} />
-              <TokenSelectField
-                name="destinationTokenKey"
-                selectionMode="destination"
-                disabled={isReview}
-                showLabel={false}
-                className='flex-row-reverse sm:pl-8 pl-2'
-                childClass="flex-row-reverse"
-              />
-            </div>
-            <div className="p-2.5 rounded-xl border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.02)] mt-4">
-              <TransferSection>
-                <OriginTokenCard isReview={isReview} setIsNft={setIsNft} />
-                <DestinationTokenCard isReview={isReview} />
-              </TransferSection>
-            </div>
+          <div className="relative grid grid-cols-2 gap-[33px]">
+            <TokenSelectField
+              name="originTokenKey"
+              selectionMode="origin"
+              disabled={isReview}
+              setIsNft={setIsNft}
+              showLabel={false}
+              className="pr-2 sm:pr-8"
+            />
+            <SwapTokensButton disabled={isReview} />
+            <TokenSelectField
+              name="destinationTokenKey"
+              selectionMode="destination"
+              disabled={isReview}
+              showLabel={false}
+              className="flex-row-reverse pl-2 sm:pl-8"
+              childClass="flex-row-reverse"
+            />
+          </div>
+          <div className="mt-4 rounded-xl border border-[rgba(112,100,233,0.20)] bg-[rgba(204,206,239,0.02)] p-2.5">
+            <TransferSection>
+              <OriginTokenCard isReview={isReview} />
+              <DestinationTokenCard isReview={isReview} />
+            </TransferSection>
+          </div>
 
           <ReviewDetails isReview={isReview} routeOverrideToken={routeOverrideToken} />
           <ButtonSection
@@ -255,26 +255,20 @@ function SwapTokensButton({ disabled }: { disabled?: boolean }) {
   }, [disabled, values, tokenMap, setValues, multiProvider]);
 
   return (
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] sm:border-[6px] border-4 border-dark rounded-md">
+    <div className="absolute left-1/2 top-1/2 z-[2] -translate-x-1/2 -translate-y-1/2 rounded-md border-4 border-dark sm:border-[6px]">
       <button
         type="button"
         onClick={onSwap}
         disabled={disabled}
-        className="sm:size-[44px] size-8 flex items-center justify-center bg-dark2 hover:bg-darker2"
+        className="flex size-8 items-center justify-center bg-dark2 hover:bg-darker2 sm:size-[44px]"
       >
-        <LuArrowLeftRight className='text-[#7064E9]' />
+        <LuArrowLeftRight className="text-[#7064E9]" />
       </button>
     </div>
   );
 }
 
-function OriginTokenCard({
-  isReview,
-  setIsNft,
-}: {
-  isReview: boolean;
-  setIsNft?: (b: boolean) => void;
-}) {
+function OriginTokenCard({ isReview }: { isReview: boolean }) {
   const { values } = useFormikContext<TransferFormValues>();
   const tokenMap = useTokenByKeyMap();
   const collateralGroups = useCollateralGroups();
@@ -295,36 +289,35 @@ function OriginTokenCard({
   const shouldShowPrice = totalTokenPrice >= 0.01;
 
   return (
-      <div className="rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 p-4">
-
-        <div className="flex items-center justify-between gap-2">
-          <TextField
-            name="amount"
-            placeholder="0.00"
-            className="w-full flex-1 border-none bg-transparent font-secondary text-xl font-normal text-contentBody outline-none placeholder:text-content-gray sm:text-2xl"
-            type="number"
-            step="any"
-            disabled={isReview}
-          />
-          <MaxButton balance={balance} disabled={isReview} isRouteSupported={isRouteSupported} />
-        </div>
-        <div className="mt-3 flex items-center justify-between text-xs leading-[18px] text-content-gray">
-          <span>
-            {shouldShowPrice && !isPriceLoading ? (
-              <>
-                $
-                {totalTokenPrice.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </>
-            ) : (
-              '$0.00'
-            )}
-          </span>
-          <TokenBalance label="Balance" balance={balance} />
-        </div>
+    <div className="rounded-lg border border-[rgba(112,100,233,0.20)] bg-darker2 p-4">
+      <div className="flex items-center justify-between gap-2">
+        <TextField
+          name="amount"
+          placeholder="0.00"
+          className="w-full flex-1 border-none bg-transparent font-secondary text-xl font-normal text-contentBody outline-none placeholder:text-content-gray sm:text-2xl"
+          type="number"
+          step="any"
+          disabled={isReview}
+        />
+        <MaxButton balance={balance} disabled={isReview} isRouteSupported={isRouteSupported} />
       </div>
+      <div className="mt-3 flex items-center justify-between text-xs leading-[18px] text-content-gray">
+        <span>
+          {shouldShowPrice && !isPriceLoading ? (
+            <>
+              $
+              {totalTokenPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </>
+          ) : (
+            '$0.00'
+          )}
+        </span>
+        <TokenBalance label="Balance" balance={balance} />
+      </div>
+    </div>
   );
 }
 
@@ -582,7 +575,6 @@ function ButtonSection({
               setRecipientInfos((state) => ({ ...state, addressConfirmed: checked }))
             }
           />
-
         </div>
 
         <ConnectAwareSubmitButton
@@ -750,7 +742,9 @@ function ReviewDetails({
             <>
               {isApproveRequired && (
                 <div>
-                  <h4 className="text-sm font-semibold text-contentBody">Transaction 1: Approve Transfer</h4>
+                  <h4 className="text-sm font-semibold text-contentBody">
+                    Transaction 1: Approve Transfer
+                  </h4>
                   <div className="ml-1.5 mt-2 space-y-1.5 border-l border-[rgba(112,100,233,0.20)] pl-3 text-xs text-content-gray">
                     <p>{`Router Address: ${originToken?.addressOrDenom}`}</p>
                     {originToken?.collateralAddressOrDenom && (

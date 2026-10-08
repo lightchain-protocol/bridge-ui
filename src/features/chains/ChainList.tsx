@@ -73,7 +73,7 @@ export function ChainList({
         <div className="h-10" />
       </div>
       {/* Bottom fade effect */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-darker2 rounded-b-xl" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 rounded-b-xl bg-gradient-to-b from-transparent to-darker2" />
     </div>
   );
 }
@@ -107,7 +107,7 @@ function ChainButton({
       onClick={onClick}
     >
       {icon}
-      <span className="min-w-0 flex-1 truncate text-sm font-medium text-left">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-left text-sm font-medium">{label}</span>
       {showEditIcon && <PencilIcon width={14} height={14} color="#7376AA" />}
     </button>
   );
