@@ -1,6 +1,4 @@
-import {
-  IRegistry
-} from '@hyperlane-xyz/registry';
+import { IRegistry } from '@hyperlane-xyz/registry';
 import {
   ChainName,
   TOKEN_STANDARD_TO_PROTOCOL,
@@ -20,14 +18,14 @@ export type WireDecimalsMap = Record<ChainName, Record<string, number>>;
 
 export async function assembleWarpCoreConfig(
   storeOverrides: WarpCoreConfig[],
-  registry: IRegistry,
+  _registry: IRegistry, // kept for callers; registry warp routes are disabled below
 ): Promise<{ config: WarpCoreConfig; wireDecimalsMap: WireDecimalsMap }> {
   const yamlResult = WarpCoreConfigSchema.safeParse(yamlWarpRoutes);
   const yamlConfig = validateZodResult(yamlResult, 'warp core yaml config');
   const tsResult = WarpCoreConfigSchema.safeParse(tsWarpRoutes);
   const tsConfig = validateZodResult(tsResult, 'warp core typescript config');
 
-  let registryWarpRoutes: Record<string, WarpCoreConfig> = {};
+  const registryWarpRoutes: Record<string, WarpCoreConfig> = {};
 
   // try {
   //   if (config.registryUrl) {

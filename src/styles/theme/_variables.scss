@@ -1,13 +1,13 @@
 /*-- Variables --*/
 :root {
   // Theme Color
-  --color-primary: #5B4BFF;
+  --color-primary: #5b4bff;
   --color-primary-alt: #35316f;
 
-  --bs-primary: #5B4BFF;
+  --bs-primary: #5b4bff;
   --bs-primary-rgb: 112, 100, 233;
   // Theme Color
-  --color-primary: #5B4BFF;
+  --color-primary: #5b4bff;
   --color-primary-alt: #35316f;
   --color-secondary: #410093;
   --color-tertiary: #f2cd25;
@@ -19,7 +19,7 @@
 
   --color-secondary-gradient-start: #f850ff;
   --color-secondary-gradient-end: #147ef3;
-  --color-secondary-gradient-end-2: #EE11FB;
+  --color-secondary-gradient-end-2: #ee11fb;
 
   --color-tertiary-gradient-start: #fd6221;
   --color-tertiary-gradient-end: #f2cd25;
@@ -49,7 +49,7 @@
   --color-border: hsla(0, 0%, 100%, 0.1);
   --color-border-light: #e5e7eb;
   --color-border-light-2: rgba(91, 75, 255, 0.21);
-  --color-border-light-soft: rgba(255, 255, 255, 0.10);
+  --color-border-light-soft: rgba(255, 255, 255, 0.1);
 
   --color-lessdark: #1e1e1e;
 
@@ -70,9 +70,9 @@
   --color-info: #1ba2db;
 
   --color-surface-success: rgba(62, 183, 94, 0.4);
-  --color-surface-info: rgba(27, 161, 219, 0.40);
-  --color-content-error-strong: #FF2A27;
-  --color-surface-base-error-subtle: rgba(233, 53, 68, 0.20);
+  --color-surface-info: rgba(27, 161, 219, 0.4);
+  --color-content-error-strong: #ff2a27;
+  --color-surface-base-error-subtle: rgba(233, 53, 68, 0.2);
 
   //Social icon colors
   --color-facebook: #3b5997;
@@ -120,9 +120,9 @@
   --transition-transform: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
 
   //Font Family
-  --font-primary: "Inter", sans-serif;
-  --secondary-font: "Inter", sans-serif;
-  --font-awesome: "Font Awesome 5 Pro";
+  --font-primary: 'Inter', sans-serif;
+  --secondary-font: 'Inter', sans-serif;
+  --font-awesome: 'Font Awesome 5 Pro';
 
   //Fonts Size
   --font-size-b1: 18px;
@@ -146,11 +146,11 @@
 }
 
 // Layouts Variation
-$smlg-device: "only screen and (max-width: 1199px)";
-$extra-device: "only screen and (min-width: 1600px) and (max-width: 1919px)";
-$laptop-device: "only screen and (min-width: 1200px) and (max-width: 1599px)";
-$lg-layout: "only screen and (min-width: 992px) and (max-width: 1199px)";
-$md-layout: "only screen and (min-width: 768px) and (max-width: 991px)";
-$sm-layout: "only screen and (max-width: 767px)";
-$large-mobile: "only screen and (max-width: 575px)";
-$small-mobile: "only screen and (max-width: 479px)";
+$smlg-device: 'only screen and (max-width: 1199px)';
+$extra-device: 'only screen and (min-width: 1600px) and (max-width: 1919px)';
+$laptop-device: 'only screen and (min-width: 1200px) and (max-width: 1599px)';
+$lg-layout: 'only screen and (min-width: 992px) and (max-width: 1199px)';
+$md-layout: 'only screen and (min-width: 768px) and (max-width: 991px)';
+$sm-layout: 'only screen and (max-width: 767px)';
+$large-mobile: 'only screen and (max-width: 575px)';
+$small-mobile: 'only screen and (max-width: 479px)';

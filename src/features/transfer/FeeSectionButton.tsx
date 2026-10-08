@@ -1,11 +1,11 @@
 import { WarpCoreFeeEstimate } from '@hyperlane-xyz/sdk';
 import { ChevronIcon, useModal } from '@hyperlane-xyz/widgets';
 import { useEffect, useState } from 'react';
+import { ImCreditCard } from 'react-icons/im';
 import { getFeePercentage, getTotalFeesUsdRaw } from '../balances/feeUsdDisplay';
 import { FeePrices } from '../balances/useFeePrices';
 import { formatUsd } from '../balances/utils';
 import { TransferFeeModal } from './TransferFeeModal';
-import { ImCreditCard } from "react-icons/im";
 
 function useLoadingDots(isLoading: boolean, intervalMs = 1000) {
   const [dotCount, setDotCount] = useState(1);

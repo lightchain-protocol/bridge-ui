@@ -80,7 +80,7 @@ export function RecipientAddressModal({
           type="button"
           color="primary"
           onClick={handleSave}
-          className="mt-4 w-full py-3 text-base hpl-btn-gd text-white"
+          className="hpl-btn-gd mt-4 w-full py-3 text-base text-white"
           disabled={!address.trim()}
         >
           Save

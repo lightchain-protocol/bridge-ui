@@ -13,12 +13,12 @@ export function RecipientWarningBanner({
         <WarningIcon width={32} height={32} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="my-2 break-words whitespace-normal">
+        <p className="my-2 whitespace-normal break-words">
           The recipient address is the same as the currently connected smart contract wallet,{' '}
           <strong>but it does not exist as a smart contract on {destinationChain}</strong>.
         </p>
         <p className="my-2">This may result in losing access to your bridged tokens.</p>
-        <p className="my-2 break-words whitespace-normal">
+        <p className="my-2 whitespace-normal break-words">
           <strong>
             Only proceed if you are certain you have control over this address on {destinationChain}
           </strong>
@@ -33,7 +33,7 @@ export function RecipientWarningBanner({
           />
           <label
             htmlFor="confirm-address"
-            className="cursor-pointer break-words whitespace-normal leading-5"
+            className="cursor-pointer whitespace-normal break-words leading-5"
           >
             I have control and want to bridge to this address
           </label>

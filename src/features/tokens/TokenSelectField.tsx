@@ -1,7 +1,7 @@
 import { Token } from '@hyperlane-xyz/sdk';
+import { ChevronIcon } from '@hyperlane-xyz/widgets';
 import { useField, useFormikContext } from 'formik';
 import { useState } from 'react';
-import { ChevronIcon } from '@hyperlane-xyz/widgets';
 import { WARP_QUERY_PARAMS } from '../../consts/args';
 import { updateQueryParams } from '../../utils/queryParams';
 import { trackTokenSelectionEvent } from '../analytics/utils';
@@ -166,24 +166,27 @@ function TokenButton({
   return (
     <button
       type="button"
-      className={`sm:px-4 px-2 py-2.5 w-full rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 flex items-center justify-between sm:gap-4 gap-2 hover:bg-darker2 transition-colors ${disabled ? styles.disabled : styles.enabled} ${className}`}
+      className={`flex w-full items-center justify-between gap-2 rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 px-2 py-2.5 transition-colors hover:bg-darker2 sm:gap-4 sm:px-4 ${disabled ? styles.disabled : styles.enabled} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
       {token ? (
-        <div className={`flex items-center sm:gap-3 gap-2 ${childClass}`}>
+        <div className={`flex items-center gap-2 sm:gap-3 ${childClass}`}>
           <TokenChainIcon token={token} size={36} />
           <div className="flex flex-col items-start gap-0.5">
-            <span className="sm:text-base text-sm font-semibold text-contentBody leading-tight">{token.symbol}</span>
-            <span className="sm:text-xs text-[10px] font-normal text-content-gray leading-tight">{chainDisplayName}</span>
+            <span className="text-sm font-semibold leading-tight text-contentBody sm:text-base">
+              {token.symbol}
+            </span>
+            <span className="text-[10px] font-normal leading-tight text-content-gray sm:text-xs">
+              {chainDisplayName}
+            </span>
           </div>
         </div>
       ) : (
         <span className="text-sm text-gray-400">Select token</span>
       )}
-     
-      <ChevronIcon className='sm:size-3.5 size-3' direction="s" color="#7376AA" />
 
+      <ChevronIcon className="size-3 sm:size-3.5" direction="s" color="#7376AA" />
     </button>
   );
 }

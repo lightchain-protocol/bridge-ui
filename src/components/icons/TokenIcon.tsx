@@ -14,10 +14,7 @@ export function TokenIcon({ token, size = 32 }: Props) {
   const chainMetadata = useChainMetadata(token?.chainName);
   const chainId = typeof chainMetadata?.chainId === 'number' ? chainMetadata.chainId : undefined;
 
-  const candidates = useMemo(
-    () => buildCandidates(token, chainId, size),
-    [token, chainId, size],
-  );
+  const candidates = useMemo(() => buildCandidates(token, chainId, size), [token, chainId, size]);
 
   const tokenKey = token ? `${token.chainName}::${token.addressOrDenom}` : '';
   const [attempt, setAttempt] = useState(0);

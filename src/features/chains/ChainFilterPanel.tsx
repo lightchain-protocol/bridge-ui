@@ -95,11 +95,7 @@ export function ChainFilterPanel({
             title={isEditMode ? 'Exit edit mode' : 'Edit chain metadata'}
             className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-primary-800"
           >
-            <PencilIcon
-              width={14}
-              height={14}
-              color={isEditMode ? '#7064E9' : '#7376AA'}
-            />
+            <PencilIcon width={14} height={14} color={isEditMode ? '#7064E9' : '#7376AA'} />
           </button>
         </div>
       </div>
@@ -139,11 +135,7 @@ function FilterButton({
         title="Filter chains"
         className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-primary-800"
       >
-        <FunnelIcon
-          width={14}
-          height={14}
-          color={isActive ? '#7064E9' : '#7376AA'}
-        />
+        <FunnelIcon width={14} height={14} color={isActive ? '#7064E9' : '#7376AA'} />
       </button>
       {isOpen && (
         <div className="absolute right-0 top-full z-20 mt-1 w-56 max-w-[calc(100vw-2rem)] rounded-xl border border-[rgba(112,100,233,0.20)] bg-dark2 p-3 shadow-md md:left-0 md:right-auto">
@@ -153,7 +145,7 @@ function FilterButton({
               <button
                 type="button"
                 onClick={() => onChange(defaultFilterState)}
-                className="flex items-center gap-1 text-xs text-content-gray hover:text-contentBody [&_path]:fill-content-gray [&_path]:hover:fill-contentBody transition-colors"
+                className="flex items-center gap-1 text-xs text-content-gray transition-colors hover:text-contentBody [&_path]:fill-content-gray [&_path]:hover:fill-contentBody"
               >
                 <XIcon width={8} height={8} />
                 Clear
@@ -245,11 +237,7 @@ function SortButton({
         title={`Sort: ${toTitleCase(sortState.sortBy)} (${sortState.sortOrder})`}
         className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-primary-800"
       >
-        <UpDownArrowsIcon
-          width={14}
-          height={14}
-          color={isActive ? '#7064E9' : '#7376AA'}
-        />
+        <UpDownArrowsIcon width={14} height={14} color={isActive ? '#7064E9' : '#7376AA'} />
       </button>
       {isOpen && (
         <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-xl border border-[rgba(112,100,233,0.20)] bg-dark2 py-1 shadow-md">

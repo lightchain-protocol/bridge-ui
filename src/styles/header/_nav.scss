@@ -138,7 +138,7 @@
               padding: 16px !important;
               border-right: 1px solid rgb(115 118 170 / 15%);
               @media #{$lg-layout} {
-                  padding: 8px !important;           
+                padding: 8px !important;
               }
               &.has-bg-1 {
                 // background: url(../../images/banner/header-banner-01.png);
@@ -160,13 +160,13 @@
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
-              
+
                 .lcai-nav-card {
                   padding: 8px;
                   margin: 0 !important;
                   border-radius: 8px;
                   transition: var(--transition);
-            
+
                   .icon {
                     width: 36px;
                     height: 36px;
@@ -176,45 +176,52 @@
                     align-items: center;
                     background: rgba(204, 206, 239, 0.1);
                     transition: all 0.3s ease-in-out;
-            
+
                     i {
                       margin-top: 0 !important;
                     }
-            
+
                     &.bg-flashlight-static::before,
                     &.bg-flashlight-static::after {
                       border-radius: 50%;
                     }
-            
+
                     &.bg-flashlight-static::before {
-                      background: linear-gradient(94deg, #dd00ac 10.66%, #7130c3 53.03%, #410093 96.34%, rgba(255, 0, 238, 0.26) 191.41%, rgba(255, 59, 212, 0) 191.43%) !important;
+                      background: linear-gradient(
+                        94deg,
+                        #dd00ac 10.66%,
+                        #7130c3 53.03%,
+                        #410093 96.34%,
+                        rgba(255, 0, 238, 0.26) 191.41%,
+                        rgba(255, 59, 212, 0) 191.43%
+                      ) !important;
                       opacity: 0;
                     }
-            
+
                     &.bg-flashlight-static::after {
-                      background: #1B1C3C;
+                      background: #1b1c3c;
                     }
                   }
-            
+
                   .content {
                     display: flex;
                     flex-direction: column;
                     margin-left: 8px;
                     gap: 4px;
-            
+
                     .title {
                       font-size: var(--font-size-b3);
                       line-height: normal;
                       font-weight: 600;
                     }
-            
+
                     .description {
                       font-size: var(--font-size-b4);
                       line-height: normal;
                       color: var(--color-body);
                     }
                   }
-            
+
                   .right-arrow {
                     position: absolute;
                     right: 12px;
@@ -232,26 +239,26 @@
                       visibility: hidden;
                     }
                   }
-            
+
                   &:hover {
                     color: var(--color-heading) !important;
-            
+
                     .icon {
                       &.bg-flashlight-static::before {
                         opacity: 1;
                       }
                     }
-            
+
                     .right-arrow {
                       i {
                         transform: translateX(0px);
                       }
-            
+
                       .default-icon {
                         opacity: 0;
                         visibility: hidden;
                       }
-            
+
                       .hover-icon {
                         opacity: 1;
                         visibility: visible;
@@ -301,8 +308,8 @@
             width: 900px;
             margin: inherit;
             @media #{$lg-layout} {
-                width: 800px;   
-                left: -100px;     
+              width: 800px;
+              left: -100px;
             }
           }
         }
@@ -349,14 +356,14 @@
   border-radius: 16px;
   overflow: hidden;
   height: 100%;
-  .inner{
+  .inner {
     height: 100%;
-    a{
+    a {
       display: block;
       position: relative;
       height: 100%;
       padding: 0 !important;
-      img{
+      img {
         height: 100%;
       }
     }
@@ -406,9 +413,20 @@
   margin-bottom: 8px;
   text-transform: uppercase;
 }
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-    word-break: break-word;
-    font-family: var(--secondary-font);
-    line-height: 1.4074;
-    color: var(--color-heading);
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  word-break: break-word;
+  font-family: var(--secondary-font);
+  line-height: 1.4074;
+  color: var(--color-heading);
 }

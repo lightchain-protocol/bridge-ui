@@ -243,7 +243,9 @@ export function SideBarMenu({
                   </div>
                 )}
                 {!hasMore && mergedTransfers.length > 0 && (
-                  <div className="py-3 text-center text-xs text-content-gray">No more transfers</div>
+                  <div className="py-3 text-center text-xs text-content-gray">
+                    No more transfers
+                  </div>
                 )}
               </>
             )}
@@ -373,7 +375,9 @@ function LocalTransferSummary({
           <div className="flex flex-col">
             <div className="items flex items-baseline">
               <span className="text-sm font-normal text-contentBody">{amount}</span>
-              <span className="ml-1 text-sm font-normal text-contentBody">{token?.symbol || ''}</span>
+              <span className="ml-1 text-sm font-normal text-contentBody">
+                {token?.symbol || ''}
+              </span>
             </div>
             <div className="mt-1 flex flex-row items-center">
               <span className="text-xxs font-normal tracking-wide text-content-gray">

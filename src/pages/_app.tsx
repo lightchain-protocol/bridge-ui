@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <div className={`${MAIN_FONT.variable} font-sans text-black bg-mainBg`}>
+    <div className={`${MAIN_FONT.variable} bg-mainBg font-sans text-black`}>
       <ErrorBoundary>
         <QueryClientProvider client={reactQueryClient}>
           <WarpContextInitGate>
