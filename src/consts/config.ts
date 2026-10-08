@@ -1,5 +1,6 @@
 import { ChainMap } from '@hyperlane-xyz/sdk';
 import { ADDRESS_BLACKLIST } from './blacklist';
+import { IS_TESTNET } from './network';
 
 const isDevMode = process?.env?.NODE_ENV === 'development';
 const version = process?.env?.NEXT_PUBLIC_VERSION || '2.0.0';
@@ -39,8 +40,8 @@ export const config: Config = Object.freeze({
   chainWalletWhitelists,
   enableExplorerLink: false,
   explorerApiUrl,
-  defaultOriginToken: 'ethereum-LCAI',
-  defaultDestinationToken: 'lcai-LCAI',
+  defaultOriginToken: IS_TESTNET ? 'sepolia-LCAI' : 'ethereum-LCAI',
+  defaultDestinationToken: IS_TESTNET ? 'lcaitestnet-LCAI' : 'lcai-LCAI',
   isDevMode,
   registryUrl,
   registryBranch,

@@ -15,7 +15,7 @@ import { ChainLogo } from '../../components/icons/ChainLogo';
 import { TextInput } from '../../components/input/TextField';
 import {
   LCAI_ZAP_ADDRESS,
-  LIGHTCHAIN_CHAIN_NAME,
+  ZAP,
   ZAP_CHAIN_ID,
   ZAP_DEADLINE_SECONDS,
   ZAP_SLIPPAGE_BPS,
@@ -157,7 +157,7 @@ export function ZapForm() {
           </p>
         </div>
         <div className="flex gap-3 text-sm">
-          <ExternalLinkButton href={`https://etherscan.io/tx/${txHash}`}>
+          <ExternalLinkButton href={ZAP.explorerTxUrl(txHash)}>
             Etherscan
           </ExternalLinkButton>
           <ExternalLinkButton href={`https://explorer.hyperlane.xyz/?search=${txHash}`}>
@@ -189,7 +189,7 @@ export function ZapForm() {
               inputMode="decimal"
               className="min-w-0 flex-1 border-none bg-transparent p-0 font-secondary text-3xl font-medium tracking-tight text-contentBody outline-none placeholder:text-content-gray/60 sm:text-4xl"
             />
-            <TokenChip chainName="ethereum" symbol="ETH" network="Ethereum" />
+            <TokenChip chainName={ZAP.sourceChainName} symbol="ETH" network={ZAP.sourceLabel} />
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-content-gray">
             <span>{ethInUsd ?? ' '}</span>
@@ -226,7 +226,11 @@ export function ZapForm() {
             >
               {quote.data ? fmt(quote.data.lcaiOut, 2) : '0'}
             </span>
-            <TokenChip chainName={LIGHTCHAIN_CHAIN_NAME} symbol="LCAI" network="Lightchain" />
+            <TokenChip
+              chainName={ZAP.destinationChainName}
+              symbol="LCAI"
+              network={ZAP.destinationLabel}
+            />
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-content-gray">
             <span>{lcaiUsdValue ? `≈ ${fmtUsd(lcaiUsdValue)}` : ' '}</span>
