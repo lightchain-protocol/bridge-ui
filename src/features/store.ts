@@ -92,8 +92,6 @@ export interface AppState {
   setTransferLoading: (isLoading: boolean) => void;
   isSideBarOpen: boolean;
   setIsSideBarOpen: (isOpen: boolean) => void;
-  showEnvSelectModal: boolean;
-  setShowEnvSelectModal: (show: boolean) => void;
 
   originChainName: ChainName;
   setOriginChainName: (originChainName: ChainName) => void;
@@ -227,10 +225,6 @@ export const useStore = create<AppState>()(
       isSideBarOpen: false,
       setIsSideBarOpen: (isSideBarOpen) => {
         set(() => ({ isSideBarOpen }));
-      },
-      showEnvSelectModal: false,
-      setShowEnvSelectModal: (showEnvSelectModal) => {
-        set(() => ({ showEnvSelectModal }));
       },
       originChainName: '',
       setOriginChainName: (originChainName: ChainName) => {

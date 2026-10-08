@@ -6,10 +6,9 @@ import {
   useAccountForChain,
   useConnectFns,
   useDisconnectFns,
-  useModal
+  useModal,
 } from '@hyperlane-xyz/widgets';
 import React, { useCallback, useMemo } from 'react';
-import { Color } from '../../styles/Color';
 import { logger } from '../../utils/logger';
 import { useChainProtocol, useMultiProvider } from '../chains/hooks';
 import { RecipientAddressModal } from './RecipientAddressModal';
@@ -152,10 +151,9 @@ function ConnectWalletButton({ chainName }: { chainName?: string }) {
     <button
       type="button"
       onClick={onConnect}
-      className="flex items-center gap-1.5 text-sm text-primary-500 transition-colors hover:text-primary-600"
+      className="text-sm text-primary-500 transition-colors hover:text-primary-600"
     >
-      <span>Connect Wallet</span>
-      <ChevronIcon width={10} height={8} direction="s" color={Color.primary[500]} />
+      Connect Wallet
     </button>
   );
 }
@@ -173,9 +171,9 @@ function ConnectMenuItem({ protocol }: { protocol: ProtocolType }) {
     <button
       type="button"
       onClick={onConnect}
-      className="w-full rounded-lg px-4 py-2 text-left text-sm text-contentBody transition-colors bg-dark2 hover:bg-darker2"
+      className="w-full rounded-lg bg-dark2 px-4 py-2 text-left text-sm text-contentBody transition-colors hover:bg-darker2"
     >
-      Connect wallet
+      Connect Wallet
     </button>
   );
 }
@@ -194,7 +192,7 @@ function MenuItemButton({ onClick, children }: { onClick: () => void; children: 
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-lg px-4 py-2 text-left text-sm text-contentBody transition-colors bg-dark2 hover:bg-darker2"
+      className="w-full rounded-lg bg-dark2 px-4 py-2 text-left text-sm text-contentBody transition-colors hover:bg-darker2"
     >
       {children}
     </button>

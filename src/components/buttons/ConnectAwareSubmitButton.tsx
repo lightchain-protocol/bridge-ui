@@ -34,7 +34,7 @@ export function ConnectAwareSubmitButton<FormValues = any>({
   const firstError = `${Object.values(errors)[0]}` || 'Unknown error';
 
   const color = hasError ? 'red' : 'accent';
-  const content = hasError ? firstError : isAccountReady ? text : 'Connect wallet';
+  const content = hasError ? firstError : isAccountReady ? text : 'Connect Wallet';
   const type =
     disabled || !isAccountReady
       ? 'button' // never submits when deliberately disabled
