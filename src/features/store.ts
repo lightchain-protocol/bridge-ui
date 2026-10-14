@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { config } from '../consts/config';
+import { IS_TESTNET } from '../consts/network';
 import { logger } from '../utils/logger';
 import { assembleChainMetadata } from './chains/metadata';
 import { TokenChainMap } from './tokens/types';
@@ -244,7 +245,9 @@ export const useStore = create<AppState>()(
 
     // Store config
     {
-      name: 'app-state', // name in storage
+      // Separate storage per network so local transfer history and chain overrides don't mix.
+      // Mainnet keeps the original key so existing users keep their history.
+      name: IS_TESTNET ? 'app-state-testnet' : 'app-state',
       partialize: (state) => ({
         // fields to persist
         chainMetadataOverrides: state.chainMetadataOverrides,

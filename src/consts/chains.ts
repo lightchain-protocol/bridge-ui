@@ -162,7 +162,7 @@ const testnetChains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     chainId: 8200,
     domainId: 8200,
     name: 'lcaitestnet',
-    displayName: 'LightchainAI Testnet',
+    displayName: 'Lightchain Testnet',
     isTestnet: true,
     nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
     rpcUrls: [{ http: 'https://rpc.testnet.lightchain.ai' }],

@@ -169,14 +169,14 @@ export function TransferTokenForm() {
       {({ isValidating }) => (
         <Form className="flex w-full flex-col items-stretch gap-2.5">
           <WarningBanners />
-          <div className="relative grid grid-cols-2 gap-[33px]">
+          <div className="relative grid grid-cols-2 gap-6 sm:gap-[33px]">
             <TokenSelectField
               name="originTokenKey"
               selectionMode="origin"
               disabled={isReview}
               setIsNft={setIsNft}
               showLabel={false}
-              className="pr-2 sm:pr-8"
+              className="pr-2 sm:pr-6"
             />
             <SwapTokensButton disabled={isReview} />
             <TokenSelectField
@@ -184,7 +184,7 @@ export function TransferTokenForm() {
               selectionMode="destination"
               disabled={isReview}
               showLabel={false}
-              className="flex-row-reverse pl-2 sm:pl-8"
+              className="flex-row-reverse pl-2 sm:pl-6"
               childClass="flex-row-reverse"
             />
           </div>
