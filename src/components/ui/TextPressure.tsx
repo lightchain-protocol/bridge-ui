@@ -16,6 +16,8 @@ interface TextPressureProps {
   strokeColor?: string;
   className?: string;
   letterSpacing?: number;
+  /** Base weight; the `weight` prop animates the 'wght' axis on top of it when enabled. */
+  fontWeight?: number;
   minFontSize?: number;
   maxFontSize?: number;
   classNameTextPressure?: string;
@@ -61,6 +63,7 @@ const TextPressure: React.FC<TextPressureProps> = ({
   textColor = '#FFFFFF',
   strokeColor = '#FF0000',
   letterSpacing = 0,
+  fontWeight = 100,
   className = '',
   minFontSize = 16,
   maxFontSize = 300,
@@ -127,8 +130,22 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
     requestAnimationFrame(() => {
       if (!titleRef.current) return;
-      const textRect = titleRef.current.getBoundingClientRect();
 
+      // The estimate above assumes a condensed glyph (~0.5em). Measure the real glyph run and
+      // shrink to fit, below minFontSize if needed: a clipped word is worse than a small one.
+      const spans = spansRef.current.filter((s): s is HTMLSpanElement => !!s);
+      if (spans.length) {
+        const first = spans[0].getBoundingClientRect();
+        const last = spans[spans.length - 1].getBoundingClientRect();
+        const textW = last.right - first.left;
+        const glyphW = textW - letterExtra; // letter-spacing is in px and does not scale
+        if (textW > containerW && glyphW > 0) {
+          const fitted = (Math.min(newFontSize, effectiveMax) * widthForGlyphs) / glyphW;
+          setFontSize(Math.max(8, Math.floor(fitted * 0.98)));
+        }
+      }
+
+      const textRect = titleRef.current.getBoundingClientRect();
       if (!isSmall && scale && textRect.height > 0) {
         const yRatio = containerH / textRect.height;
         setScaleY(yRatio);
@@ -141,7 +158,15 @@ const TextPressure: React.FC<TextPressureProps> = ({
     const debouncedSetSize = debounce(setSize, 100);
     debouncedSetSize();
     window.addEventListener('resize', debouncedSetSize);
-    return () => window.removeEventListener('resize', debouncedSetSize);
+    // Glyph widths change when the web font arrives; measure again then.
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (!cancelled) debouncedSetSize();
+    });
+    return () => {
+      cancelled = true;
+      window.removeEventListener('resize', debouncedSetSize);
+    };
   }, [setSize]);
 
   useEffect(() => {
@@ -183,12 +208,13 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
           const d = dist(mouseRef.current, charCenter);
 
-          const wdth = width ? Math.floor(getAttr(d, maxDist, 5, 200)) : 100;
-          const wght = weight ? Math.floor(getAttr(d, maxDist, 100, 900)) : 400;
-          const italVal = italic ? getAttr(d, maxDist, 0, 1).toFixed(2) : '0';
+          const axes: string[] = [];
+          if (width) axes.push(`'wdth' ${Math.floor(getAttr(d, maxDist, 5, 200))}`);
+          if (weight) axes.push(`'wght' ${Math.floor(getAttr(d, maxDist, 100, 900))}`);
+          if (italic) axes.push(`'ital' ${getAttr(d, maxDist, 0, 1).toFixed(2)}`);
           const alphaVal = alpha ? getAttr(d, maxDist, 0, 1).toFixed(2) : '1';
 
-          const newFontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
+          const newFontVariationSettings = axes.length ? axes.join(', ') : 'normal';
 
           if (span.style.fontVariationSettings !== newFontVariationSettings) {
             span.style.fontVariationSettings = newFontVariationSettings;
@@ -292,7 +318,7 @@ const TextPressure: React.FC<TextPressureProps> = ({
           textAlign: 'center',
           userSelect: 'none',
           whiteSpace: 'nowrap',
-          fontWeight: 100,
+          fontWeight,
           width: '100%',
         }}
       >

@@ -15,8 +15,8 @@ import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
 import Footer from '../footer/Footer';
 import type { RawFooterConfig } from '../footer/types/types';
 import { Header } from '../nav/Header';
-import DeferredAurora from '../ui/DeferredAurora';
 import DottedLineBackground from '../ui/DottedLineBackground';
+import Starfield from '../ui/Starfield';
 
 type Props = PropsWithChildren<{
   // Provided by pages with getStaticProps (index); other pages fall back to a client fetch.
@@ -68,23 +68,12 @@ export function AppLayout({ children, navConfig: navProp, footerConfig: footerPr
             {children}
             <DottedLineBackground lineCount={5} />
           </main>
-          <div className="absolute left-0 top-0 z-[1] h-full w-full">
-            <DeferredAurora
-              speed={0.9}
-              scale={1.7}
-              brightness={1.9}
-              color1="#644aff"
-              color2="#e100ff"
-              noiseFrequency={3}
-              noiseAmplitude={2}
-              bandHeight={0.5}
-              bandSpread={1}
-              octaveDecay={0.1}
-              layerOffset={0.15}
-              colorSpeed={1}
-              enableMouseInteraction
-              mouseInfluence={0.15}
-            />
+          {/* Background: a faint brand glow under a warp-speed starfield (plain 2D canvas). */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-0 top-0 z-[1] h-full w-full bg-[radial-gradient(55%_45%_at_50%_40%,rgba(112,100,233,0.16),transparent_70%)]"
+          >
+            <Starfield />
           </div>
         </div>
         {footerConfig && <Footer rawFooter={footerConfig} />}
