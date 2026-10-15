@@ -117,7 +117,7 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
-  webpack(config, { isServer }) {
+  webpack(config, { isServer, webpack }) {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@rainbow-me/rainbowkit': path.resolve(__dirname, 'src/vendor/rainbowkit-shim.ts'),
@@ -131,6 +131,28 @@ const nextConfig = {
       test: /\.ya?ml$/,
       use: 'yaml-loader',
     });
+
+    // @hyperlane-xyz/core ships deploy-time material the UI never uses, and the SDK keeps it
+    // reachable through lookup maps, so tree-shaking cannot remove it (~18 MB minified):
+    //  - zkSync compiler artifacts and solc build-info blobs -> empty stubs
+    //  - deploy bytecode inside every typechain factory -> blanked, ABI kept
+    const core = /[\\/]@hyperlane-xyz[\\/]core[\\/]/;
+    config.module.rules.push({ test: core, sideEffects: false });
+    config.module.rules.push({
+      test: (p) => core.test(p) && /__factory\.js$/.test(p),
+      use: path.resolve(__dirname, 'src/vendor/hyperlane-core/strip-bytecode-loader.js'),
+    });
+    const stub = (file) => path.resolve(__dirname, 'src/vendor/hyperlane-core', file);
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]core[\\/]dist[\\/]zksync[\\/]artifacts\.js$/,
+        stub('artifacts-stub.js'),
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]core[\\/]dist[\\/](zksync[\\/])?buildArtifact\.js$/,
+        stub('build-artifact-stub.js'),
+      ),
+    );
 
     config.experiments = {
       ...config.experiments,
