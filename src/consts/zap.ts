@@ -85,12 +85,13 @@ export const LCAI_POOL_FEE = ZAP.poolFee;
 export const LCAI_COLLATERAL_ROUTER = ZAP.collateralRouter;
 
 // LcaiZap contract (lcai-smart-contract/contracts/LcaiZap.sol).
-// Deployed via Ignition (lcai-smart-contract, ignition/deployments/lcai-zap-*). Env var overrides either.
+// Deployed via Ignition (lcai-smart-contract, ignition/deployments/lcai-zap-*). No env override: the
+// network is switchable at runtime, and one override would apply to both networks.
 const TESTNET_ZAP_ADDRESS: Address = '0xEdeCE82309F12a1cb17eEe9DdDF095e845aEC49e'; // Sepolia
 const MAINNET_ZAP_ADDRESS: Address = '0x91961D28700c6524C74C4C660A3EA236550d0b27'; // Ethereum
-export const LCAI_ZAP_ADDRESS = (process?.env?.NEXT_PUBLIC_LCAI_ZAP_ADDRESS ||
-  (IS_TESTNET ? TESTNET_ZAP_ADDRESS : MAINNET_ZAP_ADDRESS)) as Address;
+export const LCAI_ZAP_ADDRESS: Address = IS_TESTNET ? TESTNET_ZAP_ADDRESS : MAINNET_ZAP_ADDRESS;
 
 export const ZAP_SLIPPAGE_BPS = 100; // 1%
-export const ZAP_DEADLINE_SECONDS = 20 * 60;
+export const ZAP_DEADLINE_SECONDS = 10 * 60;
+export const ZAP_PRICE_IMPACT_WARN_BPS = 300; // 3%
 export const ZAP_SOFT_CAP_ETH = IS_TESTNET ? 0.002 : 5; // mainnet pool ~150 WETH deep; testnet pool is tiny

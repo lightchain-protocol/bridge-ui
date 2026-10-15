@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { parseEther } from 'viem';
+import { formatEther, parseEther } from 'viem';
 import { usePublicClient } from 'wagmi';
 import {
   LCAI_COLLATERAL_ROUTER,
@@ -19,7 +19,12 @@ export interface ZapQuote {
   ethSwapped: bigint; // ethIn - gasPayment
   lcaiOut: bigint; // quoted LCAI from the swap
   minLcaiOut: bigint; // lcaiOut after slippage
+  spotLcaiPerEth: number; // pool price from a tiny reference swap (fee included)
+  priceImpactBps: number; // how much worse this swap's rate is than spot
 }
+
+// Small enough to barely move the pool, so its rate stands in for the spot price.
+const SPOT_REFERENCE_WEI = parseEther('0.0001');
 
 function parseEthInput(value: string): bigint | null {
   if (!value || Number.isNaN(Number(value)) || Number(value) <= 0) return null;
@@ -53,24 +58,42 @@ export function useZapQuote(ethInput: string) {
       const ethSwapped = ethIn - gasPayment;
 
       // QuoterV2 is non-view (reverts internally), so simulate rather than read.
-      const { result } = await client.simulateContract({
-        address: UNISWAP_QUOTER_V2,
-        abi: quoterV2Abi,
-        functionName: 'quoteExactInputSingle',
-        args: [
-          {
-            tokenIn: WETH,
-            tokenOut: LCAI_TOKEN,
-            amountIn: ethSwapped,
-            fee: LCAI_POOL_FEE,
-            sqrtPriceLimitX96: 0n,
-          },
-        ],
-      });
-      const lcaiOut = result[0];
+      const quoteOut = async (amountIn: bigint) => {
+        const { result } = await client.simulateContract({
+          address: UNISWAP_QUOTER_V2,
+          abi: quoterV2Abi,
+          functionName: 'quoteExactInputSingle',
+          args: [
+            {
+              tokenIn: WETH,
+              tokenOut: LCAI_TOKEN,
+              amountIn,
+              fee: LCAI_POOL_FEE,
+              sqrtPriceLimitX96: 0n,
+            },
+          ],
+        });
+        return result[0];
+      };
+      const [lcaiOut, spotOut] = await Promise.all([
+        quoteOut(ethSwapped),
+        quoteOut(SPOT_REFERENCE_WEI),
+      ]);
       const minLcaiOut = (lcaiOut * BigInt(10_000 - ZAP_SLIPPAGE_BPS)) / 10_000n;
 
-      return { ethIn, gasPayment, ethSwapped, lcaiOut, minLcaiOut };
+      const spotLcaiPerEth = Number(formatEther(spotOut)) / Number(formatEther(SPOT_REFERENCE_WEI));
+      const rate = Number(formatEther(lcaiOut)) / Number(formatEther(ethSwapped));
+      const priceImpactBps = Math.max(0, Math.round((1 - rate / spotLcaiPerEth) * 10_000));
+
+      return {
+        ethIn,
+        gasPayment,
+        ethSwapped,
+        lcaiOut,
+        minLcaiOut,
+        spotLcaiPerEth,
+        priceImpactBps,
+      };
     },
   });
 }

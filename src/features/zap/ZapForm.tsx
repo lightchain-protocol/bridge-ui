@@ -7,6 +7,7 @@ import { decodeEventLog, formatEther, isAddress, type Address } from 'viem';
 import {
   useAccount,
   useBalance,
+  useBytecode,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -18,6 +19,7 @@ import {
   ZAP,
   ZAP_CHAIN_ID,
   ZAP_DEADLINE_SECONDS,
+  ZAP_PRICE_IMPACT_WARN_BPS,
   ZAP_SLIPPAGE_BPS,
   ZAP_SOFT_CAP_ETH,
 } from '../../consts/zap';
@@ -40,6 +42,13 @@ function fmtUsd(value: number): string {
     maximumFractionDigits: 2,
   });
 }
+
+// Contracts in the bridge path. LCAI sent to them is lost, so never accept one as the recipient.
+const BLOCKED_RECIPIENTS = new Set(
+  [LCAI_ZAP_ADDRESS, ZAP.collateralRouter, ZAP.nativeRouter, ZAP.lcaiToken].map((a) =>
+    a.toLowerCase(),
+  ),
+);
 
 function short(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
@@ -64,11 +73,18 @@ export function ZapForm() {
 
   const quote = useZapQuote(ethInput);
 
+  const customRecipientValid =
+    isAddress(customRecipient) && !BLOCKED_RECIPIENTS.has(customRecipient.toLowerCase());
   const recipient: Address | undefined = customRecipient
-    ? isAddress(customRecipient)
+    ? customRecipientValid
       ? customRecipient
       : undefined
     : address;
+  const isCustomRecipient = !!recipient && recipient.toLowerCase() !== address?.toLowerCase();
+
+  // Guard against a wrong or missing zap address: sending value to an empty address succeeds and
+  // the ETH is gone.
+  const zapCode = useBytecode({ address: LCAI_ZAP_ADDRESS, chainId: ZAP_CHAIN_ID });
 
   const {
     writeContract,
@@ -87,7 +103,7 @@ export function ZapForm() {
     if (recordedTx.current === txHash) return;
     recordedTx.current = txHash;
     const zapLog = receipt.data.logs.find(
-      (l) => l.address.toLowerCase() === (LCAI_ZAP_ADDRESS as string).toLowerCase(),
+      (l) => l.address.toLowerCase() === LCAI_ZAP_ADDRESS.toLowerCase(),
     );
     if (!zapLog) return;
     // viem's generic inference collapses here against wagmi's Log type; the ABI has one event.
@@ -112,13 +128,18 @@ export function ZapForm() {
   }, [receipt.isSuccess, receipt.data, txHash, address, addTransfer]);
 
   const isWrongChain = isConnected && chainId !== ZAP_CHAIN_ID;
-  const isDeployed = !!LCAI_ZAP_ADDRESS;
+  const isDeployed = !!zapCode.data && zapCode.data !== '0x';
   const ethNumber = Number(ethInput) || 0;
   const exceedsBalance = !!balance && !!quote.data && quote.data.ethIn > balance.value;
   const aboveSoftCap = ethNumber > ZAP_SOFT_CAP_ETH;
   const ethInUsd = ethUsd && ethNumber > 0 ? fmtUsd(ethNumber * ethUsd) : null;
+  // Value the LCAI at the pool's spot price, so price impact shows up in the USD figure.
   const lcaiUsdValue =
-    quote.data && ethUsd ? Number(formatEther(quote.data.ethSwapped)) * ethUsd : null;
+    quote.data && ethUsd
+      ? (Number(formatEther(quote.data.lcaiOut)) / quote.data.spotLcaiPerEth) * ethUsd
+      : null;
+  const priceImpactPct = quote.data ? quote.data.priceImpactBps / 100 : null;
+  const highPriceImpact = !!quote.data && quote.data.priceImpactBps >= ZAP_PRICE_IMPACT_WARN_BPS;
   const rate =
     quote.data && quote.data.ethSwapped > 0n
       ? Number(formatEther(quote.data.lcaiOut)) / Number(formatEther(quote.data.ethSwapped))
@@ -134,7 +155,7 @@ export function ZapForm() {
     if (!isDeployed || !quote.data || !recipient) return;
     const deadline = BigInt(Math.floor(Date.now() / 1000) + ZAP_DEADLINE_SECONDS);
     writeContract({
-      address: LCAI_ZAP_ADDRESS as Address,
+      address: LCAI_ZAP_ADDRESS,
       abi: lcaiZapAbi,
       functionName: 'zapToLightchain',
       args: [quote.data.minLcaiOut, recipient, deadline],
@@ -151,7 +172,10 @@ export function ZapForm() {
         onClick: () => switchChain({ chainId: ZAP_CHAIN_ID }),
         disabled: isSwitching,
       };
-    if (!isDeployed) return { label: 'Coming soon', onClick: () => undefined, disabled: true };
+    if (zapCode.isLoading)
+      return { label: 'Checking contract�', onClick: () => undefined, disabled: true };
+    if (!isDeployed)
+      return { label: 'Zap unavailable on this network', onClick: () => undefined, disabled: true };
     if (!ethInput) return { label: 'Enter an amount', onClick: () => undefined, disabled: true };
     if (quote.isError)
       return { label: quote.error.message, onClick: () => undefined, disabled: true };
@@ -168,6 +192,7 @@ export function ZapForm() {
     isConnected,
     isWrongChain,
     isSwitching,
+    zapCode.isLoading,
     isDeployed,
     ethInput,
     quote.isError,
@@ -310,6 +335,10 @@ export function ZapForm() {
         {detailsOpen && (
           <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-[rgba(112,100,233,0.12)] px-4 py-3 text-xs">
             <Row k="Bridge fee" v={quote.data ? `${fmt(quote.data.gasPayment, 5)} ETH` : '—'} />
+            <Row
+              k="Price impact"
+              v={priceImpactPct !== null ? `${priceImpactPct.toFixed(2)}%` : '�'}
+            />
             <Row k="Swap fee" v="0.3% (Uniswap pool)" />
             <Row k="Max slippage" v={`${ZAP_SLIPPAGE_BPS / 100}%`} />
             <Row k="Min. received" v={quote.data ? `${fmt(quote.data.minLcaiOut, 2)} LCAI` : '—'} />
@@ -318,6 +347,18 @@ export function ZapForm() {
         )}
       </div>
 
+      {isCustomRecipient && (
+        <Notice tone="warn">
+          LCAI will be sent to <span className="break-all font-mono">{recipient}</span>, not your
+          connected wallet. Make sure you control this address on Lightchain.
+        </Notice>
+      )}
+      {highPriceImpact && (
+        <Notice tone="warn">
+          Price impact is {priceImpactPct?.toFixed(2)}%: you get noticeably less LCAI than the pool
+          price. Try a smaller amount.
+        </Notice>
+      )}
       {aboveSoftCap && (
         <Notice tone="warn">
           Above {ZAP_SOFT_CAP_ETH} ETH the LCAI pool gets thin and price impact climbs fast.

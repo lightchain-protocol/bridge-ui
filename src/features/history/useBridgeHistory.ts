@@ -30,7 +30,12 @@ interface RouterEvent {
   amountWei: bigint;
 }
 
-async function fetchLogs(api: string, router: Address, topic0: Hex, recipientTopic: Hex): Promise<RouterEvent[]> {
+async function fetchLogs(
+  api: string,
+  router: Address,
+  topic0: Hex,
+  recipientTopic: Hex,
+): Promise<RouterEvent[]> {
   const sep = api.includes('?') ? '&' : '?';
   const url = `${api}${sep}module=logs&action=getLogs&address=${router}&topic0=${topic0}&topic0_2_opr=and&topic2=${recipientTopic}&fromBlock=0&toBlock=latest`;
   const res = await fetch(url);
@@ -41,11 +46,21 @@ async function fetchLogs(api: string, router: Address, topic0: Hex, recipientTop
     if (/no records/i.test(json.message)) return [];
     throw new Error(`logs api: ${json.message} ${json.result}`);
   }
-  return json.result.map((l) => ({
+  // The API is external: drop malformed rows instead of building explorer links or BigInts from them.
+  return json.result.filter(isWellFormed).map((l) => ({
     txHash: l.transactionHash,
     timestamp: Number(BigInt(l.timeStamp)),
     amountWei: BigInt(l.data),
   }));
+}
+
+const TX_HASH_RE = /^0x[0-9a-fA-F]{64}$/;
+const HEX_RE = /^0x[0-9a-fA-F]{1,64}$/;
+
+function isWellFormed(l: RawLog): boolean {
+  const ok = TX_HASH_RE.test(l.transactionHash) && HEX_RE.test(l.timeStamp) && HEX_RE.test(l.data);
+  if (!ok) logger.warn('Skipping malformed bridge log', l);
+  return ok;
 }
 
 function pairUp(
@@ -59,7 +74,9 @@ function pairUp(
   const sentSorted = [...sent].sort((a, b) => a.timestamp - b.timestamp);
   const pool = [...received].sort((a, b) => a.timestamp - b.timestamp);
   return sentSorted.map((s) => {
-    const idx = pool.findIndex((r) => r.amountWei === s.amountWei && r.timestamp >= s.timestamp - 60);
+    const idx = pool.findIndex(
+      (r) => r.amountWei === s.amountWei && r.timestamp >= s.timestamp - 60,
+    );
     const match = idx >= 0 ? pool.splice(idx, 1)[0] : undefined;
     return {
       status: match ? TransferStatus.Delivered : TransferStatus.ConfirmedTransfer,
@@ -103,7 +120,10 @@ export function useBridgeHistory(wallet: Address | undefined) {
 }
 
 /** Local (this browser) + on-chain history, de-duplicated by origin tx hash. On-chain wins. */
-export function mergeHistory(local: TransferContext[], onchain: TransferContext[]): TransferContext[] {
+export function mergeHistory(
+  local: TransferContext[],
+  onchain: TransferContext[],
+): TransferContext[] {
   const seen = new Set(onchain.map((t) => t.originTxHash?.toLowerCase()).filter(Boolean));
   const extra = local.filter((t) => !t.originTxHash || !seen.has(t.originTxHash.toLowerCase()));
   return [...onchain, ...extra].sort((a, b) => b.timestamp - a.timestamp);

@@ -24,7 +24,10 @@ function readUserNetwork(): AppNetwork | null {
   try {
     const fromUrl = new URLSearchParams(window.location.search).get('network');
     if (isNetwork(fromUrl)) {
-      window.localStorage.setItem(NETWORK_STORAGE_KEY, fromUrl);
+      if (window.localStorage.getItem(NETWORK_STORAGE_KEY) !== fromUrl) {
+        window.localStorage.setItem(NETWORK_STORAGE_KEY, fromUrl);
+        clearRememberedChain();
+      }
       return fromUrl;
     }
     const saved = window.localStorage.getItem(NETWORK_STORAGE_KEY);

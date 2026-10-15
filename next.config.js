@@ -31,7 +31,7 @@ const FONT_SRC_HOSTS = [
   'https://res.cloudinary.com',
   'https://fonts.gstatic.com',
   'https://fonts.reown.com',
-  'https://fonts.googleapis.com'
+  'https://fonts.googleapis.com',
 ];
 const IMG_SRC_HOSTS = [
   'https://*.walletconnect.com',
@@ -80,8 +80,13 @@ const cspHeader = `
 
 const securityHeaders = [
   {
-    key: 'X-XSS-Protection',
-    value: '1; mode=block',
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains',
+  },
+  // Wallet flows need none of these. WebHID/USB (Ledger) and passkeys stay allowed.
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
   },
   {
     key: 'X-Frame-Options',
@@ -103,11 +108,11 @@ const securityHeaders = [
   // Note, causes a problem for firefox: https://github.com/MetaMask/metamask-extension/issues/3133
   ...(ENABLE_CSP_HEADER
     ? [
-      {
-        key: 'Content-Security-Policy',
-        value: cspHeader,
-      },
-    ]
+        {
+          key: 'Content-Security-Policy',
+          value: cspHeader,
+        },
+      ]
     : []),
 ];
 
