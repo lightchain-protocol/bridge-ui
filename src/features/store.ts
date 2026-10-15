@@ -1,10 +1,4 @@
-import {
-  chainAddresses,
-  chainMetadata,
-  GithubRegistry,
-  IRegistry,
-  PartialRegistry,
-} from '@hyperlane-xyz/registry';
+import { chainAddresses, chainMetadata, IRegistry, PartialRegistry } from '@hyperlane-xyz/registry';
 import {
   ChainMap,
   ChainMetadata,
@@ -18,7 +12,6 @@ import { normalizeAddress, objFilter } from '@hyperlane-xyz/utils';
 import { toast } from 'react-toastify';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { config } from '../consts/config';
 import { IS_TESTNET } from '../consts/network';
 import { logger } from '../utils/logger';
 import { assembleChainMetadata } from './chains/metadata';
@@ -177,11 +170,9 @@ export const useStore = create<AppState>()(
         });
       },
       multiProvider: new MultiProtocolProvider({}),
-      registry: new GithubRegistry({
-        uri: config.registryUrl,
-        branch: config.registryBranch,
-        proxyUrl: config.registryProxyUrl,
-      }),
+      // Chains and warp routes are defined locally (chains.ts, warpRoutes.ts); nothing is read
+      // from the Hyperlane GitHub registry, so no network registry is created.
+      registry: new PartialRegistry({ chainAddresses, chainMetadata }),
       warpCore: new WarpCore(new MultiProtocolProvider({}), []),
       setWarpContext: (context) => {
         logger.debug('Setting warp context in store');
@@ -275,31 +266,16 @@ async function initWarpContext({
   chainMetadataOverrides: ChainMap<Partial<ChainMetadata> | undefined>;
   warpCoreConfigOverrides: WarpCoreConfig[];
 }): Promise<WarpContext> {
-  let currentRegistry = registry;
-  try {
-    // Pre-load registry content to avoid repeated requests
-    await currentRegistry.listRegistryContent();
-  } catch (error) {
-    currentRegistry = new PartialRegistry({
-      chainAddresses: chainAddresses,
-      chainMetadata: chainMetadata,
-    });
-    logger.warn(
-      'Failed to list registry content using GithubRegistry, will continue with PartialRegistry.',
-      error,
-    );
-  }
-
   try {
     const { config: coreConfig, wireDecimalsMap } = await assembleWarpCoreConfig(
       warpCoreConfigOverrides,
-      currentRegistry,
+      registry,
     );
 
     const chainsInTokens = Array.from(new Set(coreConfig.tokens.map((t) => t.chainName)));
     const { chainMetadata, chainMetadataWithOverrides } = await assembleChainMetadata(
       chainsInTokens,
-      currentRegistry,
+      registry,
       chainMetadataOverrides,
     );
     const multiProvider = new MultiProtocolProvider(chainMetadataWithOverrides);
@@ -327,7 +303,7 @@ async function initWarpContext({
       new Set(coreConfig.tokens.map((t) => t.coinGeckoId).filter(Boolean)),
     ).sort() as string[];
     return {
-      registry: currentRegistry,
+      registry,
       chainMetadata,
       multiProvider,
       warpCore,

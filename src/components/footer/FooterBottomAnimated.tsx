@@ -1,9 +1,13 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import PixelBlast from '../ui/PixelBlast';
+import { useCanAnimateDecor } from '../../lib/animationVisibility';
 import TextPressure from '../ui/TextPressure';
+
+// three.js + postprocessing (~560 KB) for a footer decoration: keep it out of the initial bundle.
+const PixelBlast = dynamic(() => import('../ui/PixelBlast'), { ssr: false });
 
 type TitleScale = { letterSpacing: number; minFontSize: number };
 
@@ -35,6 +39,7 @@ function useFooterTitleScale(): TitleScale {
 
 export default function FooterBottomAnimated() {
   const { letterSpacing, minFontSize } = useFooterTitleScale();
+  const canAnimate = useCanAnimateDecor();
 
   return (
     <div className="footer-bottom-animated z-2 relative isolate w-full overflow-hidden">
@@ -65,22 +70,24 @@ export default function FooterBottomAnimated() {
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-[-1] h-full w-full">
-        <PixelBlast
-          variant="square"
-          pixelSize={2}
-          color="#a552f3"
-          backgroundColor="#ffffff"
-          patternScale={3.5}
-          patternDensity={0.2}
-          enableRipples={false}
-          rippleSpeed={0.3}
-          rippleThickness={0.1}
-          rippleIntensityScale={0.7}
-          speed={0.35}
-          transparent={false}
-          edgeFade={0.12}
-          lightModeBackgroundColor="#000000"
-        />
+        {canAnimate && (
+          <PixelBlast
+            variant="square"
+            pixelSize={2}
+            color="#a552f3"
+            backgroundColor="#ffffff"
+            patternScale={3.5}
+            patternDensity={0.2}
+            enableRipples={false}
+            rippleSpeed={0.3}
+            rippleThickness={0.1}
+            rippleIntensityScale={0.7}
+            speed={0.35}
+            transparent={false}
+            edgeFade={0.12}
+            lightModeBackgroundColor="#000000"
+          />
+        )}
       </div>
     </div>
   );

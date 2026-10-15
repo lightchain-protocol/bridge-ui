@@ -10,12 +10,7 @@ import { ErrorBoundary } from '../components/errors/ErrorBoundary';
 import { AppLayout } from '../components/layout/AppLayout';
 import { MAIN_FONT } from '../consts/app';
 import { WarpContextInitGate } from '../features/WarpContextInitGate';
-import { AleoWalletContext } from '../features/wallet/context/AleoWalletContext';
-import { CosmosWalletContext } from '../features/wallet/context/CosmosWalletContext';
 import { EvmWalletContext } from '../features/wallet/context/EvmWalletContext';
-import { RadixWalletContext } from '../features/wallet/context/RadixWalletContext';
-import { SolanaWalletContext } from '../features/wallet/context/SolanaWalletContext';
-import { StarknetWalletContext } from '../features/wallet/context/StarknetWalletContext';
 import '../styles/globals.css';
 import '../styles/globals.scss';
 import '../vendor/inpage-metamask';
@@ -42,21 +37,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <ErrorBoundary>
         <QueryClientProvider client={reactQueryClient}>
           <WarpContextInitGate>
+            {/* EVM only: the non-EVM wallet providers were removed (see next.config.js). */}
             <EvmWalletContext>
-              <SolanaWalletContext>
-                <CosmosWalletContext>
-                  <StarknetWalletContext>
-                    <RadixWalletContext>
-                      <AleoWalletContext>
-                        <AppLayout>
-                          <Component {...pageProps} />
-                          <Analytics />
-                        </AppLayout>
-                      </AleoWalletContext>
-                    </RadixWalletContext>
-                  </StarknetWalletContext>
-                </CosmosWalletContext>
-              </SolanaWalletContext>
+              <AppLayout navConfig={pageProps.navConfig} footerConfig={pageProps.footerConfig}>
+                <Component {...pageProps} />
+                <Analytics />
+              </AppLayout>
             </EvmWalletContext>
           </WarpContextInitGate>
         </QueryClientProvider>

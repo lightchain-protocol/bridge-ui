@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { LuMinus, LuPlus } from 'react-icons/lu';
 
 interface InnerItem {
   link: string;
@@ -80,7 +81,7 @@ const SingleFooter: React.FC<SingleFooterProps> = ({ data }) => {
                               aria-controls={collapseId}
                               onClick={() => setOpenCollapseId(isOpen ? null : collapseId)}
                             >
-                              <i className={`fa-regular ${isOpen ? 'fa-minus' : 'fa-plus'}`} />
+                              <i>{isOpen ? <LuMinus /> : <LuPlus />}</i>
                             </button>
                           )}
                         </div>

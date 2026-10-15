@@ -1,7 +1,14 @@
 import { Mesh, Program, Renderer, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
+import { createAnimationVisibilityController } from '../../lib/animationVisibility';
 
-interface SoftAuroraProps {
+// The shader runs 2 layers x 3 octaves of noise per pixel every frame. It is a soft, slow blur,
+// so rendering at 40% resolution (browser upscales) and 30 fps is indistinguishable and cuts the
+// GPU work by roughly 12x against full resolution at 60 fps.
+const RENDER_SCALE = 0.4;
+const FRAME_INTERVAL_MS = 1000 / 30;
+
+export interface SoftAuroraProps {
   speed?: number;
   scale?: number;
   brightness?: number;
@@ -181,10 +188,19 @@ export default function SoftAurora({
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ alpha: true, premultipliedAlpha: false, dpr: 1 });
+    } catch {
+      // No WebGL: the background is decoration, so just skip it.
+      return;
+    }
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
-    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    // Upscale the low-res canvas to fill the container.
+    gl.canvas.style.width = '100%';
+    gl.canvas.style.height = '100%';
+    renderer.setSize(container.offsetWidth * RENDER_SCALE, container.offsetHeight * RENDER_SCALE);
 
     const currentMouse = [0.5, 0.5];
     let targetMouse = [0.5, 0.5];
@@ -229,7 +245,7 @@ export default function SoftAurora({
     });
 
     function resize() {
-      renderer.setSize(container.offsetWidth, container.offsetHeight);
+      renderer.setSize(container.offsetWidth * RENDER_SCALE, container.offsetHeight * RENDER_SCALE);
       program.uniforms.uResolution.value = [
         gl.canvas.width,
         gl.canvas.height,
@@ -247,10 +263,15 @@ export default function SoftAurora({
       gl.canvas.addEventListener('mouseleave', handleMouseLeave);
     }
 
-    let animationFrameId: number;
+    let animationFrameId = 0;
+    let running = false;
+    let lastFrame = 0;
 
     function update(time: number) {
+      if (!running) return;
       animationFrameId = requestAnimationFrame(update);
+      if (time - lastFrame < FRAME_INTERVAL_MS) return;
+      lastFrame = time;
       program.uniforms.uTime.value = time * 0.001;
 
       if (enableMouseInteraction) {
@@ -265,9 +286,20 @@ export default function SoftAurora({
 
       renderer.render({ scene: mesh });
     }
-    animationFrameId = requestAnimationFrame(update);
+    // Pause when the tab is hidden or the container is scrolled out of view.
+    const stopVisibility = createAnimationVisibilityController(container, (visible) => {
+      if (visible && !running) {
+        running = true;
+        animationFrameId = requestAnimationFrame(update);
+      } else if (!visible && running) {
+        running = false;
+        cancelAnimationFrame(animationFrameId);
+      }
+    });
 
     return () => {
+      running = false;
+      stopVisibility();
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resize);
       if (enableMouseInteraction) {
