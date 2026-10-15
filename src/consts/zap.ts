@@ -25,8 +25,7 @@ interface ZapNetworkConfig {
   destinationLogsApi: string;
 }
 
-// Public Etherscan key already shipped in chains.ts; Lightscan (Blockscout) needs none.
-const ETHERSCAN_API_KEY = 'GP69JEAP2W7YFJT9ZJTEPGQT6Y6KMW44ZN';
+// Ethereum/Sepolia logs come from Blockscout, like Lightscan: same Etherscan-style API, no key needed.
 
 // Mainnet pool: 0x0d047a370611437a1b8e6c2a95ea36f69fdda3be. Route: hyperlane-bridge/lcai/configs.
 const mainnet: ZapNetworkConfig = {
@@ -46,7 +45,7 @@ const mainnet: ZapNetworkConfig = {
   explorerTxUrl: (hash) => `https://etherscan.io/tx/${hash}`,
   destinationTxUrl: (hash) => `https://mainnet.lightscan.app/tx/${hash}`,
   destinationAddressUrl: (address) => `https://mainnet.lightscan.app/address/${address}`,
-  sourceLogsApi: `https://api.etherscan.io/v2/api?chainid=1&apikey=${ETHERSCAN_API_KEY}`,
+  sourceLogsApi: 'https://eth.blockscout.com/api',
   destinationLogsApi: 'https://mainnet.lightscan.app/api',
 };
 
@@ -68,7 +67,7 @@ const testnet: ZapNetworkConfig = {
   explorerTxUrl: (hash) => `https://sepolia.etherscan.io/tx/${hash}`,
   destinationTxUrl: (hash) => `https://testnet.lightscan.app/tx/${hash}`,
   destinationAddressUrl: (address) => `https://testnet.lightscan.app/address/${address}`,
-  sourceLogsApi: `https://api.etherscan.io/v2/api?chainid=11155111&apikey=${ETHERSCAN_API_KEY}`,
+  sourceLogsApi: 'https://eth-sepolia.blockscout.com/api',
   destinationLogsApi: 'https://testnet.lightscan.app/api',
 };
 

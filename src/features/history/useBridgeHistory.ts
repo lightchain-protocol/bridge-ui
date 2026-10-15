@@ -6,7 +6,7 @@ import { TransferContext, TransferStatus } from '../transfer/types';
 
 /**
  * Rebuilds a wallet's LCAI bridge history straight from the Hyperlane warp-route events,
- * using Etherscan-compatible log APIs (Etherscan for Ethereum/Sepolia, Lightscan for Lightchain).
+ * using Etherscan-compatible log APIs (Blockscout for Ethereum/Sepolia, Lightscan for Lightchain).
  * Hyperlane's hosted explorer does not index Lightchain, so this is the only cross-device source.
  *
  * Covers transfers where the connected wallet is the recipient (the default for Buy & Bridge and
@@ -41,7 +41,7 @@ async function fetchLogs(
   const res = await fetch(url);
   if (!res.ok) throw new Error(`logs api ${res.status}`);
   const json = (await res.json()) as { status: string; message: string; result: RawLog[] | string };
-  // Etherscan returns status "0" / "No records found" for an empty set; that's not an error.
+  // The API returns status "0" / "No records found" for an empty set; that's not an error.
   if (!Array.isArray(json.result)) {
     if (/no records/i.test(json.message)) return [];
     throw new Error(`logs api: ${json.message} ${json.result}`);

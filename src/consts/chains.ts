@@ -31,7 +31,6 @@ const mainnetChains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   ethereum: {
     blockExplorers: [
       {
-        apiKey: 'GP69JEAP2W7YFJT9ZJTEPGQT6Y6KMW44ZN',
         apiUrl: 'https://api.etherscan.io/v2/api?chainid=1',
         family: ExplorerFamily.Etherscan,
         name: 'Etherscan',
