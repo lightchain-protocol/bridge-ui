@@ -169,14 +169,14 @@ export function TransferTokenForm() {
       {({ isValidating }) => (
         <Form className="flex w-full flex-col items-stretch gap-2.5">
           <WarningBanners />
-          <div className="relative grid grid-cols-2 gap-[33px]">
+          <div className="relative grid grid-cols-2 gap-6 sm:gap-[33px]">
             <TokenSelectField
               name="originTokenKey"
               selectionMode="origin"
               disabled={isReview}
               setIsNft={setIsNft}
               showLabel={false}
-              className="pr-2 sm:pr-8"
+              className="pr-2 sm:pr-6"
             />
             <SwapTokensButton disabled={isReview} />
             <TokenSelectField
@@ -184,7 +184,7 @@ export function TransferTokenForm() {
               selectionMode="destination"
               disabled={isReview}
               showLabel={false}
-              className="flex-row-reverse pl-2 sm:pl-8"
+              className="flex-row-reverse pl-2 sm:pl-6"
               childClass="flex-row-reverse"
             />
           </div>
@@ -255,16 +255,15 @@ function SwapTokensButton({ disabled }: { disabled?: boolean }) {
   }, [disabled, values, tokenMap, setValues, multiProvider]);
 
   return (
-    <div className="absolute left-1/2 top-1/2 z-[2] -translate-x-1/2 -translate-y-1/2 rounded-md border-4 border-dark sm:border-[6px]">
-      <button
-        type="button"
-        onClick={onSwap}
-        disabled={disabled}
-        className="flex size-8 items-center justify-center bg-dark2 hover:bg-darker2 sm:size-[44px]"
-      >
-        <LuArrowLeftRight className="text-[#7064E9]" />
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={onSwap}
+      disabled={disabled}
+      title="Swap direction"
+      className="absolute left-1/2 top-1/2 z-[2] flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl border border-[rgba(112,100,233,0.35)] bg-darker2 shadow-[0_4px_16px_rgba(0,0,0,0.45)] transition-colors enabled:hover:border-[rgba(112,100,233,0.6)] enabled:hover:bg-dark2 disabled:cursor-default sm:size-10"
+    >
+      <LuArrowLeftRight className="text-[#7064E9]" />
+    </button>
   );
 }
 
@@ -602,15 +601,14 @@ function ButtonSection({
         />
       </div>
       <div className="mb-4 mt-4 flex items-center justify-between space-x-4">
-        <SolidButton
+        <button
           type="button"
-          color="primary"
           onClick={onEdit}
-          className="px-6 py-2 font-secondary text-sm font-semibold"
-          icon={<ChevronIcon direction="w" width={10} height={6} color={Color.white} />}
+          className="flex items-center gap-2 rounded-lg border border-[rgba(112,100,233,0.24)] bg-dark2 px-5 py-2 font-secondary text-sm font-semibold text-contentBody transition-colors hover:border-[rgba(112,100,233,0.45)]"
         >
+          <ChevronIcon direction="w" width={10} height={6} color={Color.white} />
           <span>Edit</span>
-        </SolidButton>
+        </button>
         <SolidButton
           disabled={!addressConfirmed || isSanctioned}
           type="button"
@@ -733,7 +731,7 @@ function ReviewDetails({
         } overflow-hidden transition-all`}
       >
         <label className="mt-4 block pl-0.5 text-sm text-content-gray">Transactions</label>
-        <div className="mt-1.5 space-y-2 break-all rounded-xl border border-[rgba(112,100,233,0.20)] bg-darker2 px-3 py-3 text-sm text-contentBody">
+        <div className="mt-1.5 space-y-3 rounded-xl border border-[rgba(112,100,233,0.20)] bg-darker2 px-4 py-3 text-sm text-contentBody">
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <SpinnerIcon className="h-5 w-5" />
@@ -745,62 +743,53 @@ function ReviewDetails({
                   <h4 className="text-sm font-semibold text-contentBody">
                     Transaction 1: Approve Transfer
                   </h4>
-                  <div className="ml-1.5 mt-2 space-y-1.5 border-l border-[rgba(112,100,233,0.20)] pl-3 text-xs text-content-gray">
-                    <p>{`Router Address: ${originToken?.addressOrDenom}`}</p>
-                    {originToken?.collateralAddressOrDenom && (
-                      <p>{`Collateral Address: ${originToken.collateralAddressOrDenom}`}</p>
+                  <dl className={styles.txRows}>
+                    {originToken?.addressOrDenom && (
+                      <TxRow label="Router">
+                        <ShortAddress address={originToken.addressOrDenom} />
+                      </TxRow>
                     )}
-                  </div>
+                    {originToken?.collateralAddressOrDenom && (
+                      <TxRow label="Collateral">
+                        <ShortAddress address={originToken.collateralAddressOrDenom} />
+                      </TxRow>
+                    )}
+                  </dl>
                 </div>
               )}
               <div>
                 <h4 className="text-sm font-semibold text-contentBody">{`Transaction${isApproveRequired ? ' 2' : ''}: Transfer Remote`}</h4>
-                <div className="ml-1.5 mt-2 space-y-1.5 border-l border-[rgba(112,100,233,0.20)] pl-3 text-xs text-content-gray">
+                <dl className={styles.txRows}>
                   {destinationToken?.addressOrDenom && (
-                    <p className="flex">
-                      <span className="min-w-[7.5rem]">Remote Token</span>
-                      <span>{destinationToken.addressOrDenom}</span>
-                    </p>
+                    <TxRow label="Remote token">
+                      <ShortAddress address={destinationToken.addressOrDenom} />
+                    </TxRow>
                   )}
-
-                  <p className="flex">
-                    <span className="min-w-[7.5rem]">{isNft ? 'Token ID' : 'Amount'}</span>
-                    <span>{`${amount} ${originTokenSymbol}`}</span>
-                  </p>
+                  <TxRow
+                    label={isNft ? 'Token ID' : 'Amount'}
+                  >{`${amount} ${originTokenSymbol}`}</TxRow>
                   {scaledAmount && (
-                    <p className="flex">
-                      <span className="min-w-[7.5rem]">Received Amount</span>
-                      <span>{`${scaledAmount.value} ${originTokenSymbol} (scaled from ${scaledAmount.originScale} to ${scaledAmount.destinationScale})`}</span>
-                    </p>
+                    <TxRow label="Received">{`${scaledAmount.value} ${originTokenSymbol} (scaled from ${scaledAmount.originScale} to ${scaledAmount.destinationScale})`}</TxRow>
                   )}
                   {fees?.localQuote && fees.localQuote.amount > 0n && (
-                    <p className="flex">
-                      <span className="min-w-[7.5rem]">Local Gas (est.)</span>
-                      <span>
-                        {`${fees.localQuote.getDecimalFormattedAmount().toFixed(8) || '0'} ${fees.localQuote.token.symbol || ''}`}
-                        <UsdLabel tokenAmount={fees.localQuote} feePrices={feePrices} />
-                      </span>
-                    </p>
+                    <TxRow label="Network gas (est.)">
+                      {formatFee(fees.localQuote)}
+                      <UsdLabel tokenAmount={fees.localQuote} feePrices={feePrices} />
+                    </TxRow>
                   )}
                   {fees?.interchainQuote && fees.interchainQuote.amount > 0n && (
-                    <p className="flex">
-                      <span className="min-w-[7.5rem]">Interchain Gas</span>
-                      <span>
-                        {`${fees.interchainQuote.getDecimalFormattedAmount().toFixed(8) || '0'} ${fees.interchainQuote.token.symbol || ''}`}
-                        <UsdLabel tokenAmount={fees.interchainQuote} feePrices={feePrices} />
-                      </span>
-                    </p>
+                    <TxRow label="Interchain gas">
+                      {formatFee(fees.interchainQuote)}
+                      <UsdLabel tokenAmount={fees.interchainQuote} feePrices={feePrices} />
+                    </TxRow>
                   )}
                   {fees?.tokenFeeQuote && fees.tokenFeeQuote.amount > 0n && (
-                    <p className="flex">
-                      <span className="min-w-[7.5rem]">Token Fee</span>
-                      <span>
-                        {`${fees.tokenFeeQuote.getDecimalFormattedAmount().toFixed(8) || '0'} ${fees.tokenFeeQuote.token.symbol || ''}`}
-                        <UsdLabel tokenAmount={fees.tokenFeeQuote} feePrices={feePrices} />
-                      </span>
-                    </p>
+                    <TxRow label="Token fee">
+                      {formatFee(fees.tokenFeeQuote)}
+                      <UsdLabel tokenAmount={fees.tokenFeeQuote} feePrices={feePrices} />
+                    </TxRow>
                   )}
-                </div>
+                </dl>
               </div>
             </>
           )}
@@ -810,6 +799,31 @@ function ReviewDetails({
   );
 }
 
+function TxRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <>
+      <dt className="whitespace-nowrap text-content-gray">{label}</dt>
+      <dd className="min-w-0 text-right text-contentBody">{children}</dd>
+    </>
+  );
+}
+
+function ShortAddress({ address }: { address: string }) {
+  return (
+    <span title={address} className="font-mono">
+      {`${address.slice(0, 6)}…${address.slice(-4)}`}
+    </span>
+  );
+}
+
+// Tiny gas amounts rounded to 8 decimals read as "0.00000000"; show a floor instead.
+function formatFee(quote: TokenAmount) {
+  const value = quote.getDecimalFormattedAmount();
+  const symbol = quote.token.symbol || '';
+  if (value > 0 && value < 0.000001) return `< 0.000001 ${symbol}`;
+  return `${value.toLocaleString('en-US', { maximumFractionDigits: 6 })} ${symbol}`;
+}
+
 function WarningBanners() {
   const { values } = useFormikContext<TransferFormValues>();
   const tokenMap = useTokenByKeyMap();
@@ -817,15 +831,15 @@ function WarningBanners() {
   const destinationToken = getTokenByKeyFromMap(tokenMap, values.destinationTokenKey);
 
   return (
-    // Max height to prevent double padding if multiple warnings are visible
-    <div className="max-h-10">
+    // Each warning renders nothing when hidden, so the form's gap only applies to visible ones.
+    <>
       <ChainWalletWarning origin={originToken?.chainName || ''} />
       <ChainConnectionWarning
         origin={originToken?.chainName || ''}
         destination={destinationToken?.chainName || ''}
       />
       <WalletConnectionWarning origin={originToken?.chainName || ''} />
-    </div>
+    </>
   );
 }
 
@@ -1019,3 +1033,8 @@ async function enrichBalanceError(
   }
   return result;
 }
+
+const styles = {
+  txRows:
+    'ml-1.5 mt-2 grid grid-cols-[auto_1fr] items-baseline gap-x-6 gap-y-1.5 border-l border-[rgba(112,100,233,0.20)] pl-3 text-xs',
+};

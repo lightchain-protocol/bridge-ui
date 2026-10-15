@@ -48,7 +48,9 @@ const debounce = <Args extends unknown[]>(func: (...args: Args) => void, delay: 
 const TextPressure: React.FC<TextPressureProps> = ({
   text = 'Compressa',
   fontFamily = 'Compressa VF',
-  fontUrl = 'https://res.cloudinary.com/dr6lvwubh/raw/upload/v1529908256/CompressaPRO-GX.woff2',
+  // No default font file: the original pointed at a dead URL, so every page load requested a
+  // 404 and the browser fell back anyway. Pass `fontUrl` to load one.
+  fontUrl = '',
   width = true,
   weight = true,
   italic = true,
@@ -222,10 +224,14 @@ const TextPressure: React.FC<TextPressureProps> = ({
   const styleElement = useMemo(() => {
     return (
       <style>{`
-        @font-face {
+        ${
+          fontUrl
+            ? `@font-face {
           font-family: '${fontFamily}';
           src: url('${fontUrl}');
           font-style: normal;
+        }`
+            : ''
         }
 
         .${TP} .${TP}__flex {

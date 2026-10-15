@@ -31,7 +31,6 @@ const mainnetChains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
   ethereum: {
     blockExplorers: [
       {
-        apiKey: 'GP69JEAP2W7YFJT9ZJTEPGQT6Y6KMW44ZN',
         apiUrl: 'https://api.etherscan.io/v2/api?chainid=1',
         family: ExplorerFamily.Etherscan,
         name: 'Etherscan',
@@ -162,7 +161,7 @@ const testnetChains: ChainMap<ChainMetadata & { mailbox?: Address }> = {
     chainId: 8200,
     domainId: 8200,
     name: 'lcaitestnet',
-    displayName: 'LightchainAI Testnet',
+    displayName: 'Lightchain Testnet',
     isTestnet: true,
     nativeToken: { name: 'LightchainAI', symbol: 'LCAI', decimals: 18 },
     rpcUrls: [{ http: 'https://rpc.testnet.lightchain.ai' }],

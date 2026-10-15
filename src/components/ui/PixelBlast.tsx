@@ -429,9 +429,14 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       return;
     }
 
-    return createAnimationVisibilityController(container, (isVisible) => {
-      visibilityRef.current.visible = isVisible;
-    });
+    // Small margin: start only when the footer is about to show, not 320px early.
+    return createAnimationVisibilityController(
+      container,
+      (isVisible) => {
+        visibilityRef.current.visible = isVisible;
+      },
+      64,
+    );
   }, [autoPauseOffscreen]);
 
   useEffect(() => {
@@ -482,12 +487,18 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         threeRef.current = null;
       }
       const canvas = document.createElement('canvas');
-      const renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias,
-        alpha: true,
-        powerPreference: 'high-performance',
-      });
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          canvas,
+          antialias,
+          alpha: true,
+          powerPreference: 'high-performance',
+        });
+      } catch {
+        // No WebGL: this is decoration, so render nothing rather than crash the page.
+        return;
+      }
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));

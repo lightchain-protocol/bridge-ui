@@ -31,7 +31,7 @@ const FONT_SRC_HOSTS = [
   'https://res.cloudinary.com',
   'https://fonts.gstatic.com',
   'https://fonts.reown.com',
-  'https://fonts.googleapis.com'
+  'https://fonts.googleapis.com',
 ];
 const IMG_SRC_HOSTS = [
   'https://*.walletconnect.com',
@@ -80,8 +80,13 @@ const cspHeader = `
 
 const securityHeaders = [
   {
-    key: 'X-XSS-Protection',
-    value: '1; mode=block',
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains',
+  },
+  // Wallet flows need none of these. WebHID/USB (Ledger) and passkeys stay allowed.
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
   },
   {
     key: 'X-Frame-Options',
@@ -103,20 +108,44 @@ const securityHeaders = [
   // Note, causes a problem for firefox: https://github.com/MetaMask/metamask-extension/issues/3133
   ...(ENABLE_CSP_HEADER
     ? [
-      {
-        key: 'Content-Security-Policy',
-        value: cspHeader,
-      },
-    ]
+        {
+          key: 'Content-Security-Policy',
+          value: cspHeader,
+        },
+      ]
     : []),
 ];
 
 const nextConfig = {
-  webpack(config, { isServer }) {
+  webpack(config, { isServer, webpack }) {
+    // require.resolve of the entry (dist/index.js); the package's exports map hides package.json.
+    const widgetsDist = path.dirname(require.resolve('@hyperlane-xyz/widgets'));
     config.resolve.alias = {
       ...config.resolve.alias,
       '@rainbow-me/rainbowkit': path.resolve(__dirname, 'src/vendor/rainbowkit-shim.ts'),
+      // Deep path the widgets' `exports` map hides; used by src/vendor/widgets-multi-protocol.js.
+      'hyperlane-widgets-ethereum': path.join(widgetsDist, 'walletIntegrations/ethereum.js'),
     };
+
+    // EVM-only build. The bridge connects Ethereum/Sepolia and Lightchain, but the Hyperlane SDK
+    // and widgets statically import every chain family's SDK and wallet stack (Solana, Cosmos,
+    // Starknet, Radix, Aleo, Tron, zkSync; ~15 MB minified, incl. a 7 MB Radix WASM blob) and
+    // mount their hooks unconditionally. Resolve those packages to a throwing stub and swap the
+    // widgets' multi-protocol wallet hooks for an Ethereum-only version.
+    const protocolStub = path.resolve(__dirname, 'src/vendor/protocol-stub.js');
+    const NON_EVM_PACKAGES =
+      /^(@hyperlane-xyz\/(radix-sdk|aleo-sdk|cosmos-sdk|cosmos-types|tron-sdk|starknet-core)|starknet|starknetkit|zksync-ethers|tronweb|cosmjs-types|@solana\/.+|@cosmjs\/.+|@cosmos-kit\/.+|@interchain-ui\/.+|@chakra-ui\/.+|@radixdlt\/.+|@provablehq\/.+|@starknet-react\/.+|@keplr-wallet\/.+|@drift-labs\/.+|@turnkey\/solana)(\/.*)?$/;
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(NON_EVM_PACKAGES, protocolStub),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]widgets[\\/]dist[\\/]walletIntegrations[\\/](aleo|cosmos|radix|solana|starknet)(\.js|[\\/].+\.js)$/,
+        protocolStub,
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]widgets[\\/]dist[\\/]walletIntegrations[\\/]multiProtocol\.js$/,
+        path.resolve(__dirname, 'src/vendor/widgets-multi-protocol.js'),
+      ),
+    );
 
     if (!isServer) {
       config.externals.push('pino-pretty', 'lokijs', 'encoding');
@@ -126,6 +155,28 @@ const nextConfig = {
       test: /\.ya?ml$/,
       use: 'yaml-loader',
     });
+
+    // @hyperlane-xyz/core ships deploy-time material the UI never uses, and the SDK keeps it
+    // reachable through lookup maps, so tree-shaking cannot remove it (~18 MB minified):
+    //  - zkSync compiler artifacts and solc build-info blobs -> empty stubs
+    //  - deploy bytecode inside every typechain factory -> blanked, ABI kept
+    const core = /[\\/]@hyperlane-xyz[\\/]core[\\/]/;
+    config.module.rules.push({ test: core, sideEffects: false });
+    config.module.rules.push({
+      test: (p) => core.test(p) && /__factory\.js$/.test(p),
+      use: path.resolve(__dirname, 'src/vendor/hyperlane-core/strip-bytecode-loader.js'),
+    });
+    const stub = (file) => path.resolve(__dirname, 'src/vendor/hyperlane-core', file);
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]core[\\/]dist[\\/]zksync[\\/]artifacts\.js$/,
+        stub('artifacts-stub.js'),
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]core[\\/]dist[\\/](zksync[\\/])?buildArtifact\.js$/,
+        stub('build-artifact-stub.js'),
+      ),
+    );
 
     config.experiments = {
       ...config.experiments,

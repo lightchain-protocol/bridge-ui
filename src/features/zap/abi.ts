@@ -1,5 +1,3 @@
-import { parseAbiItem } from 'viem';
-
 export const quoterV2Abi = [
   {
     type: 'function',
@@ -36,10 +34,6 @@ export const hypCollateralAbi = [
     outputs: [{ name: '', type: 'uint256' }],
   },
 ] as const;
-
-export const zappedEvent = parseAbiItem(
-  'event Zapped(address indexed sender, address indexed recipient, uint256 ethSwapped, uint256 gasPayment, uint256 lcaiBridged, bytes32 messageId)',
-);
 
 export const lcaiZapAbi = [
   {

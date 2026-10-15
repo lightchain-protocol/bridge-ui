@@ -1,10 +1,6 @@
 import { IToken, MultiProtocolProvider, Token } from '@hyperlane-xyz/sdk';
 import { ProtocolType, getAddressProtocolType, isValidAddress } from '@hyperlane-xyz/utils';
-import {
-  useAccountAddressForChain,
-  useEthereumAccount,
-  useSolanaAccount,
-} from '@hyperlane-xyz/widgets';
+import { useAccountAddressForChain, useEthereumAccount } from '@hyperlane-xyz/widgets';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { toast } from 'react-toastify';
@@ -16,7 +12,6 @@ import { useMultiProvider } from '../chains/hooks';
 import { getChainDisplayName } from '../chains/utils';
 import { getTokenKey } from '../tokens/utils';
 import { fetchChainBalances, groupEvmTokensByChain } from './evm';
-import { fetchSealevelChainBalances, groupSealevelTokensByChain } from './svm';
 import { fetchSdkBalance } from './tokens';
 
 export function useBalance(chain?: ChainName, token?: IToken, address?: Address) {
@@ -103,21 +98,17 @@ export function useEvmWalletBalance(
 /** Returns a Map<ProtocolType, string> of all connected wallet addresses. */
 function useWalletAddresses(multiProvider: MultiProtocolProvider): Map<ProtocolType, string> {
   const evmAddress = useEthereumAccount(multiProvider).addresses[0]?.address;
-  const solanaAddress = useSolanaAccount(multiProvider).addresses[0]?.address;
 
   return useMemo(() => {
     const map = new Map<ProtocolType, string>();
     if (evmAddress) map.set(ProtocolType.Ethereum, evmAddress);
-    if (solanaAddress) map.set(ProtocolType.Sealevel, solanaAddress);
     return map;
-  }, [evmAddress, solanaAddress]);
+  }, [evmAddress]);
 }
 
 /**
- * Batch-fetch token balances for EVM and Sealevel protocols.
- * - EVM: multicall3.aggregate3 — one eth_call per chain
- * - Sealevel: getParsedTokenAccountsByOwner — 2-3 RPC calls per SVM chain
- * - Other VMs are not supported and silently skipped.
+ * Batch-fetch token balances for EVM chains: multicall3.aggregate3, one eth_call per chain.
+ * Other VMs are not supported (this build is EVM-only) and silently skipped.
  */
 export function useTokenBalances(tokens: Token[], scope: string, addressOverride?: string) {
   const multiProvider = useMultiProvider();
@@ -153,17 +144,6 @@ export function useTokenBalances(tokens: Token[], scope: string, addressOverride
         }
         for (const { token, key } of fallbackTokens) {
           promises.push(fetchSdkBalance(token, multiProvider, evmAddr, key));
-        }
-      }
-
-      const solAddr = effectiveAddresses.get(ProtocolType.Sealevel);
-      if (solAddr) {
-        const sealevelGroups = groupSealevelTokensByChain(tokens);
-        for (const [, group] of sealevelGroups) {
-          const rpcUrl = multiProvider.tryGetChainMetadata(group.chainName)?.rpcUrls?.[0]?.http;
-          if (rpcUrl) {
-            promises.push(fetchSealevelChainBalances(group, rpcUrl, solAddr));
-          }
         }
       }
 

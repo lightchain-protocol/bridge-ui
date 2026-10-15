@@ -312,3 +312,11 @@ div[data-floating-ui-portal] > div {
     transform: translateY(28px);
   }
 }
+
+/* Icons are inline SVGs (react-icons) inside the theme's <i> wrappers, which the SCSS sizes via font-size. */
+i > svg {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}

@@ -6,16 +6,13 @@ import { useStore } from '../store';
 export function ConnectWalletButton() {
   const { open } = useAppKit();
   const multiProvider = useMultiProvider();
-  const { originChainName, setIsSideBarOpen } = useStore((s) => ({
-    originChainName: s.originChainName,
-    setIsSideBarOpen: s.setIsSideBarOpen,
-  }));
+  const originChainName = useStore((s) => s.originChainName);
 
   return (
     <ConnectWalletButtonInner
       multiProvider={multiProvider}
       onClickWhenUnconnected={() => open()}
-      onClickWhenConnected={() => setIsSideBarOpen(true)}
+      onClickWhenConnected={() => open({ view: 'Account' })}
       className="hpl-btn-gd btn-header rounded-lg !py-2 font-medium capitalize [&_*]:text-white [&_.htw-flex-col]:flex-row [&_.htw-flex-col]:items-center [&_.htw-flex-col]:gap-2 [&_.htw-text-gray-500]:opacity-70 [&_path]:fill-white"
       countClassName="bg-white/20"
       chainName={originChainName}

@@ -166,18 +166,24 @@ function TokenButton({
   return (
     <button
       type="button"
-      className={`flex w-full items-center justify-between gap-2 rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 px-2 py-2.5 transition-colors hover:bg-darker2 sm:gap-4 sm:px-4 ${disabled ? styles.disabled : styles.enabled} ${className}`}
+      className={`flex w-full items-center justify-between gap-1.5 rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 px-1.5 py-2.5 transition-colors sm:gap-2 sm:px-3 ${disabled ? styles.disabled : styles.enabled} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
       {token ? (
-        <div className={`flex items-center gap-2 sm:gap-3 ${childClass}`}>
-          <TokenChainIcon token={token} size={36} />
-          <div className="flex flex-col items-start gap-0.5">
-            <span className="text-sm font-semibold leading-tight text-contentBody sm:text-base">
+        <div className={`flex min-w-0 items-center gap-1.5 sm:gap-3 ${childClass}`}>
+          <div className="shrink-0">
+            <TokenChainIcon token={token} size={36} />
+          </div>
+          {/* Single-line labels: long chain names truncate instead of wrapping */}
+          <div className="flex min-w-0 flex-col items-start gap-0.5 [.flex-row-reverse_&]:items-end">
+            <span className="whitespace-nowrap text-sm font-semibold leading-tight text-contentBody sm:text-base">
               {token.symbol}
             </span>
-            <span className="text-[10px] font-normal leading-tight text-content-gray sm:text-xs">
+            <span
+              title={chainDisplayName}
+              className="max-w-full truncate whitespace-nowrap text-[10px] font-normal leading-tight tracking-tight text-content-gray sm:text-xs sm:tracking-normal"
+            >
               {chainDisplayName}
             </span>
           </div>
@@ -186,13 +192,14 @@ function TokenButton({
         <span className="text-sm text-gray-400">Select token</span>
       )}
 
-      <ChevronIcon className="size-3 sm:size-3.5" direction="s" color="#7376AA" />
+      {!disabled && <ChevronIcon className="size-3 sm:size-3.5" direction="s" color="#7376AA" />}
     </button>
   );
 }
 
 const styles = {
   base: 'px-2 py-1.5 w-full flex items-center justify-between text-sm rounded-lg outline-none transition-colors duration-500',
-  enabled: 'cursor-pointer',
-  disabled: 'cursor-not-allowed opacity-60',
+  enabled: 'cursor-pointer hover:bg-darker2',
+  // Locked during review: stays fully legible, just not interactive.
+  disabled: 'cursor-default',
 };
