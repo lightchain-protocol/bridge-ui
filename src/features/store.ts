@@ -91,8 +91,6 @@ export interface AppState {
   // Shared component state
   transferLoading: boolean;
   setTransferLoading: (isLoading: boolean) => void;
-  isSideBarOpen: boolean;
-  setIsSideBarOpen: (isOpen: boolean) => void;
 
   originChainName: ChainName;
   setOriginChainName: (originChainName: ChainName) => void;
@@ -222,10 +220,6 @@ export const useStore = create<AppState>()(
       transferLoading: false,
       setTransferLoading: (isLoading) => {
         set(() => ({ transferLoading: isLoading }));
-      },
-      isSideBarOpen: false,
-      setIsSideBarOpen: (isSideBarOpen) => {
-        set(() => ({ isSideBarOpen }));
       },
       originChainName: '',
       setOriginChainName: (originChainName: ChainName) => {

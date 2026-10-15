@@ -1,6 +1,5 @@
 'use client';
 
-import { useAppKit } from '@reown/appkit/react';
 import Head from 'next/head';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { APP_NAME } from '../../consts/app';
@@ -9,8 +8,7 @@ import { initRefiner } from '../../features/analytics/refiner';
 import { EVENT_NAME } from '../../features/analytics/types';
 import { useWalletConnectionTracking } from '../../features/analytics/useWalletConnectionTracking';
 import { trackEvent } from '../../features/analytics/utils';
-import { useStore } from '../../features/store';
-import { SideBarMenu } from '../../features/wallet/SideBarMenu';
+import { TransferStatusModal } from '../../features/transfer/TransferStatusModal';
 import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
 import type { RawNavConfig } from '../../lib/nav/types';
 import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
@@ -21,11 +19,6 @@ import DottedLineBackground from '../ui/DottedLineBackground';
 import SoftAurora from '../ui/SoftAurora';
 
 export function AppLayout({ children }: PropsWithChildren) {
-  const { open } = useAppKit();
-  const { isSideBarOpen, setIsSideBarOpen } = useStore((s) => ({
-    isSideBarOpen: s.isSideBarOpen,
-    setIsSideBarOpen: s.setIsSideBarOpen,
-  }));
   const [footerConfig, setFooterConfig] = useState<RawFooterConfig | null>(null);
   const [navConfig, setNavConfig] = useState<RawNavConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,11 +75,7 @@ export function AppLayout({ children }: PropsWithChildren) {
         {!isLoading && footerConfig && <Footer rawFooter={footerConfig} />}
       </div>
 
-      <SideBarMenu
-        onClose={() => setIsSideBarOpen(false)}
-        isOpen={isSideBarOpen}
-        onClickConnectWallet={() => open()}
-      />
+      <TransferStatusModal />
     </>
   );
 }
