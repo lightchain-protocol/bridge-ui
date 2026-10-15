@@ -54,6 +54,10 @@ export default function FooterBottomAnimated() {
       <div className="relative z-10 mx-auto flex h-[90px] w-full min-w-0 max-w-[300px] items-center justify-center px-4 sm:h-[110px] sm:max-w-[500px] sm:px-8 md:h-[150px] md:px-12 lg:h-[200px] lg:max-w-[1000px] 2xl:h-[300px] 2xl:max-w-[1500px]">
         <TextPressure
           text="Lightchain"
+          // The site font: the component's default ('Compressa VF') was never shipped, so it
+          // fell back to a wide serif that overflowed its container and was clipped.
+          fontFamily="var(--font-main), sans-serif"
+          fontWeight={600}
           flex={false}
           alpha={false}
           stroke={false}
