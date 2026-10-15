@@ -48,7 +48,10 @@ export default function App({ Component, pageProps }: AppProps) {
                   <StarknetWalletContext>
                     <RadixWalletContext>
                       <AleoWalletContext>
-                        <AppLayout>
+                        <AppLayout
+                          navConfig={pageProps.navConfig}
+                          footerConfig={pageProps.footerConfig}
+                        >
                           <Component {...pageProps} />
                           <Analytics />
                         </AppLayout>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { LuArrowRight, LuChevronDown, LuChevronRight } from 'react-icons/lu';
 import { iconMap } from '../../lib/nav/iconMap';
 import { resolveTarget } from '../../lib/nav/resolveTarget';
 import { RawNavCol, RawNavConfig } from '../../lib/nav/types';
@@ -28,7 +29,7 @@ function renderCol(col: RawNavCol, colIdx: number) {
     return (
       <ul key={colIdx} className="mega-menu-item mega-menu-card-item">
         {col.items.map((item, idx) => {
-          const iconClass = iconMap[item.iconKey] ?? iconMap['default'];
+          const Icon = iconMap[item.iconKey] ?? iconMap['default'];
           const target = resolveTarget(item.href, item.target);
           const Tag = target === '_blank' ? 'a' : Link;
           const props =
@@ -40,15 +41,21 @@ function renderCol(col: RawNavCol, colIdx: number) {
             <li key={idx}>
               <Tag className="lcai-nav-card" {...props}>
                 <span className="icon bg-flashlight-static">
-                  <i className={iconClass} />
+                  <i>
+                    <Icon />
+                  </i>
                 </span>
                 <span className="content">
                   <span className="title">{item.label}</span>
                   {item.desc && <span className="description">{item.desc}</span>}
                 </span>
                 <span className="right-arrow">
-                  <i className="fa-solid fa-arrow-right hover-icon" />
-                  <i className="fa-solid fa-chevron-right default-icon" />
+                  <i className="hover-icon">
+                    <LuArrowRight />
+                  </i>
+                  <i className="default-icon">
+                    <LuChevronRight />
+                  </i>
                 </span>
               </Tag>
             </li>
@@ -78,7 +85,10 @@ const Nav: React.FC<Props> = ({ rawMenus }) => {
                 onClick={() => setActiveMenu((pre) => (pre === idx ? -1 : idx))}
                 className={activeMenu === idx ? 'open' : ''}
               >
-                {menu.label} <i className="feather-chevron-down" />
+                {menu.label}{' '}
+                <i>
+                  <LuChevronDown />
+                </i>
               </a>
               <div
                 className={`lightchain-megamenu right-align ${widthClass(menu.width)} ${

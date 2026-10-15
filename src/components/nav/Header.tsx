@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { LuMenu } from 'react-icons/lu';
 import { ConnectWalletButton } from '../../features/wallet/ConnectWalletButton';
 import { RawNavConfig } from '../../lib/nav/types';
 import Nav from './Nav';
@@ -37,7 +38,9 @@ export function Header(props: HeaderProps) {
                   className="hamberger-button"
                   onClick={() => setActiveMobileMenu(!activeMobileMenu)}
                 >
-                  <i className="feather-menu"></i>
+                  <i>
+                    <LuMenu />
+                  </i>
                 </button>
               </div>
             </div>

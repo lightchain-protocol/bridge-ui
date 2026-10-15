@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import { FaDiscord, FaXTwitter } from 'react-icons/fa6';
+import { LuX } from 'react-icons/lu';
 import { ConnectWalletButton } from '../../features/wallet/ConnectWalletButton';
 import { RawNavConfig } from '../../lib/nav/types';
 import Nav from './Nav';
@@ -94,7 +96,9 @@ const PopupMobileMenu = ({ activeMobileMenu, setActiveMobileMenu, rawMenus }: Mo
                 className="close-button"
                 onClick={() => setActiveMobileMenu?.(!activeMobileMenu)}
               >
-                <i className="feather-x"></i>
+                <i>
+                  <LuX />
+                </i>
               </button>
             </div>
           </div>
@@ -114,12 +118,16 @@ const PopupMobileMenu = ({ activeMobileMenu, setActiveMobileMenu, rawMenus }: Mo
             <ul className="social-icon social-default transparent-with-border mb--20">
               <li data-sal="slide-up" data-sal-duration="400" data-sal-delay="200">
                 <Link href="https://x.com/LightchainAI">
-                  <i className="fa-brands fa-twitter"></i>
+                  <i>
+                    <FaXTwitter />
+                  </i>
                 </Link>
               </li>
               <li data-sal="slide-up" data-sal-duration="400" data-sal-delay="300">
                 <Link href="https://Discord.gg/lightchain">
-                  <i className="fa-brands fa-discord"></i>
+                  <i>
+                    <FaDiscord />
+                  </i>
                 </Link>
               </li>
               <li data-sal="slide-up" data-sal-duration="400" data-sal-delay="400">
