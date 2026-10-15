@@ -59,10 +59,12 @@ export function TransferTokenCard() {
             <NetworkMenu />
           </div>
         </div>
-        <p className="px-4 pt-1 text-xs text-content-gray sm:px-6">
+        <p className="mb-0 px-4 pt-1 text-xs text-content-gray sm:px-6">
           {TABS.find((t) => t.id === tab)?.hint}
         </p>
-        <div className="p-4 sm:p-6">{tab === 'buy' ? <ZapForm /> : <TransferTokenForm />}</div>
+        <div className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+          {tab === 'buy' ? <ZapForm /> : <TransferTokenForm />}
+        </div>
       </div>
     </div>
   );

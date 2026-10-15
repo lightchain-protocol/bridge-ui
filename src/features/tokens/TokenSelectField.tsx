@@ -166,7 +166,7 @@ function TokenButton({
   return (
     <button
       type="button"
-      className={`flex w-full items-center justify-between gap-1.5 rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 px-1.5 py-2.5 transition-colors hover:bg-darker2 sm:gap-2 sm:px-3 ${disabled ? styles.disabled : styles.enabled} ${className}`}
+      className={`flex w-full items-center justify-between gap-1.5 rounded-lg border border-[rgba(112,100,233,0.20)] bg-dark2 px-1.5 py-2.5 transition-colors sm:gap-2 sm:px-3 ${disabled ? styles.disabled : styles.enabled} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -192,13 +192,14 @@ function TokenButton({
         <span className="text-sm text-gray-400">Select token</span>
       )}
 
-      <ChevronIcon className="size-3 sm:size-3.5" direction="s" color="#7376AA" />
+      {!disabled && <ChevronIcon className="size-3 sm:size-3.5" direction="s" color="#7376AA" />}
     </button>
   );
 }
 
 const styles = {
   base: 'px-2 py-1.5 w-full flex items-center justify-between text-sm rounded-lg outline-none transition-colors duration-500',
-  enabled: 'cursor-pointer',
-  disabled: 'cursor-not-allowed opacity-60',
+  enabled: 'cursor-pointer hover:bg-darker2',
+  // Locked during review: stays fully legible, just not interactive.
+  disabled: 'cursor-default',
 };

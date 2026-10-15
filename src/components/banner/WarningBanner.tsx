@@ -13,11 +13,11 @@ export function WarningBanner({
   onClick?: () => void;
   className?: string;
 }>) {
+  // Hidden banners render nothing, so they take no space in flex/gap layouts.
+  if (!isVisible) return null;
   return (
     <div
-      className={`flex items-center justify-between gap-2 rounded bg-amber-400 px-4 text-sm ${
-        isVisible ? 'max-h-28 py-2' : 'max-h-0'
-      } overflow-hidden transition-all duration-500 ${className}`}
+      className={`flex items-center justify-between gap-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-2.5 text-xs text-yellow-200 [&_path]:fill-yellow-300 ${className ?? ''}`}
     >
       <div className="flex items-center gap-2">
         <WarningIcon width={20} height={20} />
@@ -27,7 +27,7 @@ export function WarningBanner({
         <button
           type="button"
           onClick={onClick}
-          className="rounded-full bg-white/30 px-2.5 py-1 text-center hover:bg-white/50 active:bg-white/60"
+          className="shrink-0 rounded-full bg-yellow-500/20 px-2.5 py-1 text-center font-semibold hover:bg-yellow-500/30 active:bg-yellow-500/40"
         >
           {cta}
         </button>

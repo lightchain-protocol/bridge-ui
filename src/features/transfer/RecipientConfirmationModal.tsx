@@ -47,11 +47,11 @@ export function RecipientConfirmationModal({
           <h2 className="text-lg font-semibold tracking-tight text-contentBody">
             Confirm recipient address
           </h2>
-          <p className="mt-1.5 text-sm text-content-gray">
+          <p className="mb-0 mt-1.5 text-sm text-content-gray">
             This address has no funds on {destinationName} yet. Double-check it before sending.
           </p>
         </div>
-        <p className="w-full break-all rounded-2xl border border-[rgba(112,100,233,0.16)] bg-darker2/80 px-4 py-3 font-mono text-xs leading-relaxed text-contentBody">
+        <p className="mb-0 w-full break-all rounded-2xl border border-[rgba(112,100,233,0.16)] bg-darker2/80 px-4 py-3 font-mono text-xs leading-relaxed text-contentBody">
           {recipient}
         </p>
         <div className="grid w-full grid-cols-2 gap-3">

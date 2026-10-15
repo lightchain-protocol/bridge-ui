@@ -139,7 +139,7 @@ export function ZapForm() {
         disabled: isSwitching,
       };
     if (zapCode.isLoading)
-      return { label: 'Checking contract�', onClick: () => undefined, disabled: true };
+      return { label: 'Checking contract…', onClick: () => undefined, disabled: true };
     if (!isDeployed)
       return { label: 'Zap unavailable on this network', onClick: () => undefined, disabled: true };
     if (!ethInput) return { label: 'Enter an amount', onClick: () => undefined, disabled: true };
@@ -177,7 +177,7 @@ export function ZapForm() {
         </div>
         <div>
           <h2 className="text-xl font-semibold text-contentBody">Bridge started</h2>
-          <p className="mt-1 text-sm text-content-gray">
+          <p className="mb-0 mt-1 text-sm text-content-gray">
             Your LCAI arrives on Lightchain in a few minutes.
           </p>
         </div>
@@ -303,7 +303,7 @@ export function ZapForm() {
             <Row k="Bridge fee" v={quote.data ? `${fmt(quote.data.gasPayment, 5)} ETH` : '—'} />
             <Row
               k="Price impact"
-              v={priceImpactPct !== null ? `${priceImpactPct.toFixed(2)}%` : '�'}
+              v={priceImpactPct !== null ? `${priceImpactPct.toFixed(2)}%` : '—'}
             />
             <Row k="Swap fee" v="0.3% (Uniswap pool)" />
             <Row k="Max slippage" v={`${ZAP_SLIPPAGE_BPS / 100}%`} />

@@ -30,4 +30,4 @@ export const TextInput = forwardRef(function _TextInput(
 });
 
 const defaultClassName =
-  'rounded-lg border border-[rgba(111,100,233,0.4)] disabled:bg-gray-150 outline-none transition-all duration-300';
+  'rounded-lg border border-[rgba(111,100,233,0.4)] disabled:cursor-default outline-none transition-all duration-300';
