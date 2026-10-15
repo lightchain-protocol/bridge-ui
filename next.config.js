@@ -118,10 +118,34 @@ const securityHeaders = [
 
 const nextConfig = {
   webpack(config, { isServer, webpack }) {
+    // require.resolve of the entry (dist/index.js); the package's exports map hides package.json.
+    const widgetsDist = path.dirname(require.resolve('@hyperlane-xyz/widgets'));
     config.resolve.alias = {
       ...config.resolve.alias,
       '@rainbow-me/rainbowkit': path.resolve(__dirname, 'src/vendor/rainbowkit-shim.ts'),
+      // Deep path the widgets' `exports` map hides; used by src/vendor/widgets-multi-protocol.js.
+      'hyperlane-widgets-ethereum': path.join(widgetsDist, 'walletIntegrations/ethereum.js'),
     };
+
+    // EVM-only build. The bridge connects Ethereum/Sepolia and Lightchain, but the Hyperlane SDK
+    // and widgets statically import every chain family's SDK and wallet stack (Solana, Cosmos,
+    // Starknet, Radix, Aleo, Tron, zkSync; ~15 MB minified, incl. a 7 MB Radix WASM blob) and
+    // mount their hooks unconditionally. Resolve those packages to a throwing stub and swap the
+    // widgets' multi-protocol wallet hooks for an Ethereum-only version.
+    const protocolStub = path.resolve(__dirname, 'src/vendor/protocol-stub.js');
+    const NON_EVM_PACKAGES =
+      /^(@hyperlane-xyz\/(radix-sdk|aleo-sdk|cosmos-sdk|cosmos-types|tron-sdk|starknet-core)|starknet|starknetkit|zksync-ethers|tronweb|cosmjs-types|@solana\/.+|@cosmjs\/.+|@cosmos-kit\/.+|@interchain-ui\/.+|@chakra-ui\/.+|@radixdlt\/.+|@provablehq\/.+|@starknet-react\/.+|@keplr-wallet\/.+|@drift-labs\/.+|@turnkey\/solana)(\/.*)?$/;
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(NON_EVM_PACKAGES, protocolStub),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]widgets[\\/]dist[\\/]walletIntegrations[\\/](aleo|cosmos|radix|solana|starknet)(\.js|[\\/].+\.js)$/,
+        protocolStub,
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]@hyperlane-xyz[\\/]widgets[\\/]dist[\\/]walletIntegrations[\\/]multiProtocol\.js$/,
+        path.resolve(__dirname, 'src/vendor/widgets-multi-protocol.js'),
+      ),
+    );
 
     if (!isServer) {
       config.externals.push('pino-pretty', 'lokijs', 'encoding');
