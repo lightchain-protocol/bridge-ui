@@ -11,9 +11,6 @@ import { trackEvent } from '../../features/analytics/utils';
 import { TransferStatusModal } from '../../features/transfer/TransferStatusModal';
 import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
 import type { RawNavConfig } from '../../lib/nav/types';
-import { fetchFooterConfig } from '../../utils/fetchFooterConfig';
-import Footer from '../footer/Footer';
-import type { RawFooterConfig } from '../footer/types/types';
 import { Header } from '../nav/Header';
 import DottedLineBackground from '../ui/DottedLineBackground';
 import Starfield from '../ui/Starfield';
@@ -21,11 +18,9 @@ import Starfield from '../ui/Starfield';
 type Props = PropsWithChildren<{
   // Provided by pages with getStaticProps (index); other pages fall back to a client fetch.
   navConfig?: RawNavConfig[] | null;
-  footerConfig?: RawFooterConfig | null;
 }>;
 
-export function AppLayout({ children, navConfig: navProp, footerConfig: footerProp }: Props) {
-  const [footerConfig, setFooterConfig] = useState<RawFooterConfig | null>(footerProp ?? null);
+export function AppLayout({ children, navConfig: navProp }: Props) {
   const [navConfig, setNavConfig] = useState<RawNavConfig[]>(navProp ?? []);
 
   useWalletConnectionTracking();
@@ -36,23 +31,19 @@ export function AppLayout({ children, navConfig: navProp, footerConfig: footerPr
     trackEvent(EVENT_NAME.PAGE_VIEWED, {});
   }, []);
 
-  // Fallback for pages without build-time config. Each request fails independently; a failed
-  // fetch leaves that part of the chrome empty instead of hiding the whole footer forever.
+  // Fallback for pages without build-time config; a failed fetch just leaves the nav empty.
   useEffect(() => {
-    if (navProp && footerProp) return;
+    if (navProp) return;
     let cancelled = false;
-    Promise.allSettled([
-      navProp ? Promise.resolve(navProp) : fetchNavConfig(),
-      footerProp ? Promise.resolve(footerProp) : fetchFooterConfig(),
-    ]).then(([nav, footer]) => {
-      if (cancelled) return;
-      if (nav.status === 'fulfilled') setNavConfig(nav.value);
-      if (footer.status === 'fulfilled') setFooterConfig(footer.value);
-    });
+    fetchNavConfig()
+      .then((nav) => {
+        if (!cancelled) setNavConfig(nav);
+      })
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, [navProp, footerProp]);
+  }, [navProp]);
 
   return (
     <>
@@ -61,22 +52,21 @@ export function AppLayout({ children, navConfig: navProp, footerConfig: footerPr
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{APP_NAME}</title>
       </Head>
-      <div id="app-content" className="min-w-screen relative w-full bg-[#000000]">
+      {/* Background: a faint brand glow under a warp-speed starfield (plain 2D canvas), fixed to
+          the viewport so it fills the screen at any page height. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_50%_45%,rgba(112,100,233,0.16),transparent_70%)]"
+      >
+        <Starfield />
+      </div>
+      {/* Header on top, the bridge card centred in the remaining height. No footer. */}
+      <div id="app-content" className="relative z-[1] flex min-h-dvh w-full flex-col">
         <Header rawMenus={navConfig} />
-        <div className="relative mx-auto overflow-hidden">
-          <main className="main-wrapper container relative z-10 mx-auto flex w-full flex-1 items-center justify-center overflow-hidden px-3 py-10 sm:py-24 lg:py-[120px]">
-            {children}
-            <DottedLineBackground lineCount={5} />
-          </main>
-          {/* Background: a faint brand glow under a warp-speed starfield (plain 2D canvas). */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-0 top-0 z-[1] h-full w-full bg-[radial-gradient(55%_45%_at_50%_40%,rgba(112,100,233,0.16),transparent_70%)]"
-          >
-            <Starfield />
-          </div>
-        </div>
-        {footerConfig && <Footer rawFooter={footerConfig} />}
+        <main className="main-wrapper container relative z-10 mx-auto flex w-full flex-1 items-center justify-center overflow-hidden px-3 py-8 sm:py-12">
+          {children}
+          <DottedLineBackground lineCount={5} />
+        </main>
       </div>
 
       <TransferStatusModal />

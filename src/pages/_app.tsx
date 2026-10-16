@@ -39,7 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <WarpContextInitGate>
             {/* EVM only: the non-EVM wallet providers were removed (see next.config.js). */}
             <EvmWalletContext>
-              <AppLayout navConfig={pageProps.navConfig} footerConfig={pageProps.footerConfig}>
+              <AppLayout navConfig={pageProps.navConfig}>
                 <Component {...pageProps} />
                 <Analytics />
               </AppLayout>
