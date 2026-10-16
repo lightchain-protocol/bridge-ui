@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IS_TESTNET } from '../../consts/network';
 import { NetworkMenu } from '../network/NetworkMenu';
+import { useStore } from '../store';
 import { ZapForm } from '../zap/ZapForm';
 import { TransferTokenForm } from './TransferTokenForm';
 
@@ -14,6 +15,17 @@ const TABS: Array<{ id: Tab; label: string; hint: string }> = [
 
 export function TransferTokenCard() {
   const [tab, setTab] = useState<Tab>('buy');
+  // Edge beam: Buy & Bridge sets idle/pending/success; a classic Bridge transfer counts as pending.
+  const beamState = useStore((s) => s.beamState);
+  const setBeamState = useStore((s) => s.setBeamState);
+  const transferLoading = useStore((s) => s.transferLoading);
+  const beam = transferLoading && beamState === 'idle' ? 'pending' : beamState;
+  // The green success flash plays once, then the beam settles back to idle.
+  useEffect(() => {
+    if (beamState !== 'success') return;
+    const id = setTimeout(() => setBeamState('idle'), 2600);
+    return () => clearTimeout(id);
+  }, [beamState, setBeamState]);
 
   return (
     <div className="relative w-full min-w-0 max-w-full sm:w-[560px]">
@@ -24,8 +36,8 @@ export function TransferTokenCard() {
       />
       <div className="relative min-w-0 rounded-3xl border border-[rgba(112,100,233,0.22)] bg-dark/80 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl">
         {/* Streaming purple beam around the edge (styles in globals.css). */}
-        <div aria-hidden className="card-beam-glow" />
-        <div aria-hidden className="card-beam" />
+        <div aria-hidden className={`card-beam-glow is-${beam}`} />
+        <div aria-hidden className={`card-beam is-${beam}`} />
         <div className="flex flex-col gap-3 px-4 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold tracking-tight text-contentBody">LCAI Bridge</h1>

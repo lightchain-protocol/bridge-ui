@@ -9,8 +9,8 @@ import {
   UNISWAP_QUOTER_V2,
   WETH,
   ZAP_CHAIN_ID,
-  ZAP_SLIPPAGE_BPS,
 } from '../../consts/zap';
+import { useStore } from '../store';
 import { hypCollateralAbi, quoterV2Abi } from './abi';
 
 export interface ZapQuote {
@@ -36,13 +36,14 @@ function parseEthInput(value: string): bigint | null {
 }
 
 export function useZapQuote(ethInput: string) {
+  const slippageBps = useStore((s) => s.zapSlippageBps);
   const client = usePublicClient({ chainId: ZAP_CHAIN_ID });
   const ethIn = parseEthInput(ethInput);
 
   return useQuery({
     // bigint cannot be serialized into the key; uid and the decimal string are stable stand-ins
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['zapQuote', client?.uid, ethIn?.toString()],
+    queryKey: ['zapQuote', client?.uid, ethIn?.toString(), slippageBps],
     enabled: !!client && ethIn !== null,
     refetchInterval: 15_000,
     queryFn: async (): Promise<ZapQuote> => {
@@ -80,7 +81,7 @@ export function useZapQuote(ethInput: string) {
         quoteOut(SPOT_REFERENCE_WEI),
       ]);
       if (lcaiOut === 0n || spotOut === 0n) throw new Error('Not enough pool liquidity');
-      const minLcaiOut = (lcaiOut * BigInt(10_000 - ZAP_SLIPPAGE_BPS)) / 10_000n;
+      const minLcaiOut = (lcaiOut * BigInt(10_000 - slippageBps)) / 10_000n;
 
       const spotLcaiPerEth = Number(formatEther(spotOut)) / Number(formatEther(SPOT_REFERENCE_WEI));
       const rate = Number(formatEther(lcaiOut)) / Number(formatEther(ethSwapped));

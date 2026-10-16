@@ -2,7 +2,7 @@ import { useAppKit } from '@reown/appkit/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
-import { LuArrowDown, LuChevronDown, LuExternalLink, LuPencil } from 'react-icons/lu';
+import { LuArrowDown, LuChevronDown, LuPencil } from 'react-icons/lu';
 import { formatEther, isAddress, zeroAddress, type Address, type Hex } from 'viem';
 import {
   useAccount,
@@ -21,12 +21,16 @@ import {
   ZAP_CHAIN_ID,
   ZAP_DEADLINE_SECONDS,
   ZAP_PRICE_IMPACT_WARN_BPS,
-  ZAP_SLIPPAGE_BPS,
   ZAP_SOFT_CAP_ETH,
 } from '../../consts/zap';
+import { useStore } from '../store';
 import { fetchPrices } from '../tokens/useTokenPrice';
 import { lcaiZapAbi } from './abi';
+import { AddLightchainButton } from './AddLightchainButton';
+import { DeliveryTracker } from './DeliveryTracker';
 import { suggestFees } from './fees';
+import { RouteStrip } from './RouteStrip';
+import { useDelivery, zapEvent } from './useDelivery';
 import { useZapQuote } from './useZapQuote';
 
 const MAX_GAS_RESERVE_WEI = 5_000_000_000_000_000n; // 0.005 ETH kept back for the tx itself
@@ -81,6 +85,9 @@ export function ZapForm() {
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   const quote = useZapQuote(ethInput);
+  const slippageBps = useStore((s) => s.zapSlippageBps);
+  const setBeamState = useStore((s) => s.setBeamState);
+  const triggerWarp = useStore((s) => s.triggerWarp);
 
   const customRecipientValid =
     isAddress(customRecipient) && !BLOCKED_RECIPIENTS.has(customRecipient.toLowerCase());
@@ -125,6 +132,33 @@ export function ZapForm() {
     receipt.isSuccess &&
     receipt.data.logs.some((l) => l.address.toLowerCase() === LCAI_ZAP_ADDRESS.toLowerCase());
   const replacedWithoutZap = receipt.isSuccess && !zapLanded;
+
+  // After the zap lands, follow the Hyperlane message until Lightchain processes it.
+  const zapped = zapLanded ? zapEvent(receipt.data) : undefined;
+  const delivery = useDelivery(zapped?.messageId);
+  const delivered = !!delivery.data?.delivered;
+
+  // Current LCAI on Lightchain for the recipient, and what it will be after this bridge.
+  const destBalance = useBalance({
+    address: recipient,
+    chainId: ZAP.destinationChainId,
+    query: { enabled: !!recipient, refetchInterval: delivered ? false : 15_000 },
+  });
+
+  // Card edge beam: fast while anything is in flight, green flash when the LCAI lands.
+  const inFlight = isPreparing || isSending || receipt.isLoading || (zapLanded && !delivered);
+  useEffect(() => {
+    setBeamState(delivered ? 'success' : inFlight ? 'pending' : 'idle');
+  }, [inFlight, delivered, setBeamState]);
+  useEffect(() => () => setBeamState('idle'), [setBeamState]);
+
+  // Starfield warp burst when the zap confirms, and again when the LCAI arrives.
+  useEffect(() => {
+    if (zapLanded) triggerWarp();
+  }, [zapLanded, triggerWarp]);
+  useEffect(() => {
+    if (delivered) triggerWarp();
+  }, [delivered, triggerWarp]);
 
   // Flag a transaction that has been pending for a while (keyed by hash, so a new one starts over).
   const [stuckHash, setStuckHash] = useState<string | undefined>();
@@ -229,23 +263,24 @@ export function ZapForm() {
 
   if (zapLanded && landedHash) {
     return (
-      <div className="flex flex-col items-center gap-5 py-8 text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-accent-500/15 ring-1 ring-accent-500/40">
-          <LuArrowDown className="size-7 text-accent-300" />
-        </div>
+      <div className="flex flex-col items-center gap-6 py-4 text-center">
         <div>
-          <h2 className="text-xl font-semibold text-contentBody">Bridge started</h2>
+          <h2 className="text-xl font-semibold text-contentBody">
+            {delivered ? 'LCAI arrived' : 'Bridging to ' + ZAP.destinationLabel}
+          </h2>
           <p className="mb-0 mt-1 text-sm text-content-gray">
-            Your LCAI arrives on Lightchain in a few minutes.
+            {delivered
+              ? 'Your LCAI is in your wallet on ' + ZAP.destinationLabel + '.'
+              : 'Swap confirmed. You can close this page; the delivery continues without it.'}
           </p>
         </div>
-        <div className="flex gap-3 text-sm">
-          <ExternalLinkButton href={ZAP.explorerTxUrl(landedHash)}>Etherscan</ExternalLinkButton>
-          {sentRecipient && (
-            <ExternalLinkButton href={ZAP.destinationAddressUrl(sentRecipient)}>
-              Lightscan
-            </ExternalLinkButton>
-          )}
+        <div className="w-full rounded-2xl border border-[rgba(112,100,233,0.16)] bg-darker2/80 p-4 sm:p-5">
+          <DeliveryTracker
+            sourceTxHash={landedHash}
+            recipient={sentRecipient}
+            delivery={delivery.data}
+            lcaiAmount={zapped ? fmt(zapped.lcaiBridged, 2) : undefined}
+          />
         </div>
         <PrimaryButton
           onClick={() => {
@@ -315,6 +350,20 @@ export function ZapForm() {
               network={ZAP.destinationLabel}
             />
           </div>
+          {recipient && destBalance.data && (
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[11px] text-content-gray">
+              <span>
+                On {ZAP.destinationLabel}: {fmt(destBalance.data.value, 2)} LCAI
+                {quote.data && (
+                  <span className="text-contentBody">
+                    {' '}
+                    → {fmt(destBalance.data.value + quote.data.lcaiOut, 2)} after
+                  </span>
+                )}
+              </span>
+              <AddLightchainButton />
+            </div>
+          )}
           <div className="mt-2 flex items-center justify-between text-xs text-content-gray">
             <span>{lcaiUsdValue ? `≈ ${fmtUsd(lcaiUsdValue)}` : ' '}</span>
             <span className="flex items-center gap-1.5">
@@ -347,24 +396,31 @@ export function ZapForm() {
           onClick={() => setDetailsOpen((v) => !v)}
           className="flex w-full items-center justify-between px-4 py-3 text-xs text-content-gray"
         >
-          <span>
-            {rate
-              ? `1 ETH ≈ ${rate.toLocaleString('en-US', { maximumFractionDigits: 0 })} LCAI`
-              : 'Swap on Uniswap, bridge via Hyperlane. One transaction.'}
-          </span>
+          {rate ? (
+            <span>{`1 ETH ≈ ${rate.toLocaleString('en-US', { maximumFractionDigits: 0 })} LCAI`}</span>
+          ) : (
+            <div className="min-w-0 flex-1 pr-4">
+              <RouteStrip />
+            </div>
+          )}
           <LuChevronDown
             className={clsx('size-4 transition-transform', detailsOpen && 'rotate-180')}
           />
         </button>
         {detailsOpen && (
           <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-[rgba(112,100,233,0.12)] px-4 py-3 text-xs">
+            {rate && (
+              <div className="col-span-2 pb-2 pt-1">
+                <RouteStrip />
+              </div>
+            )}
             <Row k="Bridge fee" v={quote.data ? `${fmt(quote.data.gasPayment, 5)} ETH` : '—'} />
             <Row
               k="Price impact"
               v={priceImpactPct !== null ? `${priceImpactPct.toFixed(2)}%` : '—'}
             />
             <Row k="Swap fee" v="0.3% (Uniswap pool)" />
-            <Row k="Max slippage" v={`${ZAP_SLIPPAGE_BPS / 100}%`} />
+            <Row k="Max slippage" v={`${slippageBps / 100}% (change in settings)`} />
             <Row k="Min. received" v={quote.data ? `${fmt(quote.data.minLcaiOut, 2)} LCAI` : '—'} />
             <Row k="Est. time" v="2–5 min" />
           </dl>
@@ -513,19 +569,5 @@ function PrimaryButton({
     >
       {children}
     </button>
-  );
-}
-
-function ExternalLinkButton({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="flex items-center gap-1.5 rounded-full border border-[rgba(112,100,233,0.24)] bg-dark2 px-4 py-2 text-contentBody transition-colors hover:border-[rgba(112,100,233,0.5)]"
-    >
-      {children}
-      <LuExternalLink className="size-3.5" />
-    </a>
   );
 }

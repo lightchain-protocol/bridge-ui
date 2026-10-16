@@ -6,6 +6,8 @@ interface StarfieldProps {
   speed?: number;
   /** Stars per million CSS pixels of canvas; the total is clamped to [150, 700]. */
   density?: number;
+  /** Change this number to fire a brief warp burst (e.g. when a bridge confirms). */
+  warpPulse?: number;
 }
 
 const MAX_DPR = 1.5;
@@ -13,6 +15,8 @@ const MAX_FRAME_DT = 0.05; // s; a tab coming back from the background must not 
 const NEAR = 0.02; // depth at which a star has flown past the viewer
 const STREAK = 2.5; // streak length, in frames of travel at the current speed
 const PARALLAX = 0.12; // how far (fraction of the canvas) the vanishing point follows the pointer
+const WARP_PEAK = 12; // speed multiplier at the start of a warp burst
+const WARP_DECAY_MS = 450; // exponential fall-off back to cruising speed
 // Mostly white with a few brand-tinted stars. Alpha is set per star from its depth.
 const PALETTE: ReadonlyArray<readonly [number, number, number]> = [
   [255, 255, 255],
@@ -34,8 +38,13 @@ const PALETTE: ReadonlyArray<readonly [number, number, number]> = [
  * they are, so the ones rushing past the edges smear while the distant ones stay points.
  * Pauses when hidden or scrolled away; with `prefers-reduced-motion` it draws one still frame.
  */
-export default function Starfield({ speed = 0.45, density = 220 }: StarfieldProps) {
+export default function Starfield({ speed = 0.45, density = 220, warpPulse = 0 }: StarfieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const warpStartRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (warpPulse > 0) warpStartRef.current = performance.now();
+  }, [warpPulse]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -141,7 +150,14 @@ export default function Starfield({ speed = 0.45, density = 220 }: StarfieldProp
       raf = requestAnimationFrame(frame);
       const dt = Math.min(MAX_FRAME_DT, Math.max(0, (t - last) / 1000));
       last = t;
-      draw(dt);
+      let boost = 1;
+      const warpStart = warpStartRef.current;
+      if (warpStart !== null) {
+        const since = t - warpStart;
+        if (since > WARP_DECAY_MS * 8) warpStartRef.current = null;
+        else if (since >= 0) boost = 1 + (WARP_PEAK - 1) * Math.exp(-since / WARP_DECAY_MS);
+      }
+      draw(dt * boost);
     };
 
     const ro = new ResizeObserver(resize);
