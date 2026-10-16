@@ -79,6 +79,7 @@ export function useZapQuote(ethInput: string) {
         quoteOut(ethSwapped),
         quoteOut(SPOT_REFERENCE_WEI),
       ]);
+      if (lcaiOut === 0n || spotOut === 0n) throw new Error('Not enough pool liquidity');
       const minLcaiOut = (lcaiOut * BigInt(10_000 - ZAP_SLIPPAGE_BPS)) / 10_000n;
 
       const spotLcaiPerEth = Number(formatEther(spotOut)) / Number(formatEther(SPOT_REFERENCE_WEI));

@@ -110,24 +110,25 @@
       }
     }
 
+    // Submenu arrow: the inline SVG chevron from Nav.tsx, pinned right and flipped when open.
+    // (Previously an icon-font ::after; the Feather font was removed.)
     .has-menu-child-item {
       > a {
         position: relative;
         &::after {
-          display: block !important;
+          display: none !important;
+        }
+        > i {
           position: absolute;
-          content: '\e9b1' !important;
-          font-family: 'feather' !important;
           right: 10px;
           top: 50%;
-          transform: translateY(-50%);
-          transition: 0.4s;
+          display: flex;
           font-size: 18px;
+          transform: translateY(-50%);
+          transition: transform 0.4s;
         }
-        &.open {
-          &::after {
-            content: '\e996' !important;
-          }
+        &.open > i {
+          transform: translateY(-50%) rotate(180deg);
         }
       }
     }
@@ -252,9 +253,6 @@
   padding-bottom: 0px;
   border-top: none;
   border-bottom: none;
-}
-.popup-mobile-menu .feather-chevron-down {
-  display: none;
 }
 .social-default {
   display: flex;
