@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 import { LuArrowDown, LuChevronDown, LuExternalLink, LuPencil } from 'react-icons/lu';
-import { formatEther, isAddress, type Address } from 'viem';
+import { formatEther, isAddress, zeroAddress, type Address, type Hex } from 'viem';
 import {
   useAccount,
   useBalance,
@@ -45,12 +45,19 @@ function fmtUsd(value: number): string {
   });
 }
 
-// Contracts in the bridge path. LCAI sent to them is lost, so never accept one as the recipient.
+// Contracts in the bridge path, and the zero address. LCAI sent to them is lost (or the zap
+// reverts), so never accept one as the recipient.
 const BLOCKED_RECIPIENTS = new Set(
-  [LCAI_ZAP_ADDRESS, ZAP.collateralRouter, ZAP.nativeRouter, ZAP.lcaiToken].map((a) =>
+  [LCAI_ZAP_ADDRESS, ZAP.collateralRouter, ZAP.nativeRouter, ZAP.lcaiToken, zeroAddress].map((a) =>
     a.toLowerCase(),
   ),
 );
+
+// EIP-7702 delegated EOAs (e.g. MetaMask smart accounts) carry code 0xef0100<delegate> but are
+// still controlled by the same key on every chain, so they are not contract wallets here.
+function isContractWallet(code: Hex | undefined): boolean {
+  return !!code && code !== '0x' && !code.toLowerCase().startsWith('0xef0100');
+}
 
 function short(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
@@ -84,6 +91,15 @@ export function ZapForm() {
     : address;
   const isCustomRecipient = !!recipient && recipient.toLowerCase() !== address?.toLowerCase();
 
+  // A Safe or other smart-contract wallet usually does not exist at the same address on
+  // Lightchain, so LCAI sent there could be unrecoverable. Require an explicit recipient.
+  const accountCode = useBytecode({
+    address,
+    chainId: ZAP_CHAIN_ID,
+    query: { enabled: !!address },
+  });
+  const needsRecipient = isContractWallet(accountCode.data) && !isCustomRecipient;
+
   // Guard against a wrong or missing zap address: sending value to an empty address succeeds and
   // the ETH is gone.
   const zapCode = useBytecode({ address: LCAI_ZAP_ADDRESS, chainId: ZAP_CHAIN_ID });
@@ -98,6 +114,17 @@ export function ZapForm() {
   const receipt = useWaitForTransactionReceipt({ hash: txHash, chainId: ZAP_CHAIN_ID });
   const publicClient = usePublicClient({ chainId: ZAP_CHAIN_ID });
   const [isPreparing, setIsPreparing] = useState(false);
+  // Recipient as sent, for the success screen (the form field can change while in flight).
+  const [sentRecipient, setSentRecipient] = useState<Address | undefined>();
+
+  // The receipt watcher follows replacements, so a wallet "Speed up" lands here with a new hash,
+  // but so does "Cancel" (a successful 0-ETH self-send). Only count it as bridged if the zap
+  // contract emitted its event in that transaction.
+  const landedHash = receipt.data?.transactionHash ?? txHash;
+  const zapLanded =
+    receipt.isSuccess &&
+    receipt.data.logs.some((l) => l.address.toLowerCase() === LCAI_ZAP_ADDRESS.toLowerCase());
+  const replacedWithoutZap = receipt.isSuccess && !zapLanded;
 
   // Flag a transaction that has been pending for a while (keyed by hash, so a new one starts over).
   const [stuckHash, setStuckHash] = useState<string | undefined>();
@@ -139,6 +166,7 @@ export function ZapForm() {
     // Suggest a fee instead of leaving it to the wallet (see fees.ts).
     const fees = await suggestFees(publicClient);
     setIsPreparing(false);
+    setSentRecipient(recipient);
     const deadline = BigInt(Math.floor(Date.now() / 1000) + ZAP_DEADLINE_SECONDS);
     writeContract({
       address: LCAI_ZAP_ADDRESS,
@@ -155,7 +183,7 @@ export function ZapForm() {
     if (!isConnected) return { label: 'Connect Wallet', onClick: () => open(), disabled: false };
     if (isWrongChain)
       return {
-        label: isSwitching ? 'Switching…' : 'Switch to Ethereum',
+        label: isSwitching ? 'Switching…' : `Switch to ${ZAP.sourceLabel}`,
         onClick: () => switchChain({ chainId: ZAP_CHAIN_ID }),
         disabled: isSwitching,
       };
@@ -171,6 +199,12 @@ export function ZapForm() {
       return { label: 'Insufficient ETH', onClick: () => undefined, disabled: true };
     if (!recipient)
       return { label: 'Enter a valid recipient', onClick: () => undefined, disabled: true };
+    if (needsRecipient)
+      return {
+        label: 'Enter a Lightchain recipient',
+        onClick: () => setEditingRecipient(true),
+        disabled: false,
+      };
     if (isPreparing) return { label: 'Preparing…', onClick: () => undefined, disabled: true };
     if (isSending) return { label: 'Confirm in wallet…', onClick: () => undefined, disabled: true };
     if (receipt.isLoading) return { label: 'Bridging…', onClick: () => undefined, disabled: true };
@@ -187,12 +221,13 @@ export function ZapForm() {
     quote.data,
     exceedsBalance,
     recipient,
+    needsRecipient,
     isSending,
     receipt.isLoading,
     isPreparing,
   ]);
 
-  if (receipt.isSuccess && txHash) {
+  if (zapLanded && landedHash) {
     return (
       <div className="flex flex-col items-center gap-5 py-8 text-center">
         <div className="flex size-16 items-center justify-center rounded-full bg-accent-500/15 ring-1 ring-accent-500/40">
@@ -205,9 +240,9 @@ export function ZapForm() {
           </p>
         </div>
         <div className="flex gap-3 text-sm">
-          <ExternalLinkButton href={ZAP.explorerTxUrl(txHash)}>Etherscan</ExternalLinkButton>
-          {recipient && (
-            <ExternalLinkButton href={ZAP.destinationAddressUrl(recipient)}>
+          <ExternalLinkButton href={ZAP.explorerTxUrl(landedHash)}>Etherscan</ExternalLinkButton>
+          {sentRecipient && (
+            <ExternalLinkButton href={ZAP.destinationAddressUrl(sentRecipient)}>
               Lightscan
             </ExternalLinkButton>
           )}
@@ -354,12 +389,40 @@ export function ZapForm() {
           Consider splitting into smaller transactions.
         </Notice>
       )}
+      {needsRecipient && (
+        <Notice tone="warn">
+          Your connected wallet is a smart-contract wallet, which may not exist at the same address
+          on Lightchain. Enter a Lightchain address you control as the recipient.
+        </Notice>
+      )}
       {sendError && <Notice tone="error">{sendError.message.split('\n')[0]}</Notice>}
+      {receipt.isError && landedHash && (
+        <Notice tone="error">
+          The bridge transaction failed on-chain, usually because it was mined after its 10-minute
+          deadline or the price moved past your slippage limit. Your ETH is still in your wallet;
+          only the network fee was spent.{' '}
+          <a
+            href={ZAP.explorerTxUrl(landedHash)}
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            View on Etherscan
+          </a>
+        </Notice>
+      )}
+      {replacedWithoutZap && (
+        <Notice tone="warn">
+          That transaction was cancelled or replaced in your wallet, so nothing was bridged and your
+          ETH is still in your wallet.
+        </Notice>
+      )}
       {isStuck && txHash && (
         <Notice tone="warn">
           Still waiting to be included: the network fee is probably too low. Open your wallet and
-          use <strong>Speed up</strong>. If it isn&apos;t mined within 10 minutes of sending, the
-          bridge rejects it and your ETH stays in your wallet.{' '}
+          use <strong>Speed up</strong>. If it is mined more than 10 minutes after you clicked Buy
+          &amp; Bridge, the bridge rejects it: your ETH stays in your wallet and only the network
+          fee is spent.{' '}
           <a
             href={ZAP.explorerTxUrl(txHash)}
             target="_blank"
