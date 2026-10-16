@@ -22,7 +22,10 @@ export function TransferTokenCard() {
         aria-hidden
         className="pointer-events-none absolute -inset-6 -z-10 rounded-[32px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(221,0,172,0.18),transparent_70%)] blur-2xl"
       />
-      <div className="min-w-0 rounded-3xl border border-[rgba(112,100,233,0.22)] bg-dark/80 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+      <div className="relative min-w-0 rounded-3xl border border-[rgba(112,100,233,0.22)] bg-dark/80 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+        {/* Streaming purple beam around the edge (styles in globals.css). */}
+        <div aria-hidden className="card-beam-glow" />
+        <div aria-hidden className="card-beam" />
         <div className="flex flex-col gap-3 px-4 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold tracking-tight text-contentBody">LCAI Bridge</h1>
