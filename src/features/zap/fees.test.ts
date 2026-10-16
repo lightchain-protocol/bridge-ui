@@ -4,9 +4,18 @@ import { computeFeeSuggestion } from './fees';
 
 describe('computeFeeSuggestion', () => {
   test('caps at twice the base fee plus the tip', () => {
-    const fees = computeFeeSuggestion(parseGwei('0.23'), parseGwei('0.002'));
-    expect(fees.maxFeePerGas).toBe(parseGwei('0.462'));
-    expect(fees.maxPriorityFeePerGas).toBe(parseGwei('0.002'));
+    const fees = computeFeeSuggestion(parseGwei('0.23'), parseGwei('0.05'));
+    expect(fees.maxFeePerGas).toBe(parseGwei('0.51'));
+    expect(fees.maxPriorityFeePerGas).toBe(parseGwei('0.05'));
+  });
+
+  test('raises a zero or tiny tip to the minimum', () => {
+    expect(computeFeeSuggestion(parseGwei('0.06'), 0n).maxPriorityFeePerGas).toBe(
+      parseGwei('0.01'),
+    );
+    expect(computeFeeSuggestion(parseGwei('0.06'), parseGwei('0.002')).maxFeePerGas).toBe(
+      parseGwei('0.13'),
+    );
   });
 
   test('would have covered the stuck mainnet zap of 2026-10-15', () => {
