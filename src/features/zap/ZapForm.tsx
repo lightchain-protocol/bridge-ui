@@ -1,13 +1,14 @@
 import { useAppKit } from '@reown/appkit/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LuArrowDown, LuChevronDown, LuExternalLink, LuPencil } from 'react-icons/lu';
 import { formatEther, isAddress, type Address } from 'viem';
 import {
   useAccount,
   useBalance,
   useBytecode,
+  usePublicClient,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -25,9 +26,12 @@ import {
 } from '../../consts/zap';
 import { fetchPrices } from '../tokens/useTokenPrice';
 import { lcaiZapAbi } from './abi';
+import { suggestFees } from './fees';
 import { useZapQuote } from './useZapQuote';
 
 const MAX_GAS_RESERVE_WEI = 5_000_000_000_000_000n; // 0.005 ETH kept back for the tx itself
+// A pending zap older than this is almost certainly underpriced; tell the user how to unstick it.
+const STUCK_AFTER_MS = 3 * 60_000;
 
 function fmt(value: bigint, maxFraction = 4): string {
   return Number(formatEther(value)).toLocaleString('en-US', { maximumFractionDigits: maxFraction });
@@ -92,6 +96,17 @@ export function ZapForm() {
     reset,
   } = useWriteContract();
   const receipt = useWaitForTransactionReceipt({ hash: txHash, chainId: ZAP_CHAIN_ID });
+  const publicClient = usePublicClient({ chainId: ZAP_CHAIN_ID });
+  const [isPreparing, setIsPreparing] = useState(false);
+
+  // Flag a transaction that has been pending for a while (keyed by hash, so a new one starts over).
+  const [stuckHash, setStuckHash] = useState<string | undefined>();
+  useEffect(() => {
+    if (!txHash || !receipt.isLoading) return;
+    const id = setTimeout(() => setStuckHash(txHash), STUCK_AFTER_MS);
+    return () => clearTimeout(id);
+  }, [txHash, receipt.isLoading]);
+  const isStuck = !!txHash && stuckHash === txHash && receipt.isLoading;
 
   const isWrongChain = isConnected && chainId !== ZAP_CHAIN_ID;
   const isDeployed = !!zapCode.data && zapCode.data !== '0x';
@@ -117,16 +132,22 @@ export function ZapForm() {
     setEthInput(formatEther(max));
   };
 
-  const onSubmit = () => {
-    if (!isDeployed || !quote.data || !recipient) return;
+  const onSubmit = async () => {
+    if (!isDeployed || !quote.data || !recipient || !publicClient) return;
+    const { minLcaiOut, ethIn } = quote.data;
+    setIsPreparing(true);
+    // Suggest a fee instead of leaving it to the wallet (see fees.ts).
+    const fees = await suggestFees(publicClient);
+    setIsPreparing(false);
     const deadline = BigInt(Math.floor(Date.now() / 1000) + ZAP_DEADLINE_SECONDS);
     writeContract({
       address: LCAI_ZAP_ADDRESS,
       abi: lcaiZapAbi,
       functionName: 'zapToLightchain',
-      args: [quote.data.minLcaiOut, recipient, deadline],
-      value: quote.data.ethIn,
+      args: [minLcaiOut, recipient, deadline],
+      value: ethIn,
       chainId: ZAP_CHAIN_ID,
+      ...fees,
     });
   };
 
@@ -150,6 +171,7 @@ export function ZapForm() {
       return { label: 'Insufficient ETH', onClick: () => undefined, disabled: true };
     if (!recipient)
       return { label: 'Enter a valid recipient', onClick: () => undefined, disabled: true };
+    if (isPreparing) return { label: 'Preparing…', onClick: () => undefined, disabled: true };
     if (isSending) return { label: 'Confirm in wallet…', onClick: () => undefined, disabled: true };
     if (receipt.isLoading) return { label: 'Bridging…', onClick: () => undefined, disabled: true };
     return { label: 'Buy & Bridge', onClick: onSubmit, disabled: false };
@@ -167,6 +189,7 @@ export function ZapForm() {
     recipient,
     isSending,
     receipt.isLoading,
+    isPreparing,
   ]);
 
   if (receipt.isSuccess && txHash) {
@@ -332,6 +355,21 @@ export function ZapForm() {
         </Notice>
       )}
       {sendError && <Notice tone="error">{sendError.message.split('\n')[0]}</Notice>}
+      {isStuck && txHash && (
+        <Notice tone="warn">
+          Still waiting to be included: the network fee is probably too low. Open your wallet and
+          use <strong>Speed up</strong>. If it isn&apos;t mined within 10 minutes of sending, the
+          bridge rejects it and your ETH stays in your wallet.{' '}
+          <a
+            href={ZAP.explorerTxUrl(txHash)}
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            View on Etherscan
+          </a>
+        </Notice>
+      )}
 
       <PrimaryButton onClick={button.onClick} disabled={button.disabled}>
         {button.label}
