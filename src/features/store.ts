@@ -190,10 +190,15 @@ export const useStore = create<AppState>()(
       updateTransferStatus: (i, s, options) => {
         set((state) => {
           if (i >= state.transfers.length) return state;
+          // Replace the entry instead of mutating it, so subscribers that hold the object
+          // (e.g. TransferStatusModal) see a new reference and re-render.
           const txs = [...state.transfers];
-          txs[i].status = s;
-          txs[i].msgId ||= options?.msgId;
-          txs[i].originTxHash ||= options?.originTxHash;
+          txs[i] = {
+            ...txs[i],
+            status: s,
+            msgId: txs[i].msgId || options?.msgId,
+            originTxHash: txs[i].originTxHash || options?.originTxHash,
+          };
           return {
             transfers: txs,
           };
