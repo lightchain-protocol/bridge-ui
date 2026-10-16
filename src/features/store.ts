@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { IS_TESTNET } from '../consts/network';
+import { ZAP_SLIPPAGE_BPS } from '../consts/zap';
 import { logger } from '../utils/logger';
 import { assembleChainMetadata } from './chains/metadata';
 import { TokenChainMap } from './tokens/types';
@@ -85,6 +86,14 @@ export interface AppState {
   transferLoading: boolean;
   setTransferLoading: (isLoading: boolean) => void;
 
+  // Buy & Bridge: user slippage (persisted), card edge beam state, starfield warp trigger
+  zapSlippageBps: number;
+  setZapSlippageBps: (bps: number) => void;
+  beamState: BeamState;
+  setBeamState: (state: BeamState) => void;
+  warpPulse: number; // increments; the starfield bursts on each change
+  triggerWarp: () => void;
+
   originChainName: ChainName;
   setOriginChainName: (originChainName: ChainName) => void;
   tokensBySymbolChainMap: Record<string, TokenChainMap>;
@@ -103,6 +112,8 @@ export interface AppState {
   // Deduplicated, sorted CoinGecko IDs for all tokens (used by useTokenPrices)
   coinGeckoIds: string[];
 }
+
+export type BeamState = 'idle' | 'pending' | 'success';
 
 export const useStore = create<AppState>()(
   persist(
@@ -217,6 +228,12 @@ export const useStore = create<AppState>()(
       setTransferLoading: (isLoading) => {
         set(() => ({ transferLoading: isLoading }));
       },
+      zapSlippageBps: ZAP_SLIPPAGE_BPS,
+      setZapSlippageBps: (zapSlippageBps) => set(() => ({ zapSlippageBps })),
+      beamState: 'idle',
+      setBeamState: (beamState) => set(() => ({ beamState })),
+      warpPulse: 0,
+      triggerWarp: () => set((state) => ({ warpPulse: state.warpPulse + 1 })),
       originChainName: '',
       setOriginChainName: (originChainName: ChainName) => {
         set(() => ({ originChainName }));
@@ -242,6 +259,7 @@ export const useStore = create<AppState>()(
         // fields to persist
         chainMetadataOverrides: state.chainMetadataOverrides,
         transfers: state.transfers, // Keep for transfers through non-indexed routes
+        zapSlippageBps: state.zapSlippageBps,
       }),
       version: PERSIST_STATE_VERSION,
       onRehydrateStorage: () => {

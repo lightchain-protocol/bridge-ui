@@ -7,6 +7,8 @@ interface ZapNetworkConfig {
   sourceChainName: string; // Hyperlane chain name of the source chain, for logos
   sourceLabel: string; // Network label shown on the pay side
   destinationDomain: number; // Hyperlane domain of Lightchain
+  destinationChainId: number; // EVM chain id of Lightchain (same number as the domain)
+  destinationMailbox: Address; // Hyperlane Mailbox on Lightchain, polled for delivery
   destinationChainName: string; // Hyperlane chain name of Lightchain, for logos
   destinationLabel: string; // Network label shown on the receive side
   lcaiToken: Address;
@@ -33,6 +35,8 @@ const mainnet: ZapNetworkConfig = {
   sourceChainName: 'ethereum',
   sourceLabel: 'Ethereum',
   destinationDomain: 9200,
+  destinationChainId: 9200,
+  destinationMailbox: '0x142a9CEf00ACcAddB76283c49A1Bf37f20c1F00e',
   destinationChainName: 'lcai',
   destinationLabel: 'Lightchain',
   lcaiToken: '0x9cA8530CA349c966Fe9ef903Df17a75B8A778927',
@@ -55,6 +59,8 @@ const testnet: ZapNetworkConfig = {
   sourceChainName: 'sepolia',
   sourceLabel: 'Sepolia',
   destinationDomain: 8200,
+  destinationChainId: 8200,
+  destinationMailbox: '0x39AF7e7967e45f6dbdA1559885bDF432Fd20288e',
   destinationChainName: 'lcaitestnet',
   destinationLabel: 'Lightchain Testnet',
   lcaiToken: '0xCAb9A0d25d7F673E6cc05B35cd28D3e888d5D4A3',
@@ -91,6 +97,10 @@ const MAINNET_ZAP_ADDRESS: Address = '0x91961D28700c6524C74C4C660A3EA236550d0b27
 export const LCAI_ZAP_ADDRESS: Address = IS_TESTNET ? TESTNET_ZAP_ADDRESS : MAINNET_ZAP_ADDRESS;
 
 export const ZAP_SLIPPAGE_BPS = 100; // 1%
+// User-adjustable slippage (gear menu). Above 5% a sandwich bot can take too much.
+export const ZAP_SLIPPAGE_PRESETS_BPS = [50, 100, 200];
+export const ZAP_MIN_SLIPPAGE_BPS = 5;
+export const ZAP_MAX_SLIPPAGE_BPS = 500;
 export const ZAP_DEADLINE_SECONDS = 10 * 60;
 export const ZAP_PRICE_IMPACT_WARN_BPS = 300; // 3%
 export const ZAP_SOFT_CAP_ETH = IS_TESTNET ? 0.002 : 5; // mainnet pool ~150 WETH deep; testnet pool is tiny

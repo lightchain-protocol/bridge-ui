@@ -8,6 +8,7 @@ import { initRefiner } from '../../features/analytics/refiner';
 import { EVENT_NAME } from '../../features/analytics/types';
 import { useWalletConnectionTracking } from '../../features/analytics/useWalletConnectionTracking';
 import { trackEvent } from '../../features/analytics/utils';
+import { useStore } from '../../features/store';
 import { TransferStatusModal } from '../../features/transfer/TransferStatusModal';
 import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
 import type { RawNavConfig } from '../../lib/nav/types';
@@ -22,6 +23,7 @@ type Props = PropsWithChildren<{
 
 export function AppLayout({ children, navConfig: navProp }: Props) {
   const [navConfig, setNavConfig] = useState<RawNavConfig[]>(navProp ?? []);
+  const warpPulse = useStore((s) => s.warpPulse);
 
   useWalletConnectionTracking();
 
@@ -58,7 +60,7 @@ export function AppLayout({ children, navConfig: navProp }: Props) {
         aria-hidden
         className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_50%_45%,rgba(112,100,233,0.16),transparent_70%)]"
       >
-        <Starfield />
+        <Starfield warpPulse={warpPulse} />
       </div>
       {/* Header on top, the bridge card centred in the remaining height. No footer. */}
       <div id="app-content" className="relative z-[1] flex min-h-dvh w-full flex-col">
