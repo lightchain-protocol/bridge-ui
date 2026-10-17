@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../../sentry.client.config';
 import { ErrorBoundary } from '../components/errors/ErrorBoundary';
 import { AppLayout } from '../components/layout/AppLayout';
+import { SiteHead } from '../components/layout/SiteHead';
 import { MAIN_FONT } from '../consts/app';
 import { WarpContextInitGate } from '../features/WarpContextInitGate';
 import { EvmWalletContext } from '../features/wallet/context/EvmWalletContext';
@@ -29,11 +30,13 @@ export default function App({ Component, pageProps }: AppProps) {
   // complicates wallet and graphql integrations
   const isSsr = useIsSsr();
   if (isSsr) {
-    return <div></div>;
+    // Metadata still renders on the server so crawlers and link previews see it.
+    return <SiteHead />;
   }
 
   return (
     <div className={`${MAIN_FONT.variable} bg-mainBg font-sans text-black`}>
+      <SiteHead />
       <ErrorBoundary>
         <QueryClientProvider client={reactQueryClient}>
           <WarpContextInitGate>

@@ -1,8 +1,6 @@
 'use client';
 
-import Head from 'next/head';
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { APP_NAME } from '../../consts/app';
 import { initIntercom } from '../../features/analytics/intercom';
 import { initRefiner } from '../../features/analytics/refiner';
 import { EVENT_NAME } from '../../features/analytics/types';
@@ -49,11 +47,6 @@ export function AppLayout({ children, navConfig: navProp }: Props) {
 
   return (
     <>
-      <Head>
-        {/* https://nextjs.org/docs/messages/no-document-viewport-meta */}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{APP_NAME}</title>
-      </Head>
       {/* Background: a faint brand glow under a warp-speed starfield (plain 2D canvas), fixed to
           the viewport so it fills the screen at any page height. */}
       <div
