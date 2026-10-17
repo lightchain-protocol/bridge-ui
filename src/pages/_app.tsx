@@ -3,7 +3,7 @@ import '@hyperlane-xyz/widgets/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
-import { ToastContainer, Zoom } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../sentry.client.config';
 import { ErrorBoundary } from '../components/errors/ErrorBoundary';
@@ -46,7 +46,14 @@ export default function App({ Component, pageProps }: AppProps) {
             </EvmWalletContext>
           </WarpContextInitGate>
         </QueryClientProvider>
-        <ToastContainer transition={Zoom} position="bottom-right" limit={2} />
+        <ToastContainer
+          transition={Slide}
+          position="bottom-right"
+          limit={3}
+          theme="dark"
+          newestOnTop
+          hideProgressBar={false}
+        />
       </ErrorBoundary>
     </div>
   );

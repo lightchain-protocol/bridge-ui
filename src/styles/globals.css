@@ -380,3 +380,109 @@ i > svg {
     animation: none;
   }
 }
+
+/* Transfer status bar (TransferStatusBar): slide in above the card; animated active step. */
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-progress {
+  background: linear-gradient(90deg, transparent, #7064e9, #dd00ac, transparent);
+  background-size: 200% 100%;
+  animation: status-progress 1.4s linear infinite;
+}
+
+@keyframes status-progress {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Toasts (react-toastify, theme="dark"): dark glass like the bridge card, coloured left accent
+   and a thin progress line per type. Applies to every toast in the app. */
+:root {
+  --toastify-color-dark: rgba(12, 11, 26, 0.92);
+  --toastify-text-color-dark: #dcdcf5;
+  --toastify-color-success: #34d399;
+  --toastify-color-error: #f87171;
+  --toastify-color-warning: #facc15;
+  --toastify-color-info: #a59cff;
+  --toastify-toast-bd-radius: 16px;
+  --toastify-toast-min-height: 60px;
+  --toastify-toast-width: 360px;
+  --toastify-font-family: var(--font-main), sans-serif;
+}
+
+.Toastify__toast-theme--dark {
+  border: 1px solid rgba(112, 100, 233, 0.32);
+  border-left: 3px solid var(--toast-accent, #7064e9);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.55),
+    0 0 24px rgba(112, 100, 233, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 12px 12px 14px 14px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.Toastify__toast--success {
+  --toast-accent: #34d399;
+}
+.Toastify__toast--error {
+  --toast-accent: #f87171;
+}
+.Toastify__toast--warning {
+  --toast-accent: #facc15;
+}
+.Toastify__toast--info,
+.Toastify__toast--default {
+  --toast-accent: #7064e9;
+}
+
+.Toastify__toast-icon {
+  width: 22px;
+  margin-inline-end: 12px;
+}
+
+.Toastify__close-button--dark {
+  color: #8a8cc4;
+  opacity: 0.8;
+  align-self: center;
+}
+.Toastify__close-button--dark:hover {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.Toastify__progress-bar--wrp {
+  height: 2px;
+}
+.Toastify__progress-bar-theme--dark,
+.Toastify__progress-bar--info,
+.Toastify__progress-bar--default {
+  background: linear-gradient(90deg, #7064e9, #dd00ac);
+}
+.Toastify__progress-bar--success {
+  background: linear-gradient(90deg, #34d399, #7064e9);
+}
+.Toastify__progress-bar--error {
+  background: #f87171;
+}
+.Toastify__progress-bar--warning {
+  background: #facc15;
+}
+.Toastify__progress-bar--bg {
+  background: rgba(112, 100, 233, 0.12);
+  opacity: 1;
+}

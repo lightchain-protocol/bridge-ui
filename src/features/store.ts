@@ -202,7 +202,7 @@ export const useStore = create<AppState>()(
         set((state) => {
           if (i >= state.transfers.length) return state;
           // Replace the entry instead of mutating it, so subscribers that hold the object
-          // (e.g. TransferStatusModal) see a new reference and re-render.
+          // (e.g. TransferStatusBar) see a new reference and re-render.
           const txs = [...state.transfers];
           txs[i] = {
             ...txs[i],
