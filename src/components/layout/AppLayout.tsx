@@ -9,7 +9,6 @@ import { EVENT_NAME } from '../../features/analytics/types';
 import { useWalletConnectionTracking } from '../../features/analytics/useWalletConnectionTracking';
 import { trackEvent } from '../../features/analytics/utils';
 import { useStore } from '../../features/store';
-import { TransferStatusModal } from '../../features/transfer/TransferStatusModal';
 import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
 import type { RawNavConfig } from '../../lib/nav/types';
 import { Header } from '../nav/Header';
@@ -70,8 +69,6 @@ export function AppLayout({ children, navConfig: navProp }: Props) {
           <DottedLineBackground lineCount={5} />
         </main>
       </div>
-
-      <TransferStatusModal />
     </>
   );
 }

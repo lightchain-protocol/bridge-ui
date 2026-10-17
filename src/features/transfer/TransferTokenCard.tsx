@@ -4,6 +4,7 @@ import { IS_TESTNET } from '../../consts/network';
 import { NetworkMenu } from '../network/NetworkMenu';
 import { useStore } from '../store';
 import { ZapForm } from '../zap/ZapForm';
+import { TransferStatusBar } from './TransferStatusBar';
 import { TransferTokenForm } from './TransferTokenForm';
 
 type Tab = 'buy' | 'bridge';
@@ -29,6 +30,9 @@ export function TransferTokenCard() {
 
   return (
     <div className="relative w-full min-w-0 max-w-full sm:w-[560px]">
+      {/* Bridge-tab transfer progress, above the card so it never covers the form. In normal
+          flow (not absolute) so a tall card can't push it under the header. */}
+      <TransferStatusBar />
       {/* Glow behind the card */}
       <div
         aria-hidden

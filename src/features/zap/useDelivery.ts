@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { parseAbi, parseEventLogs, type Hex, type TransactionReceipt } from 'viem';
+import { parseAbi, parseEventLogs, type Address, type Hex, type TransactionReceipt } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { ZAP } from '../../consts/zap';
 import { lcaiZapAbi } from './abi';
@@ -32,22 +32,34 @@ export interface Delivery {
   deliveryTxHash?: Hex;
 }
 
+export interface DeliveryTarget {
+  chainId: number; // EVM chain id of the destination
+  mailbox: Address; // Hyperlane Mailbox on the destination
+}
+
+const ZAP_TARGET: DeliveryTarget = {
+  chainId: ZAP.destinationChainId,
+  mailbox: ZAP.destinationMailbox,
+};
+
 /**
- * Watches the Lightchain mailbox until the zap's message is processed, then looks up the delivery
- * transaction for the Lightscan link. Exact: keyed by message ID, not by amount.
+ * Watches the destination mailbox until a Hyperlane message is processed, then looks up the
+ * delivery transaction for the explorer link. Exact: keyed by message ID, not by amount.
+ * Defaults to the zap's destination (Lightchain); the Bridge tab passes either direction.
  */
-export function useDelivery(messageId: Hex | undefined) {
-  const client = usePublicClient({ chainId: ZAP.destinationChainId });
+export function useDelivery(messageId: Hex | undefined, target: DeliveryTarget = ZAP_TARGET) {
+  const { chainId, mailbox } = target;
+  const client = usePublicClient({ chainId });
   return useQuery({
     // The client is not serializable; its uid is a stable stand-in (same as useZapQuote).
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['zapDelivery', client?.uid, messageId],
+    queryKey: ['delivery', client?.uid, mailbox, messageId],
     enabled: !!client && !!messageId,
     refetchInterval: (query) => (query.state.data?.delivered ? false : POLL_MS),
     queryFn: async (): Promise<Delivery> => {
       if (!client || !messageId) throw new Error('useDelivery called without a message');
       const delivered = await client.readContract({
-        address: ZAP.destinationMailbox,
+        address: mailbox,
         abi: mailboxAbi,
         functionName: 'delivered',
         args: [messageId],
@@ -56,7 +68,7 @@ export function useDelivery(messageId: Hex | undefined) {
       try {
         const latest = await client.getBlockNumber();
         const [log] = await client.getLogs({
-          address: ZAP.destinationMailbox,
+          address: mailbox,
           event: mailboxAbi[1],
           args: { messageId },
           fromBlock: latest > LOOKBACK_BLOCKS ? latest - LOOKBACK_BLOCKS : 0n,

@@ -1,3 +1,4 @@
+import { LuExternalLink } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 import { useMultiProvider } from '../../features/chains/hooks';
 
@@ -20,11 +21,17 @@ export function TxSuccessToast({
   const url = multiProvider.tryGetExplorerTxUrl(chain, { hash: txHash });
 
   return (
-    <div>
-      {msg + ' '}
+    <div className="flex flex-col gap-1">
+      <span className="font-semibold text-contentBody">{msg}</span>
       {url && (
-        <a className="underline" href={url} target="_blank" rel="noopener noreferrer">
-          Open in Explorer
+        <a
+          className="inline-flex w-fit items-center gap-1 text-xs font-medium text-accent-300 transition-colors hover:text-accent-200"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View on explorer
+          <LuExternalLink className="size-3" />
         </a>
       )}
     </div>
