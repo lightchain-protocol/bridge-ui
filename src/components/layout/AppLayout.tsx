@@ -10,7 +10,6 @@ import { useStore } from '../../features/store';
 import { fetchNavConfig } from '../../lib/nav/fetchNavConfig';
 import type { RawNavConfig } from '../../lib/nav/types';
 import { Header } from '../nav/Header';
-import DottedLineBackground from '../ui/DottedLineBackground';
 import Starfield from '../ui/Starfield';
 
 type Props = PropsWithChildren<{
@@ -59,7 +58,6 @@ export function AppLayout({ children, navConfig: navProp }: Props) {
         <Header rawMenus={navConfig} />
         <main className="main-wrapper container relative z-10 mx-auto flex w-full flex-1 items-center justify-center overflow-hidden px-3 py-8 sm:py-12">
           {children}
-          <DottedLineBackground lineCount={5} />
         </main>
       </div>
     </>

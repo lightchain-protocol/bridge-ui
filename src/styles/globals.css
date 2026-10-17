@@ -238,16 +238,6 @@ div[data-floating-ui-portal] > div {
   @apply transition-all duration-300 ease-in-out;
 }
 
-@keyframes dotted-line-flow {
-  0% {
-    transform: translateY(0);
-  }
-
-  100% {
-    transform: translateY(28px);
-  }
-}
-
 /* Icons are inline SVGs (react-icons) inside the theme's <i> wrappers, which the SCSS sizes via font-size. */
 i > svg {
   display: inline-block;
